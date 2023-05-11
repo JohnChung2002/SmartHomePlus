@@ -6,6 +6,7 @@ class MySQLService:
         self.user = user
         self.password = password
         self.database = database
+        self.connection = None
 
     def connect(self):
         self.connection = mysql.connector.connect(
@@ -23,52 +24,52 @@ class MySQLService:
         self.connect()
     
     def __exit__(self, type, value, traceback):
-        self.connection.close()
+        self.connection.close() # type: ignore
 
     def join_param_string(self, param_list:list):
         return ', '.join([('%s = %%s' %(key)) for key in param_list])
 
     def get_all(self, table_name: str):
-        cursor = self.connection.cursor(dictionary=True)
+        cursor = self.connection.cursor(dictionary=True) # type: ignore
         cursor.execute(f"SELECT * FROM {table_name}")
         result = cursor.fetchall()
         cursor.close()
         return result
 
     def get_by_id(self, table_name: str, primary_fields: list, data: list):
-        cursor = self.connection.cursor(dictionary=True)
+        cursor = self.connection.cursor(dictionary=True) # type: ignore
         cursor.execute(f"SELECT * FROM {table_name} WHERE {self.join_param_string(primary_fields)}", data)
         result = cursor.fetchone()
         cursor.close()
         return result
 
     def insert(self, table_name: str, fields: list, data: list):
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor() # type: ignore
         cursor.execute(f"INSERT INTO {table_name} ({', '.join(fields)}) VALUES ({', '.join(['%s'] * len(fields))})", data)
-        self.connection.commit()
+        self.connection.commit() # type: ignore
         cursor.close()
 
     def update(self, table_name: str, modifying_fields: list, primary_fields: list, data: list):
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor() # type: ignore
         cursor.execute(f"UPDATE {table_name} SET {self.join_param_string(modifying_fields)} WHERE {self.join_param_string(primary_fields)}", data)
-        self.connection.commit()
+        self.connection.commit() # type: ignore
         cursor.close()
 
     def delete_by_id(self, table_name: str, primary_fields: list, data: list):
-        cursor = self.connection.cursor()
+        cursor = self.connection.cursor() # type: ignore
         cursor.execute(f"DELETE FROM {table_name} WHERE {self.join_param_string(primary_fields)}", data)
-        self.connection.commit()
+        self.connection.commit() # type: ignore
         cursor.close()
 
     def get_last_entry(self, table_name: str, primary_field: str):
-        cursor = self.connection.cursor(dictionary=True)
+        cursor = self.connection.cursor(dictionary=True) # type: ignore
         cursor.execute(f"SELECT * FROM {table_name} ORDER BY {primary_field} DESC LIMIT 1")
         result = cursor.fetchone()
         cursor.close()
         return result
     
     def get_last_entry_by_id(self, table_name: str, primary_fields: list, order_field: str, data: list):
-        cursor = self.connection.cursor(dictionary=True)
+        cursor = self.connection.cursor(dictionary=True) # type: ignore
         cursor.execute(f"SELECT * FROM {table_name} WHERE {self.join_param_string(primary_fields)} ORDER BY {order_field} DESC LIMIT 1", data)
         result = cursor.fetchone()
         cursor.close()
