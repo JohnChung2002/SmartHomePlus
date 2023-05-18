@@ -63,6 +63,10 @@ void setup()
   lcd.clear();
 }
 
+void loadInformation() {
+  
+}
+
 void checkButtonClick() {
   for (int i = 0; i < (sizeof(button_status) / sizeof(button_status[0])); i+=2) {
     int reading = digitalRead(button_pins[(i/2)]);
@@ -193,4 +197,3 @@ void loop()
   digitalWrite(FAN, fanStatus);
   noStopDelay(100);
 }
-
