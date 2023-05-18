@@ -41,7 +41,7 @@ def request_has_connection():
 @app.before_request
 def get_request_connection():
     if not request_has_connection():
-        g.dbconn = MySQLService(os.getenv("DATABASE_HOST"), 'pi', 'pi', 'smart_lock_system') # type: ignore
+        g.dbconn = MySQLService(os.getenv("CLOUD_DATABASE_HOST"), os.getenv("CLOUD_DATABASE_USERNAME"), os.getenv("CLOUD_DATABASE_PASSWORD"), os.getenv("CLOUD_DATABASE_NAME")) # type: ignore
 
 @app.teardown_request
 def close_db_connection(ex):
