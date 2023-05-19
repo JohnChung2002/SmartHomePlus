@@ -76,13 +76,13 @@ void checkButtonClick() {
       switch (button_pins[(i/2)]) {
         case 2:
           room1person++;
-          serialOutput = "Room1|Inc";
+          serialOutput = "{'title': 'Room Count', 'room': '1', 'action': 'Inc'}";
           Serial.println(serialOutput);
           break;
         case 4:
           if (room1person != 0) {
             room1person--;
-            serialOutput = "Room1|Dec";
+            serialOutput = "{'title': 'Room Count', 'room': '1', 'action': 'Dec'}";
             Serial.println(serialOutput);
           } else {
             room1person;
@@ -90,13 +90,13 @@ void checkButtonClick() {
           break;
         case 6:
           room2person++;
-          serialOutput = "Room2|Inc";
+          serialOutput = "{'title': 'Room Count', 'room': '2', 'action': 'Inc'}";
           Serial.println(serialOutput);
           break;
         case 8:
           if (room2person != 0) {
             room2person--;
-            serialOutput = "Room2|Dec";
+            serialOutput = "{'title': 'Room Count', 'room': '2', 'action': 'Dec'}";
             Serial.println(serialOutput);
           } else {
             room2person;
