@@ -1,6 +1,6 @@
 import serial
 import os
-import json
+import ast
 import paho.mqtt.client as mqtt
 
 from dotenv import load_dotenv
@@ -15,7 +15,7 @@ def read_serial_input():
         if (ser.in_waiting > 0):
             temp = ser.readline()
             print(f"Received from Arduino {temp}")
-            input = json.loads(temp.decode('utf-8').rstrip())
+            input = ast.literal_eval(temp.decode('utf-8').rstrip())
             if (input["title"] == "Room Count"):
                 topic = "/john_node/room_count"
                 value = input["action"]
