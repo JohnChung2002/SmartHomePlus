@@ -108,7 +108,6 @@ void checkButtonClick() {
       }
       lcd.clear();
       lcd.print(output);
-      Serial.println(output);
     }
     if (reading == 1 && button_status[i+1] == 0) {
       button_status[i+1] = 1;
@@ -119,16 +118,17 @@ void checkButtonClick() {
 void detectMotion() {
   int reading = digitalRead(MOTION_SENSOR);
   int corridor = analogRead(CORRIDOR_LIS);
-  Serial.println(reading);
   if (reading == 1 && motion_sensor_status == 1) {
     motion_sensor_status = 0;
     if (manualOverride[1] == 0) button_status[6] = (corridor <= 10);
-    Serial.println("Motion Detected!");
+    serialOutput = "{'title': 'Motion', 'action': 'Detected'}";
+    Serial.println(serialOutput);
     timeout0.cancel();
   }
   if (reading == 0 && motion_sensor_status == 0) {
     motion_sensor_status = 1;
-    Serial.println("No Motion Detected!");
+    serialOutput = "{'title': 'Motion', 'action': 'Ended'}";
+    Serial.println(serialOutput);
     timeout0.timeOut(5000, endOfMotion);
   }
 }
@@ -181,7 +181,8 @@ void loop()
     } else if (command.indexOf("TriggerFan|") != -1) {
       
       fanStatus = command.substring(11).toInt();
-      Serial.println("Trigger " + String(fanStatus));
+      serialOutput = "{'title': 'Fan', 'status': '" + String(fanStatus ? "On" : "Off") + "'}";
+      Serial.println(serialOutput);
     }
   }
   checkButtonClick();
