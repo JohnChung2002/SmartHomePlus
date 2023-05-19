@@ -1,6 +1,7 @@
 import serial
 import os
 import ast
+import json
 import paho.mqtt.client as mqtt
 
 from dotenv import load_dotenv
@@ -17,9 +18,8 @@ def read_serial_input():
             print(f"Received from Arduino {temp}")
             input = ast.literal_eval(temp.decode('utf-8').rstrip())
             if (input["title"] == "Room Count"):
-                topic = "/john_node/room_count"
-                value = input["action"]
-                client.publish(topic, value)
+                topic = "/john_node"
+                client.publish(topic, json.dumps(input))
                 
 def on_connect(client, userdata, flags, rc):
     print("connected with rc: "+str(rc))
