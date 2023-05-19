@@ -19,6 +19,7 @@ def read_serial_input():
             input = ast.literal_eval(temp.decode('utf-8').rstrip())
             if (input["title"] == "Room Count"):
                 topic = "/john_node"
+                input["sender"] = "Edge"
                 client.publish(topic, json.dumps(input))
                 
 def on_connect(client, userdata, flags, rc):
@@ -28,6 +29,9 @@ def on_connect(client, userdata, flags, rc):
 def on_publish(client, data, result):
     print("data published")
     pass
+
+def on_message(client, userdata, msg):
+    print("Received message: ", msg.payload.decode())
     
 client = mqtt.Client()
 client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
@@ -35,6 +39,10 @@ client.on_connect = on_connect
 client.on_publish = on_publish
 client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
 
+topic = "/john_node"
+client.subscribe(topic)
+
+client.loop_start()
 read_serial_input()
 
 
