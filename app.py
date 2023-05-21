@@ -16,6 +16,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.secret_key =  os.getenv("APP_SECRET_KEY")
 jwt = JWTManager(app)
 
 cors = CORS(app, resources={r"/api/*" : {"origins": "*"}})
