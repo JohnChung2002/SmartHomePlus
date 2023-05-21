@@ -17,21 +17,24 @@ def read_serial_input():
             temp = ser.readline()
             print(f"Received from Arduino {temp}")
             input = ast.literal_eval(temp.decode('utf-8').rstrip())
-            if (input["title"] == "Room Count"):
-                topic = "/john_node"
-                input["sender"] = "Edge"
+            input["sender"] = "Edge"
+            if (input["title"] in ["Room Count", "Lights", "Ventilating Fan"]):
                 client.publish(topic, json.dumps(input))
-                
+
 def on_connect(client, userdata, flags, rc):
-    print("connected with rc: "+str(rc))
+    print(f"Connected with RC: {str(rc)}")
     pass
     
 def on_publish(client, data, result):
-    print("data published")
+    print("Message sent to MQTT broker")
     pass
 
 def on_message(client, userdata, msg):
-    print("Received message: ", msg.payload.decode())
+    json_message = ast.literal_eval(msg.payload.decode())
+    if (json_message["sender"] == "Cloud"):
+        if (json_message["title"] in ["Lights", "Intruder", "Ventilating Fan", "Aircon Switch", "Aircon Temp", "Disengage Override"]):
+            ser.write(str.encode(json.dumps(input)))
+        print("Received message: ", msg.payload.decode())
     
 client = mqtt.Client()
 client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore

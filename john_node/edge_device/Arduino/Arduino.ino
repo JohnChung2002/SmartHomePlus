@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <TimeOut.h>
+#include <ArduinoJson.h>
 
 #define ROOM_1_LED 22
 #define CORRIDOR_LED 23
@@ -13,7 +14,8 @@
 #define MOTION_SENSOR 28
 #define FAN 29
 
-String command, serialInput, serialOutput;
+String serialInput, serialOutput;
+StaticJsonDocument<500> jsonDoc;
 int room1person = 0;
 int room2person = 0;
 int manualOverride[3] = {0, 0, 0};
@@ -22,7 +24,7 @@ int button_status[14] = {0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1};
 int motion_sensor_status = 0;
 int airConStatus[2] = {0, 0};
 int airConTemp[2] = {0, 0};
-int fanStatus = 0;
+int ventilatingFanStatus = 0;
 
 unsigned long lastMillis = 0;
 unsigned long currentMillis = 0;
@@ -140,49 +142,61 @@ void checkBrightness() {
   if (manualOverride[2] == 0) button_status[10] = (room2person > 0) && (room_2 <= 10);
 }
 
-void loop()
-{
+void loop() {
   TimeOut::handler();
   if (Serial.available() != 0) {
-    command = Serial.readString();
-    if (command == "IntruderAllOn") {
-      button_status[2] = 1;
-      button_status[6] = 1;
-      button_status[10] = 1;
-    } else if (command == "DisengageOverride") {
-      for (int i = 0; i < (sizeof(manualOverride) / sizeof(manualOverride[0])); i++) {
-        manualOverride[i] = 0;
+    deserializeJson(jsonDoc, Serial.readString());
+    if (jsonDoc["title"] == "Aircon Switch") {
+      if (jsonDoc["room"] == "1") {
+        airConStatus[0] = jsonDoc["status"];
+      } else if (jsonDoc["room"] == "2") {
+        airConStatus[1] = jsonDoc["status"];
       }
-    } else if (command.indexOf("Pin|") != -1) {
-      int pin = command.substring(4).toInt();
-      if (pin == 3 || pin == 5 || pin == 7) {
-        button_status[(pin-2)*2] = 1;
-      }
-    } else if (command.indexOf("AirconOnOff|") != -1) {
-      int room = command.substring(12, 13).toInt();
-      int status = command.substring(14).toInt();
-      airConStatus[room-1] = status;
       lcd.clear();
       for (int i = 0; i < (sizeof(airConStatus) / sizeof(airConStatus[0])); i++) {
         lcd.setCursor(0, i);
         lcd.print("AC" + String(i+1) + ":" + String(airConStatus[i] ? "On |" : "Off|") + String(airConTemp[i]) + (char)223 +"C");
       }
-    } else if (command.indexOf("AirconTemp|") != -1) {
-      int room = command.substring(11, 12).toInt();
-      int temp = command.substring(13).toInt();
-      if (airConStatus[room-1] == 1) {
-        airConTemp[room-1] = temp;
+      serialOutput = "{'title': 'Aircon Switch Response', 'status': '1'}";
+      Serial.println(serialOutput);
+    } else if (jsonDoc["title"] == "Aircon Temp") {
+      if (airConStatus[int(jsonDoc["room"])-1] == 1) {
+        if (jsonDoc["room"] == "1" && airConStatus[int(jsonDoc["room"])-1] == 1) {
+          airConTemp[0] = jsonDoc["temp"];
+        } else if (jsonDoc["room"] == "2" && airConStatus[int(jsonDoc["room"])-1] == 1) {
+          airConTemp[1] = jsonDoc["temp"];
+        }
         lcd.clear();
         for (int i = 0; i < (sizeof(airConStatus) / sizeof(airConStatus[0])); i++) {
           lcd.setCursor(0, i);
           lcd.print("AC" + String(i+1) + ":" + String(airConStatus[i] ? "On |" : "Off|") + String(airConTemp[i]) + (char)223 +"C");
         }
       }
-    } else if (command.indexOf("TriggerFan|") != -1) {
-      
-      fanStatus = command.substring(11).toInt();
-      serialOutput = "{'title': 'Fan', 'status': '" + String(fanStatus ? "On" : "Off") + "'}";
+    } else if (jsonDoc["title"] == "Ventilating Fan") {
+      ventilatingFanStatus = jsonDoc["status"];
+      serialOutput = "{'title': 'Fan', 'status': '" + String(ventilatingFanStatus ? "On" : "Off") + "'}";
       Serial.println(serialOutput);
+    } else if (jsonDoc["title"] == "Lights") {
+      if (jsonDoc["room"] == "1") {
+        button_status[2] = jsonDoc["status"];
+      } else if (jsonDoc["room"] == "2") {
+        button_status[6] = jsonDoc["status"];
+      } else if (jsonDoc["room"] == "Corridor") {
+        button_status[10] = jsonDoc["status"];
+      }
+    } else if (jsonDoc["title"] == "Disengage Override") {
+      for (int i = 0; i < (sizeof(manualOverride) / sizeof(manualOverride[0])); i++) {
+        manualOverride[i] = 0;
+      }
+    } else if (jsonDoc["title"] == "Intruder") {
+      for (int i = 0; i < (sizeof(manualOverride) / sizeof(manualOverride[0])); i++) {
+        manualOverride[i] = int(jsonDoc["status"]);
+      }
+      if (jsonDoc["status"] == "1") {
+        button_status[2] = jsonDoc["status"];
+        button_status[6] = jsonDoc["status"];
+        button_status[10] = jsonDoc["status"];
+      }
     }
   }
   checkButtonClick();
@@ -195,6 +209,6 @@ void loop()
   digitalWrite(ROOM_1_LED, button_status[2]);
   digitalWrite(CORRIDOR_LED, button_status[6]);
   digitalWrite(ROOM_2_LED, button_status[10]);
-  digitalWrite(FAN, fanStatus);
+  digitalWrite(FAN, ventilatingFanStatus);
   noStopDelay(100);
 }
