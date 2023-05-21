@@ -1,0 +1,12 @@
+argon2-cffi==0.1.10
+discord_webhook==1.1.0
+face_recognition==1.3.0
+Flask==1.1.2
+flask_cors==3.0.10
+flask_jwt_extended==4.4.4
+imutils==0.5.4
+mysql_connector_repackaged==0.3.1
+paho_mqtt==1.6.1
+picamera==1.13
+pyserial==3.5b0
+python-dotenv==1.0.0
