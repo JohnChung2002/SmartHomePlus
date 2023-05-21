@@ -79,7 +79,7 @@ client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.ge
 client.on_connect = on_connect 
 client.on_publish = on_publish
 client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
-
+g.client = client
 topic = [("/john_node", 0), ("/cheryl_node", 0), ("/timmy_node", 0)]
 client.subscribe(topic)
 

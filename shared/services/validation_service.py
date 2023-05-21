@@ -27,3 +27,13 @@ def validate_john_trigger(f):
             return generate_missing_error(["appliance_id", "status"]), 400
         return f(*args, **kwargs)
     return decorated_function
+
+def validate_john_aircon_temp(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        appliance_id = request.form.get('appliance_id')
+        value = request.form.get('value')
+        if appliance_id is None or value is None or appliance_id == "" or value == "" or appliance_id not in [4, 5]:
+            return generate_missing_error(["appliance_id", "value"]), 400
+        return f(*args, **kwargs)
+    return decorated_function
