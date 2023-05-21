@@ -2,6 +2,9 @@ from flask import Flask, g
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 import os
+import ast
+import json
+import paho.mqtt.client as mqtt
 from threading import Thread
 from shared.services.mysql_service import MySQLService
 from dotenv import load_dotenv
@@ -50,6 +53,37 @@ def close_db_connection(ex):
         dbconn = g.pop('dbconn', None)
         if (dbconn is not None):
             dbconn.close()
+
+def on_connect(client, userdata, flags, rc):
+    print(f"Connected with RC: {str(rc)}")
+    pass
+    
+def on_publish(client, data, result):
+    print("Message sent to MQTT broker")
+    pass
+
+def on_message(client, userdata, msg):
+    json_message = ast.literal_eval(msg.payload.decode())
+    if msg.topic == "/john_node":
+        if (json_message["sender"] == "Edge"):
+            print("Received message: ", msg.payload.decode())
+    if msg.topic == "/cheryl_node":
+        if (json_message["sender"] == "Edge"):
+            print("Received message: ", msg.payload.decode())
+    if msg.topic == "/timmy_node":
+        if (json_message["sender"] == "Edge"):
+            print("Received message: ", msg.payload.decode())
+    
+client = mqtt.Client()
+client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
+client.on_connect = on_connect 
+client.on_publish = on_publish
+client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
+
+topic = [("/john_node", 0), ("/cheryl_node", 0), ("/timmy_node", 0)]
+client.subscribe(topic)
+
+client.loop_start()
 
 # @app.template_filter('config_name_to_id')
 # def config_name_to_id(config_name):
