@@ -27,7 +27,7 @@ def login_post():
                     session["user_id"] = result["user_id"]
                     session["user_role"] = result["role"]
                 return redirect("/")
-            except:
+            except Exception as e:
                 pass
     return render_template('login.html', message="Invalid username or password"), 401
 
