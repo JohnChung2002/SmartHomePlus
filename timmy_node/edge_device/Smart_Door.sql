@@ -1,9 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 5.0.4deb2+deb11u1
--- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Generation Time: May 22, 2023 at 09:25 PM
 -- Server version: 10.5.19-MariaDB-0+deb11u2
 -- PHP Version: 7.4.33
 
