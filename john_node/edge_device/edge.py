@@ -40,6 +40,7 @@ client = mqtt.Client()
 client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
 client.on_connect = on_connect 
 client.on_publish = on_publish
+client.on_message = on_message
 client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
 
 topic = "/john_node"
