@@ -1,7 +1,10 @@
-from flask import Flask, g
+from flask import Flask, g, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
 import os
+import hmac
+import hashlib
+import time
 import ast
 import json
 import paho.mqtt.client as mqtt
@@ -28,6 +31,12 @@ app.register_blueprint(bp_cheryl, url_prefix='/api/node_1')
 app.register_blueprint(bp_john, url_prefix='/api/node_2')
 app.register_blueprint(bp_timmy, url_prefix='/api/node_3')
 app.register_blueprint(bp_main)
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    Thread(target=lambda: [os.system("git pull")]).start()
+    return "ok"
+
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -79,7 +88,8 @@ client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.ge
 client.on_connect = on_connect 
 client.on_publish = on_publish
 client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
-g.client = client
+with app.app_context():
+    g.client = client
 topic = [("/john_node", 0), ("/cheryl_node", 0), ("/timmy_node", 0)]
 client.subscribe(topic)
 
