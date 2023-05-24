@@ -36,7 +36,7 @@ def validate_john_aircon_temp(f):
         if appliance_id is None or value is None or appliance_id == "" or value == "":
             return generate_missing_error(["appliance_id", "value"]), 400
         try:
-            value = int(appliance_id)
+            appliance_id = int(appliance_id)
         except:
             return "Invalid appliance id", 400
         if appliance_id not in [4, 5]:
