@@ -6,6 +6,7 @@ from shared.services.auth_middleware import auth_middleware
 from shared.services.validation_service import validate_john_trigger, validate_john_aircon_temp
 
 remote_bp = Blueprint('remote_trigger', __name__)
+#testing remote pull
 
 @remote_bp.route('/remote_trigger', methods=['POST'])
 @auth_middleware
