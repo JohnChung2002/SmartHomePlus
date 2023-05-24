@@ -17,3 +17,23 @@ def validate_login(f):
             return render_template('login.html', message="Invalid username or password"), 401
         return f(*args, **kwargs)
     return decorated_function
+
+def validate_john_trigger(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        appliance_id = request.form.get('appliance_id')
+        status = request.form.get('status')
+        if appliance_id is None or status is None or appliance_id == "" or status == "":
+            return generate_missing_error(["appliance_id", "status"]), 400
+        return f(*args, **kwargs)
+    return decorated_function
+
+def validate_john_aircon_temp(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        appliance_id = request.form.get('appliance_id')
+        value = request.form.get('value')
+        if appliance_id is None or value is None or appliance_id == "" or value == "" or appliance_id not in [4, 5]:
+            return generate_missing_error(["appliance_id", "value"]), 400
+        return f(*args, **kwargs)
+    return decorated_function
