@@ -4,7 +4,7 @@ import time
 from flask import Blueprint, Flask, render_template, redirect, url_for, request
 
 def connect_db():
-    return mysql.connector.connect(user='hp', password='0123', host='localhost', database='waterSprinkler_db')
+    return mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
 
  
 sprinkler_bp = Blueprint('WaterSprinkler', __name__)
@@ -15,6 +15,7 @@ sprinkler_bp = Blueprint('WaterSprinkler', __name__)
 pins = { 
         11: {'name' : 'PIN 11', 'state' : 0}  
         } 
+topic = "/cheryl_node"
 
 def display_data():
     # Connect to the database
@@ -46,7 +47,7 @@ def index():
         'rows' : rows
     } 
     # Pass the template data into the template index.html and return it 
-    return render_template('index.html', **templateData)
+    return render_template('cheryl_index.html', **templateData)
 
  
 # Function to send simple commands 
@@ -98,11 +99,4 @@ def submit_form():
     db.close()
 #     return 'Form submitted successfully'
     return redirect(url_for('index'))
-
-     
-# Main function, set up serial bus, indicate port for the webserver, and start the service 
-if __name__ == "__main__" : 
-    ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1) 
-    ser.flush()
-    sprinkler_bp.run(host='0.0.0.0', port = 8080, debug = False) 
 
