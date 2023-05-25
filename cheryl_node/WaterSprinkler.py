@@ -62,7 +62,7 @@ def action(action):
         pins[11]['state'] = 1
     if action == 'action3' : 
 #         ser.write(b"3")
-        g.client.publish(topic, "Spray at intruder")
+        g.client.publish(topic, "Spray at Intruder")
         pins[11]['state'] = 2
 #     if action == 'action4' : 
 #         ser.write(b"4") 
