@@ -5,12 +5,12 @@
 </head>
 
 <body>
-    <h1><a href="/">Smart Door</a></h1>
+    <h1><a href="/api/node_3/">Smart Door</a></h1>
     <h2>Home Page</h2>
     
     <div class="navigation">
-        <a href="/"><button class="navigation-btn">Home</button></a>
-        <a href="/profile"><button class="navigation-btn">Profile</button></a>
+        <a href="/api/node_3/"><button class="navigation-btn">Home</button></a>
+        <a href="/api/node_3/profile"><button class="navigation-btn">Profile</button></a>
     </div>
 
     <h2>Controls</h2>
@@ -24,8 +24,8 @@
     {% endfor %}
 
     <div class="homepage-control">
-        <a href="/control1"><button class="homepage-control-btn" id="homepage-control-btn-open">Open</button></a>
-        <a href="/control2"><button class="homepage-control-btn" id="homepage-control-btn-close">Close</button></a>
+        <a href="/api/node_3/control1"><button class="homepage-control-btn" id="homepage-control-btn-open">Open</button></a>
+        <a href="/api/node_3/control2"><button class="homepage-control-btn" id="homepage-control-btn-close">Close</button></a>
     </div>
     
     <br>
@@ -131,7 +131,7 @@
     <h2 class="settings-h2">Update Settings</h2>
 
     <div class="form">
-        <form action="/update_settings" method="post">
+        <form action="/api/node_3/update_settings" method="post">
             <label for="door-height">Door Height (cm)</label>
             <select name="door-height" id="door-height">
                 <option disabled selected value>-- Select --</option>
