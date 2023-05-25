@@ -3,7 +3,7 @@ import serial
 import time 
 import os
 from dotenv import load_dotenv
-from flask import Blueprint, Flask, render_template, redirect, url_for, request
+from flask import Blueprint, Flask, render_template, redirect, url_for, request, g
 
 def connect_db():
     return mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
@@ -54,15 +54,15 @@ def index():
 def action(action): 
     if action == 'action1' : 
 #         ser.write(b"1")
-        client.publish(topic, "Sprinkler Off")
+        g.client.publish(topic, "Sprinkler Off")
         pins[11]['state'] = 0 
     if action == 'action2' : 
 #         ser.write(b"2")
-        client.publish(topic, "Sprinkler On")
+        g.client.publish(topic, "Sprinkler On")
         pins[11]['state'] = 1
     if action == 'action3' : 
 #         ser.write(b"3")
-        client.publish(topic, "Spray at intruder")
+        g.client.publish(topic, "Spray at intruder")
         pins[11]['state'] = 2
 #     if action == 'action4' : 
 #         ser.write(b"4") 
