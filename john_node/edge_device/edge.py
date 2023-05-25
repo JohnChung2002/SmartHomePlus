@@ -33,7 +33,7 @@ def on_message(client, userdata, msg):
     json_message = ast.literal_eval(msg.payload.decode())
     if (json_message["sender"] == "Cloud"):
         if (json_message["title"] in ["Lights", "Intruder", "Ventilating Fan", "Aircon Switch", "Aircon Temp", "Disengage Override"]):
-            ser.write(str.encode(json.dumps(input)))
+            ser.write(str.encode(json.dumps(json_message)))
         print("Received message: ", msg.payload.decode())
     
 client = mqtt.Client()
