@@ -77,11 +77,7 @@ def on_publish(client, data, result):
 
 def on_message(client, userdata, msg):
     json_message = ast.literal_eval(msg.payload.decode())
-<<<<<<< Updated upstream
     print("Received message: ", msg.payload.decode())
-=======
-    print(msg.payload.decode())
->>>>>>> Stashed changes
     if msg.topic == "/john_node":
         if (json_message["sender"] == "Edge"):
             print("Received message: ", msg.payload.decode())
