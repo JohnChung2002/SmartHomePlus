@@ -51,7 +51,7 @@ def doorcontrol(control):
         pins[5]['state'] = 0
         
     # redirects to the homepage
-    return redirect(url_for('smartdoor'))
+    return redirect(url_for('timmy_node.remote_door.smartdoor'))
 
 # updates different settings
 @remote_bp.route("/update_settings", methods=["GET", "POST"])
@@ -73,7 +73,7 @@ def updatesettings():
                 mycursor.close()
 
     # redirects to the homepage
-    return redirect(url_for('smartdoor'))
+    return redirect(url_for('timmy_node.remote_door.smartdoor'))
 
 # profile page
 @remote_bp.route("/profile")
@@ -136,4 +136,4 @@ def updateprofile():
     mycursor.close()
     
     # redirects to the profile webpage
-    return redirect(url_for('profile'))
+    return redirect(url_for('timmy_node.remote_door.profile'))
