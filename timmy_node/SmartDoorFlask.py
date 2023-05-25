@@ -1,7 +1,7 @@
 import serial
 from datetime import date
 import time
-from flask import Flask, render_template, request, redirect, url_for, Response, Blueprint
+from flask import Flask, render_template, request, redirect, url_for, Response, Blueprint, g
 import mysql.connector
 import os
 from dotenv import load_dotenv
@@ -44,10 +44,10 @@ def smartdoor():
 @remote_bp.route("/<control>")
 def doorcontrol(control):
     if control == 'control1' :
-        client.publish(topic, "doorOpen")
+        g.client.publish(topic, "doorOpen")
         pins[5]['state'] = 1
     if control == 'control2' :
-        client.publish(topic, "doorClose")
+        g.client.publish(topic, "doorClose")
         pins[5]['state'] = 0
         
     # redirects to the homepage
