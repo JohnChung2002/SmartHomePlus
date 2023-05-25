@@ -6,6 +6,7 @@ from SmartDoorDetection import detection, detectionstop
 # from SmartDoorDetection2 import detection, detectionstop
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
+import os
 
 # initialization of variables
 directionIn = False
