@@ -29,7 +29,6 @@ def display_data():
 
     # Fetch all the rows returned by the query
     rows = cur.fetchall()
-    print(rows[0])
 
     # Close the cursor and database connection
     cur.close()
