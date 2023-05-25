@@ -1,18 +1,20 @@
 import mysql.connector
 import serial 
 import time 
+import os
+from dotenv import load_dotenv
 from flask import Blueprint, Flask, render_template, redirect, url_for, request
 
 def connect_db():
     return mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
 
- 
+load_dotenv()
 sprinkler_bp = Blueprint('WaterSprinkler', __name__)
 
 # Dictionary of pins with name of pin and state ON/OFF 
 pins = { 
-        11: {'name' : 'PIN 11', 'state' : 0}  
-        } 
+    11: {'name' : 'PIN 11', 'state' : 0}  
+} 
 topic = "/cheryl_node"
 
 def display_data():
