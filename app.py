@@ -49,17 +49,21 @@ def page_not_found(e):
 def request_has_connection():
     return (
         ("dbconn" in g) and (g.dbconn is not None)
+        and
+        ("client" in g)
     )
 
 @app.before_request
 def get_request_connection():
     if not request_has_connection():
         g.dbconn = MySQLService(os.getenv("CLOUD_DATABASE_HOST"), os.getenv("CLOUD_DATABASE_USERNAME"), os.getenv("CLOUD_DATABASE_PASSWORD"), os.getenv("CLOUD_DATABASE_NAME")) # type: ignore
+        g.client = client
 
 @app.teardown_request
 def close_db_connection(ex):
     if request_has_connection():
         dbconn = g.pop('dbconn', None)
+        g.pop('client', None)
         if (dbconn is not None):
             dbconn.close()
 
@@ -73,7 +77,11 @@ def on_publish(client, data, result):
 
 def on_message(client, userdata, msg):
     json_message = ast.literal_eval(msg.payload.decode())
+<<<<<<< Updated upstream
     print("Received message: ", msg.payload.decode())
+=======
+    print(msg.payload.decode())
+>>>>>>> Stashed changes
     if msg.topic == "/john_node":
         if (json_message["sender"] == "Edge"):
             print("Received message: ", msg.payload.decode())
@@ -85,12 +93,10 @@ def on_message(client, userdata, msg):
             print("Received message: ", msg.payload.decode())
     
 client = mqtt.Client()
-client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
+client.username_pw_set(username=os.getenv("CLOUD_MQTT_USERNAME"), password=os.getenv("CLOUD_MQTT_PASSWORD")) # type: ignore
 client.on_connect = on_connect 
 client.on_publish = on_publish
-client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
-with app.app_context():
-    g.client = client
+client.connect(os.getenv("CLOUD_MQTT_HOST"), int(os.getenv("CLOUD_MQTT_PORT")), 60) # type: ignore
 topic = [("/john_node", 0), ("/cheryl_node", 0), ("/timmy_node", 0)]
 client.subscribe(topic)
 
