@@ -12,6 +12,7 @@ remote_bp = Blueprint('remote_door', __name__)
 pins = {
         5: {'name' : 'PIN5', 'state' : 0}
         }
+topic = "/timmy_node"
 
 # homepage (dashboard)
 @remote_bp.route("/")
