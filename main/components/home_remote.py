@@ -8,4 +8,4 @@ home_remote_bp = Blueprint('home_remote', __name__)
 @home_remote_bp.route('/home_remote', methods=['GET'])
 @auth_middleware
 def home_remote():
-    return render_template('home_remote.html'), 200
+    return render_template('home_control.html'), 200
