@@ -71,7 +71,7 @@ def action(action):
 #         ser.write(b"5") 
 #         pins[12]['state'] = 1
         
-    return redirect(url_for('index'))
+    return redirect(url_for('cheryl_node.WaterSprinkler.index'))
 
 #  This is to change the threshold value of the brightness
 @sprinkler_bp.route('/submit-form', methods=['POST'])
