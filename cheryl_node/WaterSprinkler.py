@@ -9,8 +9,6 @@ def connect_db():
  
 sprinkler_bp = Blueprint('WaterSprinkler', __name__)
 
-@sprinkler_bp.route('/WaterSprinkler', methods=['POST'])
-
 # Dictionary of pins with name of pin and state ON/OFF 
 pins = { 
         11: {'name' : 'PIN 11', 'state' : 0}  
