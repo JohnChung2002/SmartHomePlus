@@ -73,6 +73,7 @@ def on_publish(client, data, result):
 
 def on_message(client, userdata, msg):
     json_message = ast.literal_eval(msg.payload.decode())
+    print("Received message: ", msg.payload.decode())
     if msg.topic == "/john_node":
         if (json_message["sender"] == "Edge"):
             print("Received message: ", msg.payload.decode())
