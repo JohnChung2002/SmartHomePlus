@@ -56,7 +56,7 @@ def remote_aircon_temp():
             message = {
                 "title": "Aircon Temp",
                 "sender": "Cloud",
-                "room": "4" if appliance_id == 4 else "5",
+                "room": "1" if appliance_id == 4 else "2",
                 "temp": value
             }
             g.client.publish("/john_node", json.dumps(message))
