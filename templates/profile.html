@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<head>
+    <title>Smart Door Profile</title>
+    <link rel="stylesheet" href='/static/style.css'>
+</head>
+
+<body>
+    <h1><a href="/">Smart Door</a></h1>
+    <h2>Profile Page</h2>
+    
+    <div class="navigation">
+        <a href="/"><button class="navigation-btn">Home</button></a>
+        <a href="/profile"><button class="navigation-btn">Profile</button></a>
+    </div>
+
+    <h2>Profile Table</h2>
+
+    <div class="table-container">
+        <div class="table">
+            <div class="table-row table-header">
+                <div class="table-cell">Profile ID</div>
+                <div class="table-cell">RFID ID</div>
+                <div class="table-cell">Name</div>
+                <div class="table-cell">Birthday</div>
+                <div class="table-cell">Height (cm)</div>
+                <div class="table-cell">Weight (kg)</div>
+                <div class="table-cell">BMI</div>
+                <div class="table-cell">In House</div>
+            </div>
+              
+            {% for item in profile %}
+            <div class="table-row">
+                <div class="table-cell">{{ item[0] }}</div>
+                <div class="table-cell">{{ item[1] }}</div>
+                <div class="table-cell">{{ item[2] }}</div>
+                <div class="table-cell">{{ item[3] }}</div>
+                <div class="table-cell">{{ item[4] }}</div>
+                <div class="table-cell">{{ item[5] }}</div>
+                <div class="table-cell">{{ item[6] }}</div>
+                <div class="table-cell">{{ item[7] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <h2 class="profile-h2">Update Profile</h2>
+
+    <div class="form">
+        <form action="/update_profile" method="post">
+            <!-- <label for="updated-name">Name</label>
+            <input type="text" id="updated-name" name="updated-name"> -->
+        
+            <label for="updated-birthday">Birthday</label>
+            <input type="date" id="updated-birthday" name="updated-birthday">
+        
+            <label for="updated-height">Height (cm)</label>
+            <input type="text" id="updated-height" name="updated-height">
+        
+            <label for="updated-weight">Weight (kg)</label>
+            <input type="text" id="updated-weight" name="updated-weight">
+
+            <label for="updated-location">In House</label>
+            <select name="updated-location" id="updated-location">
+                <option disabled selected value>-- Select --</option>
+                <option value="1">Inside</option>
+                <option value="0">Outside</option>
+            </select>
+
+            <div class="form-submit">
+                <input type="submit" value="Update Profile">
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

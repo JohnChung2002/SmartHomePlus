@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<head>
+    <title>Smart Door Homepage</title>
+    <link rel="stylesheet" href='/static/style.css'>
+</head>
+
+<body>
+    <h1><a href="/">Smart Door</a></h1>
+    <h2>Home Page</h2>
+    
+    <div class="navigation">
+        <a href="/"><button class="navigation-btn">Home</button></a>
+        <a href="/profile"><button class="navigation-btn">Profile</button></a>
+    </div>
+
+    <h2>Controls</h2>
+    
+    {% for pin in pins %}
+    {% if pins[pin].state == 0 %}
+    <h3>The door is closed!</h3>
+    {% else %}
+    <h3>The door is open!</h3>
+    {% endif %}
+    {% endfor %}
+
+    <div class="homepage-control">
+        <a href="/control1"><button class="homepage-control-btn" id="homepage-control-btn-open">Open</button></a>
+        <a href="/control2"><button class="homepage-control-btn" id="homepage-control-btn-close">Close</button></a>
+    </div>
+    
+    <br>
+    
+    <h2>History Table</h2>
+
+    <div class="table-container">
+        <div class="table">
+            <div class="table-row table-header">
+                <div class="table-cell">History ID</div>
+                <div class="table-cell">Profile ID</div>
+                <div class="table-cell">Time</div>
+                <div class="table-cell">Date</div>
+                <div class="table-cell">Height (cm)</div>
+                <div class="table-cell">Weight (kg)</div>
+                <div class="table-cell">BMI</div>
+                <div class="table-cell">In House</div>
+            </div>
+              
+            {% for item in history %}
+            <div class="table-row">
+                <div class="table-cell">{{ item[0] }}</div>
+                <div class="table-cell">{{ item[1] }}</div>
+                <div class="table-cell">{{ item[2] }}</div>
+                <div class="table-cell">{{ item[3] }}</div>
+                <div class="table-cell">{{ item[4] }}</div>
+                <div class="table-cell">{{ item[5] }}</div>
+                <div class="table-cell">{{ item[6] }}</div>
+                <div class="table-cell">{{ item[7] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <h2>RFID Table</h2>
+
+    <div class="table-container">
+        <div class="table">
+            <div class="table-row table-header">
+                <div class="table-cell">RFID ID</div>
+                <div class="table-cell">Number</div>
+            </div>
+              
+            {% for item in rfid %}
+            <div class="table-row">
+                <div class="table-cell">{{ item[0] }}</div>
+                <div class="table-cell">{{ item[1] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <h2>Stranger Table</h2>
+
+    <div class="table-container">
+        <div class="table">
+            <div class="table-row table-header">
+                <div class="table-cell">Stranger ID</div>
+                <div class="table-cell">Time</div>
+                <div class="table-cell">Date</div>
+                <div class="table-cell">Status</div>
+            </div>
+              
+            {% for item in stranger %}
+            <div class="table-row">
+                <div class="table-cell">{{ item[0] }}</div>
+                <div class="table-cell">{{ item[1] }}</div>
+                <div class="table-cell">{{ item[2] }}</div>
+                <div class="table-cell">{{ item[3] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <h2>Settings Table</h2>
+
+    <div class="table-container">
+        <div class="table">
+            <div class="table-row table-header">
+                <div class="table-cell">Settings ID</div>
+                <div class="table-cell">Door Height (cm)</div>
+                <div class="table-cell">In Distance Threshold (cm)</div>
+                <div class="table-cell">Out Distance Threshold (cm)</div>
+                <div class="table-cell">Closing Duration (seconds)</div>
+                <div class="table-cell">Detection Duration (seconds)</div>
+                <div class="table-cell">Face Detection Duration (seconds)</div>
+            </div>
+              
+            {% for item in settings %}
+            <div class="table-row">
+                <div class="table-cell">{{ item[0] }}</div>
+                <div class="table-cell">{{ item[1] }}</div>
+                <div class="table-cell">{{ item[2] }}</div>
+                <div class="table-cell">{{ item[3] }}</div>
+                <div class="table-cell">{{ item[4] }}</div>
+                <div class="table-cell">{{ item[5] }}</div>
+                <div class="table-cell">{{ item[6] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <h2 class="settings-h2">Update Settings</h2>
+
+    <div class="form">
+        <form action="/update_settings" method="post">
+            <label for="door-height">Door Height (cm)</label>
+            <select name="door-height" id="door-height">
+                <option disabled selected value>-- Select --</option>
+                <option value="180">180 seconds</option>
+                <option value="185">185 seconds</option>
+                <option value="190">190 seconds</option>
+                <option value="195">195 seconds</option>
+                <option value="200">200 seconds</option>
+                <option value="205">205 seconds</option>
+                <option value="210">210 seconds</option>
+            </select>
+
+            <label for="in-distance-threshold">In Distance Threshold (cm)</label>
+            <select name="in-distance-threshold" id="in-distance-threshold">
+                <option disabled selected value>-- Select --</option>
+                <option value="30">30 cm</option>
+                <option value="35">35 cm</option>
+                <option value="40">40 cm</option>
+                <option value="45">45 cm</option>
+                <option value="50">50 cm</option>
+                <option value="55">55 cm</option>
+                <option value="60">60 cm</option>
+                <option value="65">65 cm</option>
+                <option value="70">70 cm</option>
+            </select>
+
+            <label for="out-distance-threshold">In Distance Threshold (cm)</label>
+            <select name="out-distance-threshold" id="out-distance-threshold">
+                <option disabled selected value>-- Select --</option>
+                <option value="30">30 cm</option>
+                <option value="35">35 cm</option>
+                <option value="40">40 cm</option>
+                <option value="45">45 cm</option>
+                <option value="50">50 cm</option>
+                <option value="55">55 cm</option>
+                <option value="60">60 cm</option>
+                <option value="65">65 cm</option>
+                <option value="70">70 cm</option>
+            </select>
+
+            <label for="closing-duration">Closing Duration (seconds)</label>
+            <select name="closing-duration" id="closing-duration">
+                <option disabled selected value>-- Select --</option>
+                <option value="3">3 seconds</option>
+                <option value="4">4 seconds</option>
+                <option value="5">5 seconds</option>
+                <option value="6">6 seconds</option>
+                <option value="7">7 seconds</option>
+                <option value="8">8 seconds</option>
+                <option value="9">9 seconds</option>
+                <option value="10">10 seconds</option>
+            </select>
+
+            <label for="detection-duration">Detection Duration (seconds)</label>
+            <select name="detection-duration" id="detection-duration">
+                <option disabled selected value>-- Select --</option>
+                <option value="3">3 seconds</option>
+                <option value="4">4 seconds</option>
+                <option value="5">5 seconds</option>
+                <option value="6">6 seconds</option>
+                <option value="7">7 seconds</option>
+                <option value="8">8 seconds</option>
+                <option value="9">9 seconds</option>
+                <option value="10">10 seconds</option>
+                <option value="11">11 seconds</option>
+                <option value="12">12 seconds</option>
+            </select>
+
+            <label for="face-detection-duration">Detection Duration (seconds)</label>
+            <select name="face-detection-duration" id="face-detection-duration">
+                <option disabled selected value>-- Select --</option>
+                <option value="3">3 seconds</option>
+                <option value="4">4 seconds</option>
+                <option value="5">5 seconds</option>
+                <option value="6">6 seconds</option>
+                <option value="7">7 seconds</option>
+                <option value="8">8 seconds</option>
+                <option value="9">9 seconds</option>
+                <option value="10">10 seconds</option>
+                <option value="11">11 seconds</option>
+                <option value="12">12 seconds</option>
+            </select>
+
+            <div class="form-submit">
+                <input type="submit" value="Update Settings">
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
