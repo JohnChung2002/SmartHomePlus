@@ -13,7 +13,7 @@ pins = {
 
 # homepage (dashboard)
 @remote_bp.route("/")
-def index():
+def smartdoor():
     # accessing database and table
     mydb = mysql.connector.connect(host="localhost", user="pi", password="pi_101222782", database="Smart Door")
     mycursor = mydb.cursor()
@@ -35,7 +35,7 @@ def index():
                     }
 
     # updates homepage with template content
-    return render_template('index.html', **templateData)
+    return render_template('smartdoor.html', **templateData)
 
 # fully opens or closes the smart pet door
 @remote_bp.route("/<control>")
@@ -48,7 +48,7 @@ def doorcontrol(control):
         pins[5]['state'] = 0
         
     # redirects to the homepage
-    return redirect(url_for('index'))
+    return redirect(url_for('smartdoor'))
 
 # updates different settings
 @remote_bp.route("/update_settings", methods=["GET", "POST"])
@@ -70,7 +70,7 @@ def updatesettings():
                 mycursor.close()
 
     # redirects to the homepage
-    return redirect(url_for('index'))
+    return redirect(url_for('smartdoor'))
 
 # profile page
 @remote_bp.route("/profile")
