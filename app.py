@@ -187,4 +187,5 @@ if __name__ == "__main__":
     # sensor_thread.start()
     every_minute_cron_thread()
     every_hour_cron_thread()
+    every_hour_ten_offset_cron_thread()
     app.run(host="0.0.0.0", port=8080, debug=True)
