@@ -117,7 +117,6 @@ def query_weather(city):
         response.raise_for_status()  # Raise an exception for HTTP errors
 
         data = response.json()
-        print(data)
         # Extract the desired weather information from the response
         will_it_rain = data['forecast']['forecastday'][0]['hour'][0]['will_it_rain']
         return (int(will_it_rain) == 1)
@@ -131,7 +130,19 @@ def every_minute_function():
 
 def every_hour_ten_offset_function():
     #do something every hour (10 minutes before the next hour)
-    pass
+    if(query_weather("KCH")):
+        webhook = DiscordWebhook(
+        url=os.getenv("SPRINKLER_DISCORD_WEBHOOK"), 
+        username="Weather Notification Bot"
+        )
+        embed = DiscordEmbed(
+        title="Weather Webhook", 
+        description=f"It seems like it will be raining in the next hour", 
+        color="03b2f8",
+        url = "https://dashboard.digitalserver.tech/"
+        )
+        webhook.add_embed(embed)
+        webhook.execute()
 
 def every_hour_function():
     #do something every hour
@@ -156,7 +167,7 @@ def every_hour_cron_thread():
     # Calculate the time until the next hour
     time_until_next_hour = (60 - current_time.minute) * 60 - current_time.second 
     Timer(time_until_next_hour, every_hour_ten_offset_cron_thread).start()
-    every_hour_ten_offset_function()
+    every_hour_function()
 
 
 if __name__ == "__main__":
