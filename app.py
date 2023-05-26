@@ -159,7 +159,8 @@ def every_hour_ten_offset_cron_thread():
     # Run the function every hour
     current_time = datetime.datetime.now()
     # Calculate the time until the next hour
-    time_until_next_hour = (60 - current_time.minute) * 60 - current_time.second - 600  # 10 minutes before the next hour
+    time_until_next_hour = (((60 - current_time.minute) * 60) - current_time.second) - 600  # 10 minutes before the next hour
+    print(time_until_next_hour)
     Timer(time_until_next_hour, every_hour_ten_offset_cron_thread).start()
     every_hour_ten_offset_function()
 
@@ -167,7 +168,7 @@ def every_hour_cron_thread():
     # Run the function every hour
     current_time = datetime.datetime.now()
     # Calculate the time until the next hour
-    time_until_next_hour = (60 - current_time.minute) * 60 - current_time.second 
+    time_until_next_hour = ((60 - current_time.minute) * 60) - current_time.second 
     Timer(time_until_next_hour, every_hour_ten_offset_cron_thread).start()
     every_hour_function()
 
