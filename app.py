@@ -1,17 +1,11 @@
 from flask import Flask, g, request
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager
 from discord_webhook import DiscordWebhook, DiscordEmbed
-import os
-import hmac
-import hashlib
-import time
-import ast
-import json
 import paho.mqtt.client as mqtt
 from threading import Thread, Timer
 from shared.services.mysql_service import MySQLService
 from dotenv import load_dotenv
+import os, ast, requests, datetime
 
 from cheryl_node import bp_cheryl
 from john_node import bp_john
@@ -20,11 +14,20 @@ from main import bp_main
 
 load_dotenv()
 
+lights_dict = {
+    "1": 1,
+    "Corridor": 2,
+    "2": 3,
+}
+
+aircon_dict = {
+    "1": 4,
+    "2": 5
+}
+
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
-app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
 app.secret_key =  os.getenv("APP_SECRET_KEY")
-jwt = JWTManager(app)
 
 cors = CORS(app, resources={r"/api/*" : {"origins": "*"}})
 
@@ -37,7 +40,6 @@ app.register_blueprint(bp_main)
 def webhook():
     Thread(target=lambda: [os.system("git pull")]).start()
     return "ok"
-
 
 @app.errorhandler(404)
 def page_not_found(e):
@@ -76,17 +78,6 @@ def on_publish(client, data, result):
     print("Message sent to MQTT broker")
     pass
 
-lights_dict = {
-    "1": 1,
-    "Corridor": 2,
-    "2": 3,
-}
-
-aircon_dict = {
-    "1": 4,
-    "2": 5
-}
-
 def on_message(client, userdata, msg):
     json_message = ast.literal_eval(msg.payload.decode())
     print("Received message: ", msg.payload.decode())
@@ -99,48 +90,62 @@ def on_message(client, userdata, msg):
     if msg.topic == "/timmy_node":
         if (json_message["sender"] == "Edge"):
             print("Received message: ", msg.payload.decode())
-    
-client = mqtt.Client()
-mqtt_dbconn = MySQLService(os.getenv("CLOUD_DATABASE_HOST"), os.getenv("CLOUD_DATABASE_USERNAME"), os.getenv("CLOUD_DATABASE_PASSWORD"), os.getenv("CLOUD_DATABASE_NAME"))
-client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
-client.on_connect = on_connect 
-client.on_publish = on_publish
-client.connect(os.getenv("CLOUD_MQTT_HOST"), int(os.getenv("CLOUD_MQTT_PORT")), 60) # type: ignore
-topic = [("/john_node", 0), ("/cheryl_node", 0), ("/timmy_node", 0)]
-client.subscribe(topic)
-
-client.loop_start()
 
 # @app.template_filter('config_name_to_id')
 # def config_name_to_id(config_name):
 #     return config_name.lower().replace(" ", "-").replace("(", "9").replace(")", "0")
 
-def my_function():
-    webhook = DiscordWebhook(
-        url="https://discord.com/api/webhooks/1111506734192795688/YxLEJ7GDlWRvHMyNgmYW1eK28Iv-fSR60qvXFzq29N2DkuVUAm77Ufb1tPkUH366fRwq", 
-        username="Testing Bot"
-    )   
+def query_weather(city):
+    base_url = 'http://api.weatherapi.com/v1/forecast.json'
+    params = {
+        'key': os.getenv("WEATHER_API_KEY"),
+        'q': f"iata:{city}",
+        'hour': (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime("%H"),
+    }
 
-    embed = DiscordEmbed(
-        title="Testing Discord Webhook", 
-        description="Mak Kau Hijau", 
-        color="03b2f8",
-        url = "https://dashboard.digitalserver.tech/"
-    )
+    try:
+        response = requests.get(base_url, params=params)
+        response.raise_for_status()  # Raise an exception for HTTP errors
 
-    webhook.add_embed(embed)
-    response = webhook.execute()
+        data = response.json()
+        # Extract the desired weather information from the response
+        will_it_rain = data['forecast']['forecastday'][0]['hour'][0]['will_it_rain']
+        return (int(will_it_rain) == 1)
+    except requests.exceptions.RequestException as e:
+        print('Error occurred during the API request:', e)
+        return None
 
-def run_thread():
+def every_minute_function():
+    #do something every minute
+    pass
+
+def every_hour_function():
+    #do something every hour (10 minutes before the next hour)
+    pass
+
+def every_minute_cron_thread():
     # Run the function every minute
-    Timer(60, run_thread).start()
-    my_function()
+    Timer(60, every_minute_cron_thread).start()
+    every_minute_function()
 
-# Start the initial thread
-run_thread()
+def every_hour_cron_thread():
+    # Run the function every hour
+    Timer(3600, every_hour_cron_thread).start()
+    every_hour_function()
 
 if __name__ == "__main__":
+    client = mqtt.Client()
+    mqtt_dbconn = MySQLService(os.getenv("CLOUD_DATABASE_HOST"), os.getenv("CLOUD_DATABASE_USERNAME"), os.getenv("CLOUD_DATABASE_PASSWORD"), os.getenv("CLOUD_DATABASE_NAME"))
+    client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
+    client.on_connect = on_connect 
+    client.on_publish = on_publish
+    client.connect(os.getenv("CLOUD_MQTT_HOST"), int(os.getenv("CLOUD_MQTT_PORT")), 60) # type: ignore
+    topic = [("/john_node", 0), ("/cheryl_node", 0), ("/timmy_node", 0)]
+    client.subscribe(topic)
+    client.loop_start()
     # sensor_thread = Thread(target=read_serial_input)
     # sensor_thread.daemon = True
     # sensor_thread.start()
+    every_minute_cron_thread()
+    every_hour_cron_thread()
     app.run(host="0.0.0.0", port=8080, debug=True)

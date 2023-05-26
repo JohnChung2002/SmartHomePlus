@@ -19,6 +19,10 @@ aircon_dict = {
     "2": 5
 }
 
+current_configs = {
+    
+}
+
 ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
 ser.reset_input_buffer()
 
