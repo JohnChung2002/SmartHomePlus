@@ -118,8 +118,9 @@ def query_weather(city):
 
         data = response.json()
         # Extract the desired weather information from the response
-        will_it_rain = data['forecast']['forecastday'][0]['hour'][0]['will_it_rain']
-        return (int(will_it_rain) == 1)
+        will_it_rain = int(data['forecast']['forecastday'][0]['hour'][0]['will_it_rain'])
+        chance_of_rain = int(data['forecast']['forecastday'][0]['hour'][0]['chance_of_rain'])
+        return [will_it_rain, chance_of_rain]
     except requests.exceptions.RequestException as e:
         print('Error occurred during the API request:', e)
         return None
@@ -130,19 +131,20 @@ def every_minute_function():
 
 def every_hour_ten_offset_function():
     #do something every hour (10 minutes before the next hour)
-    if(query_weather("KCH")):
-        webhook = DiscordWebhook(
+    will_it_rain, chance_of_rain = query_weather("KCH")
+    message = f"It seems like it will be raining in the next hour. Chance of rain: {chance_of_rain}%" if will_it_rain else f"It seems like it will not be raining in the next hour. Chance of rain: {chance_of_rain}%"
+    webhook = DiscordWebhook(
         url=os.getenv("SPRINKLER_DISCORD_WEBHOOK"), 
         username="Weather Notification Bot"
-        )
-        embed = DiscordEmbed(
+    )
+    embed = DiscordEmbed(
         title="Weather Webhook", 
-        description=f"It seems like it will be raining in the next hour", 
+        description=message, 
         color="03b2f8",
         url = "https://dashboard.digitalserver.tech/"
-        )
-        webhook.add_embed(embed)
-        webhook.execute()
+    )
+    webhook.add_embed(embed)
+    webhook.execute()
 
 def every_hour_function():
     #do something every hour
