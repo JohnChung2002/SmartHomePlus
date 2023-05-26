@@ -5,7 +5,7 @@ import paho.mqtt.client as mqtt
 from threading import Thread, Timer
 from shared.services.mysql_service import MySQLService
 from dotenv import load_dotenv
-import os, ast, requests, datetime
+import os, ast, requests, datetime, airporttime, pytz
 
 from cheryl_node import bp_cheryl
 from john_node import bp_john
@@ -96,18 +96,28 @@ def on_message(client, userdata, msg):
 #     return config_name.lower().replace(" ", "-").replace("(", "9").replace(")", "0")
 
 def query_weather(city):
+
     base_url = 'http://api.weatherapi.com/v1/forecast.json'
+    apt = airporttime.AirportTime(iata_code=city)
+
+    converted_datetime = apt.from_utc(datetime.datetime.utcnow())
+    offset = converted_datetime.strftime("%z")
+    timezone = pytz.FixedOffset(int(offset[1:3]) * 60 + int(offset[3:5]))
+    given_datetime = converted_datetime.replace(tzinfo=pytz.UTC).astimezone(timezone)
+    desired_time = given_datetime.strftime("%H")
+    
     params = {
         'key': os.getenv("WEATHER_API_KEY"),
         'q': f"iata:{city}",
-        'hour': (datetime.datetime.now() + datetime.timedelta(hours=1)).strftime("%H"),
+        'hour': desired_time,
     }
-
+    
     try:
         response = requests.get(base_url, params=params)
         response.raise_for_status()  # Raise an exception for HTTP errors
 
         data = response.json()
+        print(data)
         # Extract the desired weather information from the response
         will_it_rain = data['forecast']['forecastday'][0]['hour'][0]['will_it_rain']
         return (int(will_it_rain) == 1)
@@ -148,4 +158,5 @@ if __name__ == "__main__":
     # sensor_thread.start()
     every_minute_cron_thread()
     every_hour_cron_thread()
+    print(query_weather("KCH"))
     app.run(host="0.0.0.0", port=8080, debug=True)
