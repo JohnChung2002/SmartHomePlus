@@ -127,6 +127,7 @@ def query_weather(city):
 
 def every_minute_function():
     #do something every minute
+    print("every_minute_function")
     pass
 
 def every_hour_ten_offset_function():
@@ -148,6 +149,7 @@ def every_hour_ten_offset_function():
 
 def every_hour_function():
     #do something every hour
+    print("Hourly function")
     pass
 
 def every_minute_cron_thread():
@@ -163,7 +165,9 @@ def every_hour_ten_offset_cron_thread():
     # Run the function every hour
     current_time = datetime.datetime.now()
     # Calculate the time until the next hour
-    time_until_next_hour = (((60 - current_time.minute) * 60) - current_time.second) - 300  # 10 minutes before the next hour
+    time_until_next_hour = (((60 - current_time.minute) * 60) - current_time.second) - 600  # 10 minutes before the next hour
+    if (time_until_next_hour < 0):
+        time_until_next_hour = 3600
     print(time_until_next_hour)
     if hour_ten_offset_timer is not None:
         hour_ten_offset_timer.cancel()
