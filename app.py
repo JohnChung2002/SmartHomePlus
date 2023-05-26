@@ -129,8 +129,12 @@ def every_minute_function():
     #do something every minute
     pass
 
-def every_hour_function():
+def every_hour_ten_offset_function():
     #do something every hour (10 minutes before the next hour)
+    pass
+
+def every_hour_function():
+    #do something every hour
     pass
 
 def every_minute_cron_thread():
@@ -138,10 +142,22 @@ def every_minute_cron_thread():
     Timer(60, every_minute_cron_thread).start()
     every_minute_function()
 
+def every_hour_ten_offset_cron_thread():
+    # Run the function every hour
+    current_time = datetime.datetime.now()
+    # Calculate the time until the next hour
+    time_until_next_hour = (60 - current_time.minute) * 60 - current_time.second - 600  # 10 minutes before the next hour
+    Timer(time_until_next_hour, every_hour_ten_offset_cron_thread).start()
+    every_hour_ten_offset_function()
+
 def every_hour_cron_thread():
     # Run the function every hour
-    Timer(3600, every_hour_cron_thread).start()
-    every_hour_function()
+    current_time = datetime.datetime.now()
+    # Calculate the time until the next hour
+    time_until_next_hour = (60 - current_time.minute) * 60 - current_time.second 
+    Timer(time_until_next_hour, every_hour_ten_offset_cron_thread).start()
+    every_hour_ten_offset_function()
+
 
 if __name__ == "__main__":
     client = mqtt.Client()
@@ -158,5 +174,4 @@ if __name__ == "__main__":
     # sensor_thread.start()
     every_minute_cron_thread()
     every_hour_cron_thread()
-    print(query_weather("KCH"))
     app.run(host="0.0.0.0", port=8080, debug=True)
