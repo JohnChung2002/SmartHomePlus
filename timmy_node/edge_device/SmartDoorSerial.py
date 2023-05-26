@@ -3,6 +3,10 @@ from datetime import date, datetime
 import serial
 import mysql.connector
 from SmartDoorDetection import detection, detectionstop
+# from SmartDoorDetection2 import detection, detectionstop
+import paho.mqtt.client as mqtt
+from dotenv import load_dotenv
+import os
 
 # initialization of variables
 directionIn = False
@@ -12,6 +16,8 @@ personDetected = False
 strangerWrite = True
 showRed = True
 faceDetected = False
+
+load_dotenv()
 
 # microcontroller (Arduino Uno)
 device = '/dev/ttyUSB0'
@@ -23,6 +29,38 @@ def Countdown():
     timeElapsedMs = (timeElapsed.days * 24 * 60 * 60 + timeElapsed.seconds) * 1000 + timeElapsed.microseconds / 1000.0
     
     return int(timeElapsedMs)
+
+def on_connect(client, userdata, flags, rc):
+    print(f"Connected with RC: {str(rc)}")
+    pass
+    
+def on_publish(client, data, result):
+    print("Message sent to MQTT broker")
+    pass
+
+def on_message(client, userdata, msg):
+    messageReceived = msg.payload.decode()
+    
+    if messageReceived == "doorOpen":
+        arduino.write(b"6")
+        time.sleep(1)
+    elif messageReceived == "doorClose":
+        arduino.write(b"7")
+        time.sleep(1)
+
+    pass
+
+client = mqtt.Client()
+client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
+client.on_connect = on_connect
+client.on_publish = on_publish
+client.on_message = on_message
+client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
+
+topic = "/timmy_node"
+client.subscribe(topic)
+
+client.loop_start()
 
 # infinite loop
 while True:
@@ -76,30 +114,35 @@ while True:
                 
                 # Lights up yellow LED
                 arduino.write(b"2")
+                time.sleep(1)
                 
             if personDetected == True:
                 # runs when a stranger has been outside the smart door for more than the set time
                 if Countdown() - timeDetected > timeDetection * 1000:
                     if strangerWrite == True:
-                        sql = "INSERT INTO Stranger (time, date, status) VALUES ('" + currentTime + "', '" + currentDate + "', '1')"
+                        sql = "INSERT INTO Stranger (time, date, status) VALUES ('" + currentTime + "', '" + currentDate + "', 'No RFID')"
                         mycursor.execute(sql)
                         mydb.commit()
                         
                     strangerWrite = False
                     
+                    client.publish(topic, "No RFID")
+                    
                     # continuously beeps the buzzer and blinks the red LED until the stranger leaves
                     arduino.write(b"4")
+                    time.sleep(1)
                     
                 showRed = True
+        # runs when the stranger has left or when there are no strangers   
         else:
-            # runs when the stranger has left or when there are no strangers
-            if subjectDistance > distanceDetection:
-                personDetected = False
-                
-                if showRed == True:
-                    # Lights up red LED
-                    arduino.write(b"1")
-                    showRed = False
+            personDetected = False
+            
+            if showRed == True:
+                # Lights up red LED
+                arduino.write(b"1")
+                time.sleep(1)
+                            
+                showRed = False
                     
         # runs when someone is detected to be inside the smart door
         if directionOut == True:
@@ -124,6 +167,7 @@ while True:
             # calculates the height and bmi of the user
             userHeight = doorHeight - ultrasonicSensorDistance
             bmi = potentiometerWeight / ((userHeight / 100) ** 2)
+            bmi = round(bmi, 2)
             
             print("Location: ", inHouse)
             print("RFID Value: ", rfidValue)
@@ -131,75 +175,98 @@ while True:
             print("Weight: ", potentiometerWeight)
             print("BMI: ", bmi)
             
-            mycursor.execute("SELECT Profile.profile_id, ,Profile.name, RFID.number FROM Profile LEFT JOIN RFID ON Profile.rfid_id=RFID.rfid_id")
+            mycursor.execute("SELECT Profile.profile_id, Profile.name, RFID.number FROM Profile LEFT JOIN RFID ON Profile.rfid_id=RFID.rfid_id")
             rfidProfile = mycursor.fetchall()
             
-            # goes through the different user profiles
-            for i in rfidProfile:
-                # checks whether the RFID value exists
-                if rfidValue == i[2]:
-                    # counts down the duration set to detect face
-                    timeDetectionStart = datetime.now()
-                    timeDetected = Countdown()
-                    
-                    # additional 2 seconds to compensate 2 second delay for initializing video stream
-                    while (Countdown() - timeDetected <= (timeFaceDetection + 2) * 1000):
-                        faceDetected = detection(i[1])
-
-                        if faceDetected == True:
-                            break
-                    
-                    # closes video stream
-                    detectionstop()
-                    
-                    # checks whether the user bound to the RFID value matches the face of the user
-                    if faceDetected == True:
-                        faceDetected = False
-                        
-                        doorOpen = "open " + str(timeClose)
-                        arduino.write(doorOpen.encode('utf-8'))
-                        
-                        # adds and updates the values in the tables
-                        sql = "INSERT INTO History (profile_id, time, date, height, weight, bmi, in_house) VALUES ('" + str(i[0]) + "', '" + currentTime + "', '" + currentDate + "', '" + str(userHeight) + "', '" + str(potentiometerWeight) + "', '" + str(bmi) + "', '" + inHouse + "')"
-                        mycursor.execute(sql)
-                        mydb.commit()
-                        
-                        sql = "UPDATE Profile SET height = '" + str(userHeight) + "' WHERE profile_id = '" + str(i[0]) + "'"
-                        mycursor.execute(sql)
-                        mydb.commit()
-                        
-                        sql = "UPDATE Profile SET weight = '" + str(potentiometerWeight) + "' WHERE profile_id = '" + str(i[0]) + "'"
-                        mycursor.execute(sql)
-                        mydb.commit()
-                        
-                        sql = "UPDATE Profile SET bmi = '" + str(bmi) + "' WHERE profile_id = '" + str(i[0]) + "'"
-                        mycursor.execute(sql)
-                        mydb.commit()
-                        
-                        sql = "UPDATE Profile SET in_house = '" + inHouse + "' WHERE profile_id = '" + str(i[0]) + "'"
-                        mycursor.execute(sql)
-                        mydb.commit()
-                    else:
-                        arduino.write(b"5")
-            
             # checks whether the RFID value is one of the existing RFID values
-            mycursor.execute("SELECT number FROM RFID")
-            rfidList = mycursor.fetchall()
-                        
             existingRFID = []
                         
-            for i in rfidList:
-                existingRFID.append(i[0])
+            for i in rfidProfile:
+                existingRFID.append(i[2])
                 
             if rfidValue not in existingRFID:
+                sql = "INSERT INTO Stranger (time, date, status) VALUES ('" + currentTime + "', '" + currentDate + "', 'Wrong RFID')"
+                mycursor.execute(sql)
+                mydb.commit()
+                
+                client.publish(topic, "Wrong RFID")
+                
                 # lights up red LED and makes a long beeping sound
                 arduino.write(b"5")
+                time.sleep(1)
+            else:
+                # goes through the different user profiles
+                for i in rfidProfile:
+                    # checks whether the RFID value exists
+                    if rfidValue == i[2]:
+                        # counts down the duration set to detect face
+                        timeDetectionStart = datetime.now()
+                        timeDetected = Countdown()
+                        
+                        # additional 2 seconds to compensate 2 second delay for initializing video stream
+                        while (Countdown() - timeDetected <= (timeFaceDetection + 2) * 1000):
+                            faceDetected = detection(i[1])
+
+                            if faceDetected == True:
+                                break
+                        
+                        # closes video stream
+                        detectionstop()
+                        
+                        # checks whether the user bound to the RFID value matches the face of the user
+                        if faceDetected == True:
+                            faceDetected = False
+                            
+                            client.publish(topic, inHouse)
+                            
+                            # lights up green LED, makes 'granted' sound and opens door for set time before closing
+                            doorOpen = "open " + str(timeClose)
+                            arduino.write(doorOpen.encode('utf-8'))
+                            time.sleep(1)
+                            
+                            # adds and updates the values in the tables
+                            sql = "INSERT INTO History (profile_id, time, date, height, weight, bmi, in_house) VALUES ('" + str(i[0]) + "', '" + currentTime + "', '" + currentDate + "', '" + str(userHeight) + "', '" + str(potentiometerWeight) + "', '" + str(bmi) + "', '" + inHouse + "')"
+                            mycursor.execute(sql)
+                            mydb.commit()
+                            
+                            sql = "UPDATE Profile SET height = '" + str(userHeight) + "' WHERE profile_id = '" + str(i[0]) + "'"
+                            mycursor.execute(sql)
+                            mydb.commit()
+                            
+                            sql = "UPDATE Profile SET weight = '" + str(potentiometerWeight) + "' WHERE profile_id = '" + str(i[0]) + "'"
+                            mycursor.execute(sql)
+                            mydb.commit()
+                            
+                            sql = "UPDATE Profile SET bmi = '" + str(bmi) + "' WHERE profile_id = '" + str(i[0]) + "'"
+                            mycursor.execute(sql)
+                            mydb.commit()
+                            
+                            sql = "UPDATE Profile SET in_house = '" + inHouse + "' WHERE profile_id = '" + str(i[0]) + "'"
+                            mycursor.execute(sql)
+                            mydb.commit()
+                        else:
+                            sql = "INSERT INTO Stranger (time, date, status) VALUES ('" + currentTime + "', '" + currentDate + "', 'Wrong User')"
+                            mycursor.execute(sql)
+                            mydb.commit()
+                            
+                            client.publish(topic, "Wrong User")
+                        
+                            # lights up red LED and makes a long beeping sound
+                            arduino.write(b"5")
+                            time.sleep(1)
         else:
+            sql = "INSERT INTO Stranger (time, date, status) VALUES ('" + currentTime + "', '" + currentDate + "', 'No User')"
+            mycursor.execute(sql)
+            mydb.commit()
+            
+            client.publish(topic, "No User")
+                        
             # lights up red LED and makes a long beeping sound
             arduino.write(b"5")
+            time.sleep(1)
         
-        # resets user location
-        inHouse = "2"
+    # resets user location
+    inHouse = "2"
         
     mycursor.close()
     print("-------------------------------")

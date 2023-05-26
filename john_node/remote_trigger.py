@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session
-from flask import g
+from flask import Blueprint, render_template, redirect, url_for, request, session, g
 import json
 
 from shared.services.auth_middleware import auth_middleware
@@ -59,7 +58,7 @@ def remote_aircon_temp():
                 "room": "1" if appliance_id == 4 else "2",
                 "temp": value
             }
-            g.client.publish("/john_node", json.dumps(message))
+        g.client.publish("/john_node", json.dumps(message))
         return "Success", 200
     except:
         return "Error", 500

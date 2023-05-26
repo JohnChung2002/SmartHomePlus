@@ -1,9 +1,10 @@
+# imports libraries and packages
 import pickle
 from imutils.video import VideoStream
 import face_recognition
 import time
 
-# determines faces from encodings.pickle file model created from training.py
+# determines faces from encodings.pickle file model created from SmartDoorTraining.py
 encodingsP = "encodings.pickle"
 
 # loads the known faces and embeddings along with OpenCV's Haar cascade for face detection
