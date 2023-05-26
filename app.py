@@ -151,27 +151,39 @@ def every_hour_function():
     pass
 
 def every_minute_cron_thread():
+    global minute_timer
     # Run the function every minute
-    Timer(60, every_minute_cron_thread).start()
+    if minute_timer is not None:
+        minute_timer.cancel()
+    minute_timer = Timer(60, every_minute_cron_thread).start()
     every_minute_function()
 
 def every_hour_ten_offset_cron_thread():
+    global hour_ten_offset_timer
     # Run the function every hour
     current_time = datetime.datetime.now()
     # Calculate the time until the next hour
-    time_until_next_hour = (((60 - current_time.minute) * 60) - current_time.second) - 600  # 10 minutes before the next hour
+    time_until_next_hour = (((60 - current_time.minute) * 60) - current_time.second) - 300  # 10 minutes before the next hour
     print(time_until_next_hour)
-    Timer(time_until_next_hour, every_hour_ten_offset_cron_thread).start()
+    if hour_ten_offset_timer is not None:
+        hour_ten_offset_timer.cancel()
+    hour_ten_offset_timer = Timer(time_until_next_hour, every_hour_ten_offset_cron_thread).start()
     every_hour_ten_offset_function()
 
 def every_hour_cron_thread():
+    global hour_timer
     # Run the function every hour
     current_time = datetime.datetime.now()
     # Calculate the time until the next hour
-    time_until_next_hour = ((60 - current_time.minute) * 60) - current_time.second 
-    Timer(time_until_next_hour, every_hour_ten_offset_cron_thread).start()
+    time_until_next_hour = ((60 - current_time.minute) * 60) - current_time.second
+    if hour_timer is not None:
+        hour_timer.cancel()
+    hour_timer = Timer(time_until_next_hour, every_hour_cron_thread).start()
     every_hour_function()
 
+minute_timer = None
+hour_ten_offset_timer = None
+hour_timer = None
 
 if __name__ == "__main__":
     client = mqtt.Client()
@@ -189,4 +201,4 @@ if __name__ == "__main__":
     every_minute_cron_thread()
     every_hour_cron_thread()
     every_hour_ten_offset_cron_thread()
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=True, use_reloader=False)
