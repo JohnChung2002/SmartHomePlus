@@ -14,6 +14,10 @@
 #define MOTION_SENSOR 28
 #define FAN 29
 
+#define ROOM_1_THRESHOLD 10
+#define CORRIDOR_THRESHOLD 40
+#define ROOM_2_THRESHOLD 10
+
 String serialInput, serialOutput;
 StaticJsonDocument<500> jsonDoc;
 int room1person = 0;
@@ -43,8 +47,11 @@ void noStopDelay(int interval) {
 }
 
 void endOfMotion() {
-  int corridor = analogRead(CORRIDOR_LIS);
-  if (manualOverride[1] == 0) button_status[6] = 0;
+  if (manualOverride[1] == 0) {
+    button_status[6] = 0;
+    serialOutput = "{'title': 'Lights', 'room': 'Corridor', 'status': '" + String(button_status[6]) + "'}";
+    Serial.println(serialOutput);
+  }
 }
 
 TimeOut timeout0;
@@ -63,6 +70,8 @@ void setup()
   pinMode(FAN, OUTPUT);
   lcd.begin(16, 2);
   lcd.clear();
+  serialOutput = "{'title': 'Arduino Ready'}";
+  Serial.println(serialOutput);
 }
 
 void loadInformation() {
@@ -106,10 +115,20 @@ void checkButtonClick() {
         default:
           button_status[i] = !button_status[i];
           manualOverride[(button_pins[(i/2)]-3)/2] = !manualOverride[(button_pins[(i/2)]-3)/2];
+          switch (button_pins[(i/2)]) {
+            case 3:
+              serialOutput = "{'title': 'Lights', 'room': '1', 'status': '" + String(button_status[i]) + "'}";
+              break;
+            case 5:
+              serialOutput = "{'title': 'Lights', 'room': 'Corridor', 'status': '" + String(button_status[i]) + "'}";
+              break;
+            case 7:
+              serialOutput = "{'title': 'Lights', 'room': '2', 'status': '" + String(button_status[i]) + "'}";
+              break;
+          }
+          Serial.println(serialOutput);
           break;
       }
-      lcd.clear();
-      lcd.print(output);
     }
     if (reading == 1 && button_status[i+1] == 0) {
       button_status[i+1] = 1;
@@ -122,7 +141,11 @@ void detectMotion() {
   int corridor = analogRead(CORRIDOR_LIS);
   if (reading == 1 && motion_sensor_status == 1) {
     motion_sensor_status = 0;
-    if (manualOverride[1] == 0) button_status[6] = (corridor <= 10);
+    if (manualOverride[1] == 0) {
+      button_status[6] = (corridor <= CORRIDOR_THRESHOLD);
+      serialOutput = "{'title': 'Lights', 'room': 'Corridor', 'status': '" + String(button_status[6]) + "'}";
+      Serial.println(serialOutput);
+    }
     serialOutput = "{'title': 'Motion', 'action': 'Detected'}";
     Serial.println(serialOutput);
     timeout0.cancel();
@@ -138,65 +161,101 @@ void detectMotion() {
 void checkBrightness() {
   int room_1 = analogRead(ROOM_1_LIS);
   int room_2 = analogRead(ROOM_2_LIS);
-  if (manualOverride[0] == 0) button_status[2] =  (room1person > 0) && (room_1 <= 10);
-  if (manualOverride[2] == 0) button_status[10] = (room2person > 0) && (room_2 <= 10);
+  if (manualOverride[0] == 0) {
+    button_status[2] =  (room1person > 0) && (room_1 <= ROOM_1_THRESHOLD);
+    if (button_status[2] == 1) {
+      serialOutput = "{'title': 'Lights', 'room': '1', 'status': '" + String(button_status[2]) + "'}";
+      Serial.println(serialOutput);
+    }
+  }
+  if (manualOverride[2] == 0) {
+    button_status[10] = (room2person > 0) && (room_2 <= ROOM_2_THRESHOLD);
+    if (button_status[10] == 1) {
+      serialOutput = "{'title': 'Lights', 'room': '2', 'status': '" + String(button_status[10]) + "'}";
+      Serial.println(serialOutput);
+    }
+  }
 }
 
 void loop() {
   TimeOut::handler();
   if (Serial.available() != 0) {
     deserializeJson(jsonDoc, Serial.readString());
-    if (jsonDoc["title"] == "Aircon Switch") {
-      if (jsonDoc["room"] == "1") {
-        airConStatus[0] = jsonDoc["status"];
-      } else if (jsonDoc["room"] == "2") {
-        airConStatus[1] = jsonDoc["status"];
+    if (jsonDoc["title"] == "Load Configurations") {
+      button_status[2] = int(jsonDoc["room1Status"]);
+      button_status[6] = int(jsonDoc["corridorStatus"]);
+      button_status[10] = int(jsonDoc["room2Status"]);
+      for (int i = 0; i < (sizeof(airConStatus) / sizeof(airConStatus[0])); i++) {
+        airConStatus[i] = int(jsonDoc["aircon"][i]["status"]);
+        airConTemp[i] = int(jsonDoc["aircon"][i]["temp"]);
       }
       lcd.clear();
       for (int i = 0; i < (sizeof(airConStatus) / sizeof(airConStatus[0])); i++) {
         lcd.setCursor(0, i);
         lcd.print("AC" + String(i+1) + ":" + String(airConStatus[i] ? "On |" : "Off|") + String(airConTemp[i]) + (char)223 +"C");
       }
-      serialOutput = "{'title': 'Aircon Switch Response', 'status': '1'}";
+      ventilatingFanStatus = int(jsonDoc["ventilatingFanStatus"]);
+      serialOutput = "{'title': 'Load Configurations Response', 'status': 'Success'}";
+      Serial.println(serialOutput);
+    } else if (jsonDoc["title"] == "Aircon Switch") {
+      if (jsonDoc["room"] == "1") {
+        airConStatus[0] = int(jsonDoc["status"]);
+      } else if (jsonDoc["room"] == "2") {
+        airConStatus[1] = int(jsonDoc["status"]);
+      }
+      lcd.clear();
+      for (int i = 0; i < (sizeof(airConStatus) / sizeof(airConStatus[0])); i++) {
+        lcd.setCursor(0, i);
+        lcd.print("AC" + String(i+1) + ":" + String(airConStatus[i] ? "On |" : "Off|") + String(airConTemp[i]) + (char)223 +"C");
+      }
+      serialOutput = "{'title': 'Aircon Switch Response', 'status': 'Success'}";
       Serial.println(serialOutput);
     } else if (jsonDoc["title"] == "Aircon Temp") {
       if (airConStatus[int(jsonDoc["room"])-1] == 1) {
         if (jsonDoc["room"] == "1" && airConStatus[int(jsonDoc["room"])-1] == 1) {
-          airConTemp[0] = jsonDoc["temp"];
+          airConTemp[0] = int(jsonDoc["temp"]);
         } else if (jsonDoc["room"] == "2" && airConStatus[int(jsonDoc["room"])-1] == 1) {
-          airConTemp[1] = jsonDoc["temp"];
+          airConTemp[1] = int(jsonDoc["temp"]);
         }
         lcd.clear();
         for (int i = 0; i < (sizeof(airConStatus) / sizeof(airConStatus[0])); i++) {
           lcd.setCursor(0, i);
           lcd.print("AC" + String(i+1) + ":" + String(airConStatus[i] ? "On |" : "Off|") + String(airConTemp[i]) + (char)223 +"C");
         }
+        serialOutput = "{'title': 'Aircon Temp Response', 'status': 'Success'}";
+        Serial.println(serialOutput);
       }
     } else if (jsonDoc["title"] == "Ventilating Fan") {
       ventilatingFanStatus = jsonDoc["status"];
-      serialOutput = "{'title': 'Fan', 'status': '" + String(ventilatingFanStatus ? "On" : "Off") + "'}";
+      serialOutput = "{'title': 'Fan Response', 'status': '" + String(ventilatingFanStatus ? "On" : "Off") + "'}";
       Serial.println(serialOutput);
     } else if (jsonDoc["title"] == "Lights") {
       if (jsonDoc["room"] == "1") {
-        button_status[2] = jsonDoc["status"];
+        button_status[2] = int(jsonDoc["status"]);
       } else if (jsonDoc["room"] == "2") {
-        button_status[6] = jsonDoc["status"];
+        button_status[10] = int(jsonDoc["status"]);
       } else if (jsonDoc["room"] == "Corridor") {
-        button_status[10] = jsonDoc["status"];
+        button_status[6] = int(jsonDoc["status"]);
       }
+      serialOutput = "{'title': 'Lights Response', 'status': 'Success'}";
+      Serial.println(serialOutput);
     } else if (jsonDoc["title"] == "Disengage Override") {
       for (int i = 0; i < (sizeof(manualOverride) / sizeof(manualOverride[0])); i++) {
         manualOverride[i] = 0;
       }
+      serialOutput = "{'title': 'Disengage Override Response', 'status': 'Success'}";
+      Serial.println(serialOutput);
     } else if (jsonDoc["title"] == "Intruder") {
       for (int i = 0; i < (sizeof(manualOverride) / sizeof(manualOverride[0])); i++) {
         manualOverride[i] = int(jsonDoc["status"]);
       }
       if (jsonDoc["status"] == "1") {
-        button_status[2] = jsonDoc["status"];
-        button_status[6] = jsonDoc["status"];
-        button_status[10] = jsonDoc["status"];
+        button_status[2] = 1;
+        button_status[6] = 1;
+        button_status[10] = 1;
       }
+      serialOutput = "{'title': 'Intruder Response', 'status': 'Success'}";
+      Serial.println(serialOutput);
     }
   }
   checkButtonClick();

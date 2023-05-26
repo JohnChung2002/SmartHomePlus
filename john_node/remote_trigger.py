@@ -52,7 +52,7 @@ def remote_aircon_temp():
         appliance_id = int(request.form.get('appliance_id'))
         value = int(request.form.get('value'))
         with g.dbconn:
-            g.dbconn.update("appliance_status", ["status_value"], ["appliance_id"], [value, 4])
+            g.dbconn.update("appliance_status", ["status_value"], ["appliance_id"], [value, appliance_id])
             message = {
                 "title": "Aircon Temp",
                 "sender": "Cloud",

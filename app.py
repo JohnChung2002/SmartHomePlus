@@ -1,6 +1,7 @@
 from flask import Flask, g, request
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
+from discord_webhook import DiscordWebhook, DiscordEmbed
 import os
 import hmac
 import hashlib
@@ -8,7 +9,7 @@ import time
 import ast
 import json
 import paho.mqtt.client as mqtt
-from threading import Thread
+from threading import Thread, Timer
 from shared.services.mysql_service import MySQLService
 from dotenv import load_dotenv
 
@@ -71,11 +72,22 @@ def on_publish(client, data, result):
     print("Message sent to MQTT broker")
     pass
 
+lights_dict = {
+    "1": 1,
+    "Corridor": 2,
+    "2": 3,
+}
+
+aircon_dict = {
+    "1": 4,
+    "2": 5
+}
+
 def on_message(client, userdata, msg):
     json_message = ast.literal_eval(msg.payload.decode())
     if msg.topic == "/john_node":
         if (json_message["sender"] == "Edge"):
-            print("Received message: ", msg.payload.decode())
+            print("Received message: ", msg.payload.decode())         
     if msg.topic == "/cheryl_node":
         if (json_message["sender"] == "Edge"):
             print("Received message: ", msg.payload.decode())
@@ -84,6 +96,7 @@ def on_message(client, userdata, msg):
             print("Received message: ", msg.payload.decode())
     
 client = mqtt.Client()
+mqtt_dbconn = MySQLService(os.getenv("CLOUD_DATABASE_HOST"), os.getenv("CLOUD_DATABASE_USERNAME"), os.getenv("CLOUD_DATABASE_PASSWORD"), os.getenv("CLOUD_DATABASE_NAME"))
 client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
 client.on_connect = on_connect 
 client.on_publish = on_publish
@@ -98,6 +111,30 @@ client.loop_start()
 # @app.template_filter('config_name_to_id')
 # def config_name_to_id(config_name):
 #     return config_name.lower().replace(" ", "-").replace("(", "9").replace(")", "0")
+
+def my_function():
+    webhook = DiscordWebhook(
+        url="https://discord.com/api/webhooks/1111506734192795688/YxLEJ7GDlWRvHMyNgmYW1eK28Iv-fSR60qvXFzq29N2DkuVUAm77Ufb1tPkUH366fRwq", 
+        username="Testing Bot"
+    )   
+
+    embed = DiscordEmbed(
+        title="Testing Discord Webhook", 
+        description="Mak Kau Hijau", 
+        color="03b2f8",
+        url = "https://dashboard.digitalserver.tech/"
+    )
+
+    webhook.add_embed(embed)
+    response = webhook.execute()
+
+def run_thread():
+    # Run the function every minute
+    Timer(60, run_thread).start()
+    my_function()
+
+# Start the initial thread
+run_thread()
 
 if __name__ == "__main__":
     # sensor_thread = Thread(target=read_serial_input)

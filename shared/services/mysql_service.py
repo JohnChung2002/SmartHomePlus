@@ -74,3 +74,15 @@ class MySQLService:
         result = cursor.fetchone()
         cursor.close()
         return result
+    
+    def increment_field(self, table_name: str, primary_fields: list, increment_field: str, data: list):
+        cursor = self.connection.cursor()
+        cursor.execute(f"UPDATE {table_name} SET {increment_field} = {increment_field} + 1 WHERE {self.join_param_string(primary_fields)}", data)
+        self.connection.commit() # type: ignore
+        cursor.close()
+
+    def decrement_field(self, table_name: str, primary_fields: list, decrement_field: str, data: list):
+        cursor = self.connection.cursor()
+        cursor.execute(f"UPDATE {table_name} SET {decrement_field} = {decrement_field} - 1 WHERE {self.join_param_string(primary_fields)}", data)
+        self.connection.commit()
+        cursor.close()

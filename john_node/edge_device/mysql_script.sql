@@ -66,4 +66,13 @@ END //
 
 DELIMITER ;
 
+CREATE TABLE IF NOT EXISTS `people_in_room` (
+    `room_id` int(11) NOT NULL,
+    `people_count` INT NOT NULL,
+    `created_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_on` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`room_id`)
+);
 
+INSERT INTO `people_in_room` (room_id, people_count) VALUES (1, 0);
+INSERT INTO `people_in_room` (room_id, people_count) VALUES (2, 0);
