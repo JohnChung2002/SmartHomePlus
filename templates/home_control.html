@@ -4,86 +4,91 @@
 
 {% block content %}
 <div class="container">
-    <form id="myForm1" action="/api/node_2/remote_aircon_temp" method="POST">
-        <fieldset>
-            <legend>Aircon Temperature Control</legend>
-            <div class="form-group">
-                <label for="appliance_id">Appliance ID:</label>
-                <select id="appliance_id" name="appliance_id" class="form-control" required>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="value">Value:</label>
-                <input type="number" id="value" name="value" min="16" max="30" class="form-control" required>
-            </div>
-        </fieldset>
-        <br>
-        <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-    <br/>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-2">
-                <p>Room 1 Light</p>
-                <button type="button" class="btn btn-primary" onclick="sendData(1, 1)">On</button>
-                <button type="button" class="btn btn-secondary" onclick="sendData(1, 0)">Off</button>
-            </div>
-            <div class="col-md-2">
-                <p>Corridor Light</p>
-                <button type="button" class="btn btn-primary" onclick="sendData(2, 1)">On</button>
-                <button type="button" class="btn btn-secondary" onclick="sendData(2, 0)">Off</button>
-            </div>
-            <div class="col-md-2">
-                <p>Room 2 Light</p>
-                <button type="button" class="btn btn-primary" onclick="sendData(3, 1)">On</button>
-                <button type="button" class="btn btn-secondary" onclick="sendData(3, 0)">Off</button>
-            </div>
-            <div class="col-md-2">
-                <p>Room 1 Aircon</p>
-                <button type="button" class="btn btn-primary" onclick="sendData(4, 1)">On</button>
-                <button type="button" class="btn btn-secondary" onclick="sendData(4, 0)">Off</button>
-            </div>
-            <div class="col-md-2">
-                <p>Room 2 Aircon</p>
-                <button type="button" class="btn btn-primary" onclick="sendData(5, 1)">On</button>
-                <button type="button" class="btn btn-secondary" onclick="sendData(5, 0)">Off</button>
-            </div>
-            <div class="col-md-2">
-                <p>Ventilating Fan</p>
-                <button type="button" class="btn btn-primary" onclick="sendData(6, 1)">On</button>
-                <button type="button" class="btn btn-secondary" onclick="sendData(6, 0)">Off</button>
-            </div>
+    <div class="row mt-2">
+        <h3 class="text-center">Home Appliance Control</h3>
+        <div class="col-md-2">
+            <p>Room 1 Light</p>
+            <button type="button" class="btn btn-primary" onclick="sendData(1, 1)">On</button>
+            <button type="button" class="btn btn-secondary" onclick="sendData(1, 0)">Off</button>
         </div>
+        <div class="col-md-2">
+            <p>Corridor Light</p>
+            <button type="button" class="btn btn-primary" onclick="sendData(2, 1)">On</button>
+            <button type="button" class="btn btn-secondary" onclick="sendData(2, 0)">Off</button>
+        </div>
+        <div class="col-md-2">
+            <p>Room 2 Light</p>
+            <button type="button" class="btn btn-primary" onclick="sendData(3, 1)">On</button>
+            <button type="button" class="btn btn-secondary" onclick="sendData(3, 0)">Off</button>
+        </div>
+        <div class="col-md-2">
+            <p>Room 1 Aircon</p>
+            <button type="button" class="btn btn-primary" onclick="sendData(4, 1)">On</button>
+            <button type="button" class="btn btn-secondary" onclick="sendData(4, 0)">Off</button>
+        </div>
+        <div class="col-md-2">
+            <p>Room 2 Aircon</p>
+            <button type="button" class="btn btn-primary" onclick="sendData(5, 1)">On</button>
+            <button type="button" class="btn btn-secondary" onclick="sendData(5, 0)">Off</button>
+        </div>
+        <div class="col-md-2">
+            <p>Ventilating Fan</p>
+            <button type="button" class="btn btn-primary" onclick="sendData(6, 1)">On</button>
+            <button type="button" class="btn btn-secondary" onclick="sendData(6, 0)">Off</button>
+        </div>
+    </div>
+    <div class="row justify-content-center mb-2">
+        <h3 class="text-center">Aircon Control</h3>
+        <form id="wetness-form">
+            <div class="d-flex justify-content-center">
+                <div>
+                    <label for="appliance_id">Appliance ID:</label>
+                </div>
+                <div>
+                    <select id="appliance_id" name="appliance_id" class="form-control" required>
+                        <option value="4">Room 1 Aircon</option>
+                        <option value="5">Room 2 Aircon</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="value">Value:</label>
+                </div>
+                <div>
+                    <input type="number" id="value" name="value" min="16" max="30" class="form-control" required>
+                </div>
+                <div class="ms-2 d-flex align-items-center">
+                    <button type="button" class="btn btn-primary" onclick="updateTemp()">Submit</button>
+                </div>
+            </div>
+        </form>
     </div>
     <div class="row justify-content-start mt-4">
         <div class="col-md-6">
             <div class="text-left">
-            <form id="date-form">
-                <div class="form-group mb-0">
-                <div class="input-group">
-                    <label for="month" class="input-group-prepend d-flex align-items-center me-2">Month:</label>
-                    <select id="month" name="month" class="form-control" onchange="updateApplianceData()">
-                        <option value="" selected disabled hidden>Choose here</option>
-                        <option value="1">January</option>
-                        <option value="2">Febuary</option>
-                        <option value="3">March</option>
-                        <option value="4">April</option>
-                        <option value="5">May</option>
-                        <option value="6">June</option>
-                        <option value="7">July</option>
-                        <option value="8">August</option>
-                        <option value="9">Septemeber</option>
-                        <option value="10">October</option>
-                        <option value="11">November</option>
-                        <option value="12">Decemeber</option>
-                    </select>
-                    <label for="year" class="input-group-prepend d-flex align-items-center me-2 ms-3">Year:</label>
-                    <input type="number" id="year" name="year" class="form-control" min="0" max="9999" onchange="updateApplianceData()">
-                </div>
-                </div>
-            </form>
+                <form id="date-form">
+                    <div class="form-group mb-0">
+                        <div class="input-group">
+                            <label for="month" class="input-group-prepend d-flex align-items-center me-2">Month:</label>
+                            <select id="month" name="month" class="form-control" onchange="updateApplianceData()">
+                                <option value="" selected disabled hidden>Choose here</option>
+                                <option value="1">January</option>
+                                <option value="2">Febuary</option>
+                                <option value="3">March</option>
+                                <option value="4">April</option>
+                                <option value="5">May</option>
+                                <option value="6">June</option>
+                                <option value="7">July</option>
+                                <option value="8">August</option>
+                                <option value="9">Septemeber</option>
+                                <option value="10">October</option>
+                                <option value="11">November</option>
+                                <option value="12">Decemeber</option>
+                            </select>
+                            <label for="year" class="input-group-prepend d-flex align-items-center me-2 ms-3">Year:</label>
+                            <input type="number" id="year" name="year" class="form-control" min="0" max="9999" onchange="updateApplianceData()">
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -106,26 +111,29 @@
         5: "Room 2 Aircon",
         6: "Ventilating Fan"
     }
-    document.getElementById("myForm1").addEventListener("submit", function(event) {
-      event.preventDefault(); // Prevent form submission
-      
-      var form = event.target;
-      var formData = new FormData(form);
-      
-      fetch(form.action, {
-        method: form.method,
-        body: formData
-      })
-      .then(response)
-      .then(data => {
-        // Request successful, do something with the response
-        alert(data)
-      })
-      .catch(error => {
-        // Handle any errors
-        console.error(error);
-      });
-    });
+
+    function updateTemp() {
+        var formData = new FormData();
+        formData.append("appliance_id", document.getElementById("appliance_id").value);
+        formData.append("value", document.getElementById("value").value);
+        
+        fetch("/api/node_2/remote_aircon_temp", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.text();
+        })
+        .then(data => {
+            alert(data);
+        })
+        .catch(error => {
+            console.error("There was a problem with the fetch operation:", error);
+        });
+    }
 
     function sendData(appliance_id, status) {
         var formData = new FormData();
