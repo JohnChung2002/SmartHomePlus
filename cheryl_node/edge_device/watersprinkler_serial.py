@@ -34,7 +34,7 @@ def on_message(client, userdata, msg):
             wetnessThreshold = message_mqtt[1]
             with mydb:
                 mycursor = mydb.cursor()
-                mycursor.execute("UPDATE system_data SET wetness_value = %s", (wetnessThreshold))
+                mycursor.execute("UPDATE system_data SET status = %s WHERE field = 'wetness_value'", (wetnessThreshold))
                 mydb.commit()
                 print("Wetness Threshold Updated")
             message = f"Update|{wetnessThreshold}"
@@ -58,7 +58,7 @@ while True:
     # Create a cursor object
     cur = mydb.cursor()
     # Execute the SQL query to retrieve data from the database
-    cur.execute("SELECT wetness_value FROM system_data")
+    cur.execute("SELECT status FROM system_data WHERE field = 'wetness_value'")
     # Fetch all the rows returned by the query and print out the value
     value = cur.fetchall()
     wetnessThreshold = value[0][0]
@@ -68,13 +68,13 @@ while True:
     if (data == "Sprinkler turned ON"):
         with mydb:
             mycursor = mydb.cursor()
-            mycursor.execute("UPDATE system_data SET water_sprinkler_status = 1")
+            mycursor.execute("UPDATE system_data SET status = 1 WHERE field = 'water_sprinkler_status'")
             mydb.commit()
             mycursor.close()
     elif (data == "Sprinkler turned OFF"):
         with mydb:
             mycursor = mydb.cursor()
-            mycursor.execute("UPDATE system_data SET water_sprinkler_status = 0")
+            mycursor.execute("UPDATE system_data SET status = 0 WHERE field = 'water_sprinkler_status'")
             mydb.commit()
             mycursor.close()
     else:
