@@ -228,7 +228,12 @@
                                 x: new Date(data[i].date),
                                 y: data[i].uptime
                             };
-                            applianceChart.appendSeriesData(applianceIndex, [chartData]);
+                            applianceChart.appedSeries([
+                                {
+                                    name: 'Appliance ' + (applianceIndex + 1),
+                                    data: [chartData]
+                                }
+                            ]);
                         }
                     } else {
                         applianceChart.updateSeries([]);
