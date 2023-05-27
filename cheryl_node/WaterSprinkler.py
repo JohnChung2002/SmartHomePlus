@@ -19,7 +19,7 @@ topic = "/cheryl_node"
 
 # Main function when accessing the website 
 @sprinkler_bp.route("/") 
-def index():  
+def index():
     # Pass the template data into the template index.html and return it 
     return render_template('cheryl_index.html')
 

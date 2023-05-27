@@ -99,37 +99,5 @@
           <input type="submit" value="SUBMIT" onclick="showMessage()"><br>
         </form>
 
-        
-        <h2>Sensor Data Readings</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>DataID</th>
-              <th>Temperature</th>
-              <th>TempStatus</th>
-              <th>Wetness</th>
-              <th>WetStatus</th>
-              <th>Brightness</th>
-              <th>TimeOfDay</th>
-              <th>SprinklerStatus</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for row in rows %}
-            <tr>
-              <td>{{ row[0] }}</td>
-              <td>{{ row[1] }}</td>
-              <td>{{ row[2] }}</td>
-              <td>{{ row[3] }}</td>
-              <td>{{ row[4] }}</td>
-              <td>{{ row[5] }}</td>
-              <td>{{ row[6] }}</td>
-              <td>{{ row[7] }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        <br>
-
     </body> 
 </html> 
