@@ -63,6 +63,7 @@
                 <div class="input-group">
                     <label for="month" class="input-group-prepend d-flex align-items-center me-2">Month:</label>
                     <select id="month" name="month" class="form-control" onchange="updateApplianceData()">
+                        <option value="" selected disabled hidden>Choose here</option>
                         <option value="1">January</option>
                         <option value="2">Febuary</option>
                         <option value="3">March</option>
@@ -142,10 +143,10 @@
 
     function updateApplianceData() {
         //check if month and year have values, if not give them current month and year
-        if ($("#month").val() === null) {
+        if ($("#month").val() =="") {
             $("#month").val(new Date().getMonth() + 1);
         }
-        if ($("#year").val() === null) {
+        if ($("#year").val() == "") {
             $("#year").val(new Date().getFullYear());
         }
         var month = $("#month").val();
