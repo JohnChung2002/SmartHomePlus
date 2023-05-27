@@ -79,6 +79,7 @@ def on_publish(client, data, result):
     pass
 
 def on_message(client, userdata, msg):
+    print("Received message from MQTT broker: ", msg.payload.decode())
     if (msg.topic not in ["/cheryl_node", "/john_node", "/timmy_node"]):
         print("Received unknown topic message: ", msg.payload.decode())
     if msg.topic == "/john_node":
