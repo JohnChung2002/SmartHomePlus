@@ -96,6 +96,5 @@ while True:
             print(wetnessLevel, brightness, temperature)         
             with mydb:
                 mydb.insert("environment_data", ["temperature", "brightness", "wetness"], [temperature, brightness, wetnessLevel])
-            client.publish(topic, f"{wetnessLevel},{brightness},{temperature}")
     time.sleep(0.1)
         
