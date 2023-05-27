@@ -79,10 +79,10 @@ def on_publish(client, data, result):
     pass
 
 def on_message(client, userdata, msg):
-    json_message = ast.literal_eval(msg.payload.decode())
     if (msg.topic not in ["/cheryl_node", "/john_node", "/timmy_node"]):
         print("Received unknown topic message: ", msg.payload.decode())
     if msg.topic == "/john_node":
+        json_message = ast.literal_eval(msg.payload.decode())
         if (json_message["sender"] == "Edge"):
             if (json_message["title"] == "Lights"):
                 with mqtt_dbconn:
