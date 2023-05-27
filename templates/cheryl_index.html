@@ -15,7 +15,7 @@
   </div>
 
   <div class="row justify-content-center mb-4">
-    <div class="col-md-6">
+    <div class="col-md-12">
       <h3>Adjust the wetness threshold to turn on the water sprinkler:</h3>
       <form id="wetness-form">
         <div class="form-row">
@@ -31,13 +31,15 @@
     </div>
   </div>
 
-  <div class="row justify-content-end">
+  <div class="row justify-content-start">
     <div class="col-md-6">
-      <div class="text-right">
+      <div class="text-left">
         <form id="date-form">
           <div class="form-group mb-0">
-            <label for="date">Select a date to view the environment data:</label>
-            <input type="date" id="date" name="date" class="form-control" onchange="updateEnvironmentData()">
+            <div class="input-group">
+              <label for="date" class="input-group-prepend">Select a date to view the environment data:</label>
+              <input type="date" id="date" name="date" class="form-control" onchange="updateEnvironmentData()">
+            </div>
           </div>
         </form>
       </div>
@@ -45,7 +47,7 @@
   </div>
 
   <div class="row justify-content-center mt-4">
-    <div class="col-md-8">
+    <div class="col-md-12">
       <div id="environmentChart"></div>
     </div>
   </div>
