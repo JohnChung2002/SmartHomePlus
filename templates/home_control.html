@@ -96,6 +96,14 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
+    const appliance_obj = {
+        1: "Room 1 Light",
+        2: "Corridor Light",
+        3: "Room 2 Light",
+        4: "Room 1 Aircon",
+        5: "Room 2 Aircon",
+        6: "Ventilating Fan"
+    }
     document.getElementById("myForm1").addEventListener("submit", function(event) {
       event.preventDefault(); // Prevent form submission
       
@@ -168,27 +176,27 @@
                         },
                         series: [
                             {
-                            name: 'Appliance 1',
+                            name: 'Room 1 Light',
                             data: []
                             },
                             {
-                            name: 'Appliance 2',
+                            name: 'Corridor Light',
                             data: []
                             },
                             {
-                            name: 'Appliance 3',
+                            name: 'Room 2 Light',
                             data: []
                             },
                             {
-                            name: 'Appliance 4',
+                            name: 'Room 1 Aircon',
                             data: []
                             },
                             {
-                            name: 'Appliance 5',
+                            name: 'Room 2 Aircon',
                             data: []
                             },
                             {
-                            name: 'Appliance 6',
+                            name: 'Ventilating Fan',
                             data: []
                             }
                         ],
@@ -211,7 +219,7 @@
                         }
                     };
                     for (var i = 0; i < data.length; i++) {
-                        var applianceIndex = data[i].appliance_id - 1;
+                        var applianceIndex = appliance_obj[data[i].appliance_id - 1];
                         options.series[applianceIndex].data.push({
                             x: new Date(data[i].date),
                             y: data[i].uptime
@@ -224,32 +232,32 @@
                     if (data.length > 0) {
                         series = [
                             {
-                            name: 'Appliance 1',
+                            name: 'Room 1 Light',
                             data: []
                             },
                             {
-                            name: 'Appliance 2',
+                            name: 'Corridor Light',
                             data: []
                             },
                             {
-                            name: 'Appliance 3',
+                            name: 'Room 2 Light',
                             data: []
                             },
                             {
-                            name: 'Appliance 4',
+                            name: 'Room 1 Aircon',
                             data: []
                             },
                             {
-                            name: 'Appliance 5',
+                            name: 'Room 2 Aircon',
                             data: []
                             },
                             {
-                            name: 'Appliance 6',
+                            name: 'Ventilating Fan',
                             data: []
                             }
-                        ]
+                        ];
                         for (var i = 0; i < data.length; i++) {
-                            var applianceIndex = data[i].appliance_id - 1;
+                            var applianceIndex = appliance_obj[[i].appliance_id];
                             series[applianceIndex].data.push({
                                 x: new Date(data[i].date),
                                 y: data[i].uptime
