@@ -54,7 +54,6 @@ def on_message(client, userdata, msg):
             with mydb:
                 mydb.update("system_data", ["status"], ["field"], [wetnessThreshold, "wetness_value"])
                 print("Wetness Threshold Updated")
-                mycursor.close()
             message = f"Update|{wetnessThreshold}"
             arduino.write(str.encode(message))
     time.sleep(1)
