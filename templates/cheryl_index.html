@@ -17,26 +17,30 @@
   <div class="row justify-content-center mb-4">
     <div class="col-md-6">
       <h3>Adjust the wetness threshold to turn on the water sprinkler:</h3>
-      <h5>You can enter any value between 100 to 500</h5>
       <form id="wetness-form">
-        <div class="form-group">
-          <label for="wetness">New Wetness Threshold:</label>
-          <input type="number" id="wetness" name="wetness" class="form-control" placeholder="0">
+        <div class="form-row">
+          <div class="col">
+            <label for="wetness">New Wetness Threshold (You can enter any value between 100 to 500):</label>
+            <input type="number" id="wetness" name="wetness" class="form-control" placeholder="0">
+          </div>
+          <div class="col-auto">
+            <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+          </div>
         </div>
-        <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
       </form>
     </div>
   </div>
 
-  <div class="row justify-content-center">
+  <div class="row justify-content-end">
     <div class="col-md-6">
-      <h3>Select a date to view the environment data:</h3>
-      <form id="date-form">
-        <div class="form-group">
-          <label for="date">Date:</label>
-          <input type="date" id="date" name="date" class="form-control" onchange="updateEnvironmentData()">
-        </div>
-      </form>
+      <div class="text-right">
+        <form id="date-form">
+          <div class="form-group mb-0">
+            <label for="date">Select a date to view the environment data:</label>
+            <input type="date" id="date" name="date" class="form-control" onchange="updateEnvironmentData()">
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
