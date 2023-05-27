@@ -1,7 +1,4 @@
-import serial
-import os
-import ast
-import json
+import serial, os, ast, json, datetime
 import paho.mqtt.client as mqtt
 from mysql_service import MySQLService
 
@@ -97,7 +94,7 @@ def on_message(client, userdata, msg):
         if (json_message["title"] in ["Lights", "Aircon Switch", "Ventilating Fan"]):
             appliance_id = lights_dict[json_message["room"]] if json_message["title"] == "Lights" else aircon_dict[json_message["room"]] if json_message["title"] == "Aircon Switch" else 6
             with mysql:
-                data = mysql.get_by_id("appliance_uptime", ["appliance_id"], [int(appliance_id)])
+                data = mysql.get_by_id("appliance_uptime", ["appliance_id, date"], [int(appliance_id), datetime.datetime.now().strftime("%Y-%m-%d")])
                 message = {
                     "title": "Update Uptime",
                     "sender": "Edge",
