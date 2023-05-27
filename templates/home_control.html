@@ -225,7 +225,7 @@
                         var chartList = []
                         for (var i = 0; i < data.length; i++) {
                             var applianceIndex = data[i].appliance_id - 1;
-                            chartList.append({
+                            chartList.push({
                                 x: new Date(data[i].date),
                                 y: data[i].uptime
                             });
