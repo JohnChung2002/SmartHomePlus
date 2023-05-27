@@ -32,11 +32,12 @@ def on_message(client, userdata, msg):
         message_mqtt = message_mqtt.split(",")
         if len(message_mqtt) == 2 and message_mqtt[0] == "Update Wetness Threshold":
             wetnessThreshold = message_mqtt[1]
-            with mydb:
+            with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:
                 mycursor = mydb.cursor()
                 mycursor.execute("UPDATE system_data SET status = %s WHERE field = 'wetness_value'", (wetnessThreshold))
                 mydb.commit()
                 print("Wetness Threshold Updated")
+                mycursor.close()
             message = f"Update|{wetnessThreshold}"
             arduino.write(str.encode(message))
     time.sleep(1)
@@ -51,29 +52,29 @@ topic = "/cheryl_node"
 client.subscribe(topic)
 client.loop_start()
 
-mydb = mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db")
 while True:
     while(arduino.in_waiting == 0):
         pass
-    # Create a cursor object
-    cur = mydb.cursor()
-    # Execute the SQL query to retrieve data from the database
-    cur.execute("SELECT status FROM system_data WHERE field = 'wetness_value'")
-    # Fetch all the rows returned by the query and print out the value
-    value = cur.fetchall()
-    wetnessThreshold = value[0][0]
-    cur.close()
-    print(wetnessThreshold)
+    with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:
+        # Create a cursor object
+        cur = mydb.cursor()
+        # Execute the SQL query to retrieve data from the database
+        cur.execute("SELECT status FROM system_data WHERE field = 'wetness_value'")
+        # Fetch all the rows returned by the query and print out the value
+        value = cur.fetchall()
+        wetnessThreshold = value[0][0]
+        cur.close()
+        print(wetnessThreshold)
     data = arduino.readline().decode('utf-8').strip()
     print("Received data:", data) # Print received data for debugging
     if (data == "Sprinkler turned ON"):
-        with mydb:
+        with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:
             mycursor = mydb.cursor()
             mycursor.execute("UPDATE system_data SET status = 1 WHERE field = 'water_sprinkler_status'")
             mydb.commit()
             mycursor.close()
     elif (data == "Sprinkler turned OFF"):
-        with mydb:
+        with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:
             mycursor = mydb.cursor()
             mycursor.execute("UPDATE system_data SET status = 0 WHERE field = 'water_sprinkler_status'")
             mydb.commit()
@@ -86,10 +87,11 @@ while True:
             temperature = int(readings[2])
             # Parse sensor readings from received data
             print(wetnessLevel, brightness, temperature)         
-            with mydb:      
+            with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:      
                 mycursor = mydb.cursor() 
                 mycursor.execute("INSERT INTO environment_data (temperature, brightness, wetness) VALUES (%s, %s, %s)" %(brightness, wetnessLevel, temperature))        
                 mydb.commit()
                 mycursor.close()
             client.publish(topic, f"{wetnessLevel},{brightness},{temperature}")
+    time.sleep(0.1)
         
