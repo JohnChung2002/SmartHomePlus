@@ -57,13 +57,10 @@ def doorcontrol(control):
 @remote_bp.route("/update_settings", methods=["GET", "POST"])
 def updatesettings():
     # accessing database and table
-    mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
-    mycursor = mydb.cursor()
-    mycursor.execute("SELECT settings_id FROM Settings")
-    settings = mycursor.fetchone()
-    mycursor.close()
+    with g.dbconn:
+        data = g.dbconn.get_last_entry("Settings", "settings_id")
+        settingsID = data["settings_id"]
     
-    settingsID = settings[0]
     settingsHTML = ['door-height', 'in-distance-threshold', 'out-distance-threshold', 'closing-duration', 'detection-duration', 'face-detection-duration']
     settingsDatabase = ['door_height', 'distance_in_detection', 'distance_out_detection', 'time_close', 'time_detection', 'time_face_detection']
     
@@ -72,12 +69,16 @@ def updatesettings():
             settingsValue = request.form.get(settingsHTML[i])
             
             if settingsValue != None:
-                mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
-                mycursor = mydb.cursor()
-                sql = "UPDATE Settings SET " + settingsDatabase[i] + " = '" + settingsValue + "' WHERE settings_id = '" + str(settingsID) + "'"
-                mycursor.execute(sql)
-                mydb.commit()
-                mycursor.close()
+                with g.dbconn:
+                    data = g.dbconn.get_last_entry("Settings", "settings_id")
+                    settingsID = data["settings_id"]
+                    mqtt_dbconn.update("Settings", [settingsDatabase[i]], ["settings_id"], [settingsValue, settingsID])
+#                 mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
+#                 mycursor = mydb.cursor()
+#                 sql = "UPDATE Settings SET " + settingsDatabase[i] + " = '" + settingsValue + "' WHERE settings_id = '" + str(settingsID) + "'"
+#                 mycursor.execute(sql)
+#                 mydb.commit()
+#                 mycursor.close()
 
     # redirects to the homepage
     return redirect(url_for('timmy_node.remote_door.smartdoor'))
