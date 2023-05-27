@@ -100,7 +100,7 @@ def on_message(client, userdata, msg):
                         today = datetime.date.today()
                         mqtt_dbconn.insert("appliance_uptime", ["appliance_id", "uptime", "date"], [int(json_message["appliance_id"]), int(json_message["uptime"]), datetime.date(today.year, today.month, 1).strftime("%Y-%m-%d")])
                     else:
-                        mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id"], [int(json_message["uptime"]), int(json_message["appliance_id"])])
+                        mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id"], [int(json_message["uptime"]), json_message["appliance_id"]])
             print("Received John's MQTT message: ", msg.payload.decode())         
     if msg.topic == "/cheryl_node":
         if (json_message["sender"] == "Edge"):
