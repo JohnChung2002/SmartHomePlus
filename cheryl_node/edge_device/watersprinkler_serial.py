@@ -5,12 +5,30 @@ import time
 import os
 from dotenv import load_dotenv
 import paho.mqtt.client as mqtt
+from threading import Thread, Timer
 from mysql_service import MySQLService
 
 device = '/dev/ttyACM0'
 arduino = serial.Serial(device, 9600)
 
 load_dotenv()
+
+five_minute_timer = None
+
+def every_five_minutes_function():
+    #do something every minute
+    with mydb:
+        result = mydb.get_avg_of_environment()
+        if result is not None and result["temperature"] is not None and result["brightness"] is not None and result["wetness"] is not None:
+            client.publish(topic, f"{result['temperature']},{result['brightness']},{result['wetness']}")
+
+def every_five_minutes_cron_thread():
+    global five_minute_timer
+    # Run the function every minute
+    if five_minute_timer is not None:
+        five_minute_timer.cancel()
+    five_minute_timer = Timer(300, every_five_minutes_cron_thread).start()
+    every_five_minutes_function()
 
 def on_connect(client, userdata, flags, rc):
     print(f"Connected with RC: {str(rc)}")
@@ -51,7 +69,7 @@ topic = "/cheryl_node"
 client.subscribe(topic)
 client.loop_start()
 mydb = MySQLService(os.getenv("LOCAL_DATABASE_HOST"), os.getenv("LOCAL_DATABASE_USERNAME"), os.getenv("LOCAL_DATABASE_PASSWORD"), os.getenv("LOCAL_DATABASE_NAME")) 
-
+every_five_minutes_cron_thread()
 
 while True:
     while(arduino.in_waiting == 0):
