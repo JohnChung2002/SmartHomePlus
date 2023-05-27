@@ -95,10 +95,10 @@ def on_message(client, userdata, msg):
                     mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), 6])
             if (json_message["title"] == "Update Uptime"):
                 with mqtt_dbconn:
-                    data = mqtt_dbconn.get_by_id("appliance_uptime", "appliance_id", int(json_message["appliance_id"]))
+                    data = mqtt_dbconn.get_by_id("appliance_uptime", "appliance_id", json_message["appliance_id"])
                     if data is None:
                         today = datetime.date.today()
-                        mqtt_dbconn.insert("appliance_uptime", ["appliance_id", "uptime", "date"], [int(json_message["appliance_id"]), int(json_message["uptime"]), datetime.date(today.year, today.month, 1).strftime("%Y-%m-%d")])
+                        mqtt_dbconn.insert("appliance_uptime", ["appliance_id", "uptime", "date"], [json_message["appliance_id"], int(json_message["uptime"]), datetime.date(today.year, today.month, 1).strftime("%Y-%m-%d")])
                     else:
                         mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id"], [int(json_message["uptime"]), json_message["appliance_id"]])
             print("Received John's MQTT message: ", msg.payload.decode())         
