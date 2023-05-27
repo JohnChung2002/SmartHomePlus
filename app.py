@@ -85,16 +85,16 @@ def on_message(client, userdata, msg):
         if (json_message["sender"] == "Edge"):
             if (json_message["title"] == "Lights"):
                 with mqtt_dbconn:
-                    mqtt_dbconn.update("appliance_status", "status", "appliance_id", [int(json_message["status"]), lights_dict[json_message["room"]]])
+                    mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), lights_dict[json_message["room"]]])
             if (json_message["title"] == "Aircon Switch"):
                 with mqtt_dbconn:
-                    mqtt_dbconn.update("appliance_status", "status", "appliance_id", [int(json_message["status"]), aircon_dict[json_message["room"]]])
+                    mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), aircon_dict[json_message["room"]]])
             if (json_message["title"] == "Ventilating Fan"):
                 with mqtt_dbconn:
-                    mqtt_dbconn.update("appliance_status", "status", "appliance_id", [int(json_message["status"]), 6])
+                    mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), 6])
             if (json_message["title"] == "Update Uptime"):
                 with mqtt_dbconn:
-                    mqtt_dbconn.update("appliance_uptime", "uptime", "appliance_id", [int(json_message["uptime"]), int(json_message["appliance_id"])])
+                    mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id"], [int(json_message["uptime"]), int(json_message["appliance_id"])])
             print("Received message: ", msg.payload.decode())         
     if msg.topic == "/cheryl_node":
         if (json_message["sender"] == "Edge"):
