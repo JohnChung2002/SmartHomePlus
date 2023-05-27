@@ -219,7 +219,7 @@
                         }
                     };
                     for (var i = 0; i < data.length; i++) {
-                        var applianceIndex = appliance_obj[data[i].appliance_id - 1];
+                        var applianceIndex = appliance_obj[data[i].appliance_id];
                         options.series[applianceIndex].data.push({
                             x: new Date(data[i].date),
                             y: data[i].uptime
