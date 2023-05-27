@@ -33,8 +33,7 @@ const int servoPin = 11;
 int wetthreshold = 500; // Set the threshold value of the water sensor
 int lightthreshold = 400; // Set the threshold value of the light sensor
 
-unsigned int pinStatus = 0;
-
+String commandInput;
 
 const int desiredMoisture = 30;  // Desired moisture level in percentage
 
@@ -81,39 +80,32 @@ void setup() {
 }
 
 void loop() {
-
   if (Serial.available() > 0) {
-    pinStatus = Serial.parseInt();
-  
-    switch (pinStatus){
-      case 1:
-        sprinklerServo.write(180);
-        digitalWrite(ledGreen, LOW);
-        digitalWrite(ledRed, LOW);
-        break;
-      case 2:
-        sprinklerServo.write(90);
-        digitalWrite(ledGreen, HIGH);
-        digitalWrite(ledRed, LOW);
-        break;
-      case 3:
-        sprinklerServo.write(0);
-        digitalWrite(ledGreen, LOW);
-        digitalWrite(ledRed, HIGH);
-        break;
+    commandInput = Serial.readString();
+
+    if (commandInput == "On") {
+      sprinklerServo.write(180);
+      digitalWrite(ledGreen, LOW);
+      digitalWrite(ledRed, LOW);
+    } else if (commandInput == "Off") {
+      sprinklerServo.write(90);
+      digitalWrite(ledGreen, HIGH);
+      digitalWrite(ledRed, LOW);
+    } else if (commandInput == "Spray") {
+      sprinklerServo.write(0);
+      digitalWrite(ledGreen, LOW);
+      digitalWrite(ledRed, HIGH);
+    } else if (commandInput.indexOf("Update|") != -1) {
+      wetthreshold = commandInput.substring(7).toInt();
     }
   }
 
-
   // Read the analog value from the potentiometer
   int potValue = analogRead(potentiometerPin);
-
   // Map the analog value to the temperature range
   int temperature = map(potValue, minTemp, maxTemp, -20, 50);
-  
   // Read the moisture level from the water sensor
   int wetnessValue = analogRead(waterSensorPin);
-
   // Read the light level from the LDR
   int ldrValue = analogRead(ldrPin);
 
@@ -139,11 +131,11 @@ void loop() {
 
   delay(100);
   
-    Serial.print(wetnessValue);
-    Serial.print(",");
-    Serial.print(ldrValue);
-    Serial.print(",");
-    Serial.println(temperature);
+  Serial.print(wetnessValue);
+  Serial.print(",");
+  Serial.print(ldrValue);
+  Serial.print(",");
+  Serial.println(temperature);
 
   // Check if the sprinkler status has changed
   if (previousSprinklerStatus != isSprinklerOn) {
