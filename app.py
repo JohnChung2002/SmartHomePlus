@@ -107,7 +107,7 @@ def on_message(client, userdata, msg):
         if ("," in message_mqtt):
             wetness, light_intensity, temperature = message_mqtt.split(",")
             with mqtt_dbconn:
-                mqtt_dbconn.insert("systemData", ["temperature", "wetness", "light_intensity"], [temperature, wetness, light_intensity])
+                mqtt_dbconn.insert("environment_data", ["temperature", "wetness", "brightness"], [temperature, wetness, light_intensity])
     if msg.topic == "/timmy_node":
         print("Received Timmy's MQTT message: ", message_mqtt)
 
