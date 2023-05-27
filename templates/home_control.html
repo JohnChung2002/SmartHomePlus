@@ -55,6 +55,27 @@
             </div>
         </div>
     </div>
+    <div class="row justify-content-start">
+        <div class="col-md-6">
+            <div class="text-left">
+            <form id="date-form">
+                <div class="form-group mb-0">
+                <div class="input-group">
+                    <label for="month" class="input-group-prepend d-flex align-items-center me-2">Month:</label>
+                    <input type="number" id="month" name="month" class="form-control" min="1" max="12" onchange="updateEnvironmentData()">
+                    <label for="year" class="input-group-prepend d-flex align-items-center me-2 ms-3">Year:</label>
+                    <input type="number" id="year" name="year" class="form-control" min="0" max="9999" onchange="updateEnvironmentData()">
+                </div>
+                </div>
+            </form>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-12">
+            <div id="applianceChart"></div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -103,5 +124,78 @@
             console.error("There was a problem with the fetch operation:", error);
         });
     }
+    var applianceChart = null;
+
+    function updateApplianceData() {
+        //check if month and year have values, if not give them current month and year
+        var month = $("#month").val() || new Date().getMonth() + 1;
+        var year = $("#year").val() || new Date().getFullYear();
+        $.ajax({
+            url: "/api/node_1/get-appliance-uptime",
+            type: "POST",
+            data: {
+                month: month,
+                year: year
+            },
+            dataType: "json",
+            success: function(data) {
+                if (applianceChart === null) {
+                    var options = {
+                    chart: {
+                        type: 'line',
+                        height: 350
+                    },
+                    series: [
+                        {
+                        name: 'Uptime',
+                        data: []
+                        }
+                    ],
+                    xaxis: {
+                        type: 'datetime'
+                    },
+                    yaxis: {
+                        min: 0
+                    },
+                    noData: {
+                        text: 'Data not available'
+                    }
+                    };
+                    var chartData = [];
+                    for (var i = 0; i < data.length; i++) {
+                    chartData.push({
+                        x: new Date(data[i].date),
+                        y: data[i].uptime
+                    });
+                    }
+                    options.series[0].data = chartData;
+                    var chartElement = document.getElementById('applianceChart');
+                    applianceChart = new ApexCharts(chartElement, options);
+                    applianceChart.render();
+                } else {
+                    var chartData = [];
+                    for (var i = 0; i < data.length; i++) {
+                    chartData.push({
+                        x: new Date(data[i].date),
+                        y: data[i].uptime
+                    });
+                    }
+                    applianceChart.updateSeries([
+                    {
+                        name: 'Uptime',
+                        data: chartData
+                    }
+                    ]);
+                }
+            },
+            error: function() {
+                alert("Failed to get appliance uptime data!");
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        updateEnvironmentData();
+    });
 </script>
 {% endblock %}
