@@ -42,9 +42,9 @@ client.subscribe(topic)
 
 client.loop_start()
 
+mydb = mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db")
+
 while True:
-    
-    mydb = mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db")
 
     while(arduino.in_waiting == 0):
         pass
