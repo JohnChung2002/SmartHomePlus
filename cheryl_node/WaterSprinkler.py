@@ -52,11 +52,6 @@ def action(action):
 @sprinkler_bp.route('/submit-form', methods=['POST'])
 def submit_form():
     wetnessVal = int(request.form['wetness'])
-    # Connect to the database
-    db = connect_db()
-
-    # Create a cursor object
-    cur = db.cursor()
     g.dbconn.update("system_data", ["status"], ["field"], [wetnessVal, "wetness_value"])
     g.client.publish(topic, f"Update Wetness Threshold,{wetnessVal}")
 #     return 'Form submitted successfully'
