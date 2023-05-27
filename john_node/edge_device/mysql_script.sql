@@ -38,28 +38,25 @@ BEGIN
         -- Calculate the time difference between `updated_on` and the current time
         SET @seconds_diff = TIMESTAMPDIFF(SECOND, OLD.updated_on, NOW());
 
-        -- Get the month and year from the current date
-        SET @current_month = MONTH(NOW());
-        SET @current_year = YEAR(NOW());
+        -- Get the current date and time
+        SET @current_datetime = NOW();
 
         -- Check if the row exists for the current year and month
         SELECT COUNT(*) INTO @row_count
         FROM `appliance_uptime`
         WHERE `appliance_id` = NEW.appliance_id
-        AND MONTH(`date`) = @current_month
-        AND YEAR(`date`) = @current_year;
+        AND `date` = DATE(@current_datetime);
 
         IF @row_count > 0 THEN
             -- Update the existing row
             UPDATE `appliance_uptime`
             SET `uptime` = `uptime` + @seconds_diff
             WHERE `appliance_id` = NEW.appliance_id
-            AND MONTH(`date`) = @current_month
-            AND YEAR(`date`) = @current_year;
+            AND `date` = DATE(@current_datetime);
         ELSE
             -- Insert a new row
             INSERT INTO `appliance_uptime` (`appliance_id`, `date`, `uptime`)
-            VALUES (NEW.appliance_id, CONCAT(@current_year, '-', LPAD(@current_month, 2, '0'), '-01'), @seconds_diff);
+            VALUES (NEW.appliance_id, @current_datetime, @seconds_diff);
         END IF;
     END IF;
 END //
