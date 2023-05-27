@@ -74,7 +74,7 @@ def updatesettings():
             if settingsValue != None:
                 mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
                 mycursor = mydb.cursor()
-                sql = "UPDATE Settings SET " + settingsDatabase[i] + " = '" + settingsValue + "' WHERE settings_id = '" + settingsID + "'"
+                sql = "UPDATE Settings SET " + settingsDatabase[i] + " = '" + settingsValue + "' WHERE settings_id = '" + str(settingsID) + "'"
                 mycursor.execute(sql)
                 mydb.commit()
                 mycursor.close()
