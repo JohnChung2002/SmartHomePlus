@@ -168,7 +168,27 @@
                     },
                     series: [
                         {
-                        name: 'Uptime',
+                        name: 'Appliance 1',
+                        data: []
+                        },
+                        {
+                        name: 'Appliance 2',
+                        data: []
+                        },
+                        {
+                        name: 'Appliance 3',
+                        data: []
+                        },
+                        {
+                        name: 'Appliance 4',
+                        data: []
+                        },
+                        {
+                        name: 'Appliance 5',
+                        data: []
+                        },
+                        {
+                        name: 'Appliance 6',
                         data: []
                         }
                     ],
@@ -182,31 +202,30 @@
                         text: 'Data not available'
                     }
                     };
-                    var chartData = [];
                     for (var i = 0; i < data.length; i++) {
-                    chartData.push({
+                    var applianceIndex = data[i].appliance_id - 1;
+                    options.series[applianceIndex].data.push({
                         x: new Date(data[i].date),
                         y: data[i].uptime
                     });
                     }
-                    options.series[0].data = chartData;
                     var chartElement = document.getElementById('applianceChart');
                     applianceChart = new ApexCharts(chartElement, options);
                     applianceChart.render();
                 } else {
-                    var chartData = [];
                     for (var i = 0; i < data.length; i++) {
-                    chartData.push({
+                    var applianceIndex = data[i].appliance_id - 1;
+                    var chartData = {
                         x: new Date(data[i].date),
                         y: data[i].uptime
-                    });
-                    }
+                    };
                     applianceChart.updateSeries([
-                    {
-                        name: 'Uptime',
-                        data: chartData
-                    }
+                        {
+                        name: 'Appliance ' + (applianceIndex + 1),
+                        data: [chartData]
+                        }
                     ]);
+                    }
                 }
             },
             error: function() {
