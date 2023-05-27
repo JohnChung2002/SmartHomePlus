@@ -97,7 +97,7 @@ class MySQLService:
         FROM environment_data
         WHERE DATE_FORMAT(created_on, '%Y-%m-%d') = %s
         GROUP BY hour
-        """ , (date))
+        """ , (date,))
         result = cursor.fetchall()
         cursor.close()
         return result
