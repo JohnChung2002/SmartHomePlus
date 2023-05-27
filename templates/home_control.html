@@ -220,7 +220,7 @@
                     };
                     for (var i = 0; i < data.length; i++) {
                         var applianceIndex = appliance_obj[data[i].appliance_id];
-                        options.series[applianceIndex].data.push({
+                        options.series[data[i].appliance_id - 1].data.push({
                             x: new Date(data[i].date),
                             y: data[i].uptime
                         });
@@ -257,8 +257,8 @@
                             }
                         ];
                         for (var i = 0; i < data.length; i++) {
-                            var applianceIndex = appliance_obj[[i].appliance_id];
-                            series[applianceIndex].data.push({
+                            var applianceIndex = appliance_obj[data[i].appliance_id];
+                            series[data[i].appliance_id - 1].data.push({
                                 x: new Date(data[i].date),
                                 y: data[i].uptime
                             });
