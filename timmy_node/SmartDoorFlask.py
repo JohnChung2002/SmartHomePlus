@@ -57,9 +57,9 @@ def doorcontrol(control):
 @remote_bp.route("/update_settings", methods=["GET", "POST"])
 def updatesettings():
     # accessing database and table
-    with g.dbconn:
-        data = g.dbconn.get_last_entry("Settings", "settings_id")
-        settingsID = data["settings_id"]
+#     with g.dbconn:
+#         data = g.dbconn.get_last_entry("Settings", "settings_id")
+#         settingsID = data["settings_id"]
     
     settingsHTML = ['door-height', 'in-distance-threshold', 'out-distance-threshold', 'closing-duration', 'detection-duration', 'face-detection-duration']
     settingsDatabase = ['door_height', 'distance_in_detection', 'distance_out_detection', 'time_close', 'time_detection', 'time_face_detection']
