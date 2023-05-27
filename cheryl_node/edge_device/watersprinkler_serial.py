@@ -5,6 +5,7 @@ import time
 import os
 from dotenv import load_dotenv
 import paho.mqtt.client as mqtt
+from mysql_service import MySQLService
 
 device = '/dev/ttyACM0'
 arduino = serial.Serial(device, 9600)
@@ -32,10 +33,8 @@ def on_message(client, userdata, msg):
         message_mqtt = message_mqtt.split(",")
         if len(message_mqtt) == 2 and message_mqtt[0] == "Update Wetness Threshold":
             wetnessThreshold = message_mqtt[1]
-            with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:
-                mycursor = mydb.cursor()
-                mycursor.execute("UPDATE system_data SET status = %s WHERE field = 'wetness_value'", (wetnessThreshold))
-                mydb.commit()
+            with mydb:
+                mydb.update("system_data", ["status"], ["field"], [wetnessThreshold, "wetness_value"])
                 print("Wetness Threshold Updated")
                 mycursor.close()
             message = f"Update|{wetnessThreshold}"
@@ -51,34 +50,24 @@ client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 
 topic = "/cheryl_node"
 client.subscribe(topic)
 client.loop_start()
+mydb = MySQLService(os.getenv("LOCAL_DATABASE_HOST"), os.getenv("LOCAL_DATABASE_USERNAME"), os.getenv("LOCAL_DATABASE_PASSWORD"), os.getenv("LOCAL_DATABASE_NAME")) 
+
 
 while True:
     while(arduino.in_waiting == 0):
         pass
-    with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:
-        # Create a cursor object
-        cur = mydb.cursor()
-        # Execute the SQL query to retrieve data from the database
-        cur.execute("SELECT status FROM system_data WHERE field = 'wetness_value'")
-        # Fetch all the rows returned by the query and print out the value
-        value = cur.fetchall()
-        wetnessThreshold = value[0][0]
-        cur.close()
+    with mydb:
+        data = mydb.get_by_id("system_data", ["field"], ["wetness_value"])
+        wetnessThreshold = data["status"]
         print(wetnessThreshold)
     data = arduino.readline().decode('utf-8').strip()
     print("Received data:", data) # Print received data for debugging
     if (data == "Sprinkler turned ON"):
-        with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:
-            mycursor = mydb.cursor()
-            mycursor.execute("UPDATE system_data SET status = 1 WHERE field = 'water_sprinkler_status'")
-            mydb.commit()
-            mycursor.close()
+        with mydb:
+            mydb.update("system_data", ["status"], ["field"], [1, "water_sprinkler_status"])
     elif (data == "Sprinkler turned OFF"):
-        with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:
-            mycursor = mydb.cursor()
-            mycursor.execute("UPDATE system_data SET status = 0 WHERE field = 'water_sprinkler_status'")
-            mydb.commit()
-            mycursor.close()
+        with mydb:
+            mydb.update("system_data", ["status"], ["field"], [0, "water_sprinkler_status"])
     else:
         readings = data.split(",")
         if len(readings) == 3:
@@ -87,11 +76,8 @@ while True:
             temperature = int(readings[2])
             # Parse sensor readings from received data
             print(wetnessLevel, brightness, temperature)         
-            with mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db") as mydb:      
-                mycursor = mydb.cursor() 
-                mycursor.execute("INSERT INTO environment_data (temperature, brightness, wetness) VALUES (%s, %s, %s)" %(brightness, wetnessLevel, temperature))        
-                mydb.commit()
-                mycursor.close()
+            with mydb:
+                mydb.insert("environment_data", ["temperature", "brightness", "wetness"], [temperature, brightness, wetnessLevel])
             client.publish(topic, f"{wetnessLevel},{brightness},{temperature}")
     time.sleep(0.1)
         
