@@ -5,9 +5,6 @@ import os
 from dotenv import load_dotenv
 from flask import Blueprint, Flask, render_template, redirect, url_for, request, g
 
-def connect_db():
-    return mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
-
 load_dotenv()
 sprinkler_bp = Blueprint('WaterSprinkler', __name__)
 
@@ -23,7 +20,6 @@ def index():
     # Pass the template data into the template index.html and return it 
     return render_template('cheryl_index.html')
 
- 
 # Function to send simple commands 
 @sprinkler_bp.route("/<action>") 
 def action(action): 
@@ -52,7 +48,8 @@ def action(action):
 @sprinkler_bp.route('/submit-form', methods=['POST'])
 def submit_form():
     wetnessVal = int(request.form['wetness'])
-    g.dbconn.update("system_data", ["status"], ["field"], [wetnessVal, "wetness_value"])
+    with g.dbconn:
+        g.dbconn.update("system_data", ["status"], ["field"], [wetnessVal, "wetness_value"])
     g.client.publish(topic, f"Update Wetness Threshold,{wetnessVal}")
 #     return 'Form submitted successfully'
     return redirect(url_for('cheryl_node.WaterSprinkler.index'))
