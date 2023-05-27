@@ -84,12 +84,12 @@ void loop() {
     commandInput = Serial.readString();
 
     if (commandInput == "On") {
-      sprinklerServo.write(180);
-      digitalWrite(ledGreen, LOW);
-      digitalWrite(ledRed, LOW);
-    } else if (commandInput == "Off") {
       sprinklerServo.write(90);
       digitalWrite(ledGreen, HIGH);
+      digitalWrite(ledRed, LOW);
+    } else if (commandInput == "Off") {
+      sprinklerServo.write(180);
+      digitalWrite(ledGreen, LOW);
       digitalWrite(ledRed, LOW);
     } else if (commandInput == "Spray") {
       sprinklerServo.write(0);
