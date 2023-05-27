@@ -211,7 +211,7 @@
                         }
                     };
                     for (var i = 0; i < data.length; i++) {
-                    var applianceIndex = data[i].appliance_id - 1;
+                        var applianceIndex = data[i].appliance_id - 1;
                         options.series[applianceIndex].data.push({
                             x: new Date(data[i].date),
                             y: data[i].uptime

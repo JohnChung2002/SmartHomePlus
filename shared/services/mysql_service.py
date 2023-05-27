@@ -110,4 +110,6 @@ class MySQLService:
         cursor.execute(f"SELECT appliance_id, date, SUM(uptime) AS uptime FROM appliance_uptime WHERE MONTH(date) = %s AND YEAR(date) = %s GROUP BY appliance_id, date", (month, year))
         result = cursor.fetchall()
         cursor.close()
+        if result is None:
+            return []
         return result
