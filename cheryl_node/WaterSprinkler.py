@@ -97,5 +97,5 @@ def submit_form():
     cur.close()
     db.close()
 #     return 'Form submitted successfully'
-    return redirect(url_for('index'))
+    return redirect(url_for('cheryl_node.WaterSprinkler.index'))
 
