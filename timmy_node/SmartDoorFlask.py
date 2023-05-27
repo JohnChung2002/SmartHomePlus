@@ -72,6 +72,7 @@ def updatesettings():
                 with g.dbconn:
                     data = g.dbconn.get_last_entry("Settings", "settings_id")
                     settingsID = data["settings_id"]
+                    print(settingsID)
                     mqtt_dbconn.update("Settings", [settingsDatabase[i]], ["settings_id"], [settingsValue, settingsID])
 #                 mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
 #                 mycursor = mydb.cursor()
