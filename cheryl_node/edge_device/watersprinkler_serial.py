@@ -62,6 +62,7 @@ while True:
     # Fetch all the rows returned by the query and print out the value
     value = cur.fetchall()
     wetnessThreshold = value[0][0]
+    cur.close()
     print(wetnessThreshold)
     data = arduino.readline().decode('utf-8').strip()
     print("Received data:", data) # Print received data for debugging
