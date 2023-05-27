@@ -28,6 +28,7 @@ const int maxTemp = 1023;  // Maximum temperature value from the potentiometer
 // Create a Servo object
 Servo sprinklerServo;
 TimeOut timeout0;
+TimeOut timeout1;
 
 // The pin connected to the servo
 const int servoPin = 11;
@@ -46,6 +47,7 @@ bool isSprinklerOn = false;
 bool previousSprinklerStatus = false;
 bool override = false;
 bool intruder = false;
+bool gonnaRain = false;
 
 void setSprinklerStatus(int position) {
   sprinklerServo.write(position);
@@ -55,6 +57,10 @@ void setSprinklerStatus(int position) {
 
 void endIntruderOverride() {
   override = false;
+}
+
+void endGonnaRain() {
+  gonnaRain = false;
 }
 
 void setup() {
@@ -109,6 +115,9 @@ void loop() {
       sprinklerServo.write(0);
       digitalWrite(ledGreen, LOW);
       digitalWrite(ledRed, HIGH);
+    } else if (commandInput == "GonnaRain") {
+      gonnaRain = true;
+      timeout1.timeOut(60000, endGonnaRain);
     } else if (commandInput.indexOf("Update|") != -1) {
       wetthreshold = commandInput.substring(7).toInt();
     }
@@ -125,21 +134,23 @@ void loop() {
 
   // Check if it is daytime and the moisture level is low
   if (!override) {
-    if (ldrValue > lightthreshold && wetnessValue < wetthreshold) {
-      if (!isSprinklerOn) {
-        // Turn on the sprinkler
-        setSprinklerStatus(90);
-        Serial.println("Sprinkler turned ON");
-        digitalWrite(ledGreen, HIGH);
-        digitalWrite(ledRed, LOW);
-      }
-    } else {
-      if (isSprinklerOn) {
-        // Turn off the sprinkler
-        setSprinklerStatus(180);
-        Serial.println("Sprinkler turned OFF");
-        digitalWrite(ledRed, LOW);
-        digitalWrite(ledGreen, LOW);
+    if (!gonnaRain) {
+      if (ldrValue > lightthreshold && wetnessValue < wetthreshold) {
+        if (!isSprinklerOn) {
+          // Turn on the sprinkler
+          setSprinklerStatus(90);
+          Serial.println("Sprinkler turned ON");
+          digitalWrite(ledGreen, HIGH);
+          digitalWrite(ledRed, LOW);
+        }
+      } else {
+        if (isSprinklerOn) {
+          // Turn off the sprinkler
+          setSprinklerStatus(180);
+          Serial.println("Sprinkler turned OFF");
+          digitalWrite(ledRed, LOW);
+          digitalWrite(ledGreen, LOW);
+        }
       }
     }
   } else {

@@ -47,6 +47,8 @@ def on_message(client, userdata, msg):
         arduino.write(b"On")           
     elif message_mqtt == "Spray at intruder":
         arduino.write(b"Spray")
+    elif message_mqtt == "Gonna Rain":
+        arduino.write(b"GonnaRain")
     else:
         message_mqtt = message_mqtt.split(",")
         if len(message_mqtt) == 2 and message_mqtt[0] == "Update Wetness Threshold":

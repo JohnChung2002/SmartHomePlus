@@ -195,6 +195,8 @@ def every_hour_ten_offset_function():
         color="03b2f8",
         url = "https://dashboard.digitalserver.tech/"
     )
+    if (will_it_rain == 1):
+        client.publish("/cheryl_node", "Gonna Rain")
     webhook.add_embed(embed)
     webhook.execute()
 
