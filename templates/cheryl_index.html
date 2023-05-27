@@ -18,6 +18,7 @@
     <input type="button" value="submit" onclick="submitForm()"><br>
   </form>
   <div>
+    <input type="date" id="date" name="date" onchange="updateEnvironmentData()">
     <div id="environmentChart" class="mt-4"></div>
   </div>
 </div>
@@ -84,11 +85,16 @@
   var environmentChart = null;
 
   function updateEnvironmentData() {
+    //check if date has value if not give it today's date
+    if ($("#date").val() === "") {
+      $("#date").val(new Date().toISOString().slice(0, 10));
+    }
+    date = $("#date").val();
     $.ajax({
       url: "/api/node_1/get-environment-data",
       type: "POST",
       data: {
-        date: new Date().toISOString().slice(0, 10)
+        date: date
       },
       dataType: "json",
       success: function(data) {
