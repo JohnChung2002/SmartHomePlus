@@ -104,3 +104,10 @@ class MySQLService:
         result = cursor.fetchall()
         cursor.close()
         return result
+    
+    def get_appliance_uptime(self, month: int, year: int):
+        cursor = self.connection.cursor(dictionary=True)
+        cursor.execute(f"SELECT * FROM appliance_uptime WHERE MONTH(date) = %s AND YEAR(date) = %s", (month, year))
+        result = cursor.fetchall()
+        cursor.close()
+        return result

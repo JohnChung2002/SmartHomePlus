@@ -89,10 +89,3 @@ class MySQLService:
         cursor.execute(f"UPDATE {table_name} SET {decrement_field} = {decrement_field} - 1 WHERE {self.join_and_param_string(primary_fields)}", data)
         self.connection.commit()
         cursor.close()
-
-    def get_appliance_uptime(self, month: int, year: int):
-        cursor = self.connection.cursor(dictionary=True)
-        cursor.execute(f"SELECT * FROM appliance_uptime WHERE MONTH(date) = %s AND YEAR(date) = %s", (month, year))
-        result = cursor.fetchall()
-        cursor.close()
-        return result
