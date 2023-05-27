@@ -1,4 +1,5 @@
 #include <Servo.h>
+#include <TimeOut.h>
 
 // Pin connected to the potentiometer
 const int potentiometerPin = A0;
@@ -25,7 +26,8 @@ const int minTemp = 0;     // Minimum temperature value from the potentiometer
 const int maxTemp = 1023;  // Maximum temperature value from the potentiometer
 
 // Create a Servo object
-Servo sprinklerServo; 
+Servo sprinklerServo;
+TimeOut timeout0;
 
 // The pin connected to the servo
 const int servoPin = 11;
@@ -42,12 +44,18 @@ int currentLightLevel = 0;
 int sprinklerPosition = 0;
 bool isSprinklerOn = false;
 bool previousSprinklerStatus = false;
+bool override = false;
+bool intruder = false;
 
 void setSprinklerStatus(int position) {
   sprinklerServo.write(position);
   sprinklerPosition = position;
   isSprinklerOn = (position > 0 && position <= 90);
 } 
+
+void endIntruderOverride() {
+  override = false;
+}
 
 void setup() {
   //Initialize serial communication for debugging
@@ -80,18 +88,23 @@ void setup() {
 }
 
 void loop() {
+  TimeOut::handler();
   if (Serial.available() > 0) {
     commandInput = Serial.readString();
 
     if (commandInput == "On") {
+      override = true;
       sprinklerServo.write(90);
       digitalWrite(ledGreen, HIGH);
       digitalWrite(ledRed, LOW);
     } else if (commandInput == "Off") {
+      override = false;
       sprinklerServo.write(180);
       digitalWrite(ledGreen, LOW);
       digitalWrite(ledRed, LOW);
     } else if (commandInput == "Spray") {
+      override = true;
+      intruder = true;
       sprinklerServo.write(0);
       digitalWrite(ledGreen, LOW);
       digitalWrite(ledRed, HIGH);
@@ -110,24 +123,31 @@ void loop() {
   int ldrValue = analogRead(ldrPin);
 
   // Check if it is daytime and the moisture level is low
-  if (ldrValue > lightthreshold && wetnessValue < wetthreshold) {
-    if (!isSprinklerOn) {
-      // Turn on the sprinkler
-      setSprinklerStatus(90);
-      Serial.println("Sprinkler turned ON");
-      digitalWrite(ledGreen, HIGH);
-      digitalWrite(ledRed, LOW);
+  if (!override) {
+    if (ldrValue > lightthreshold && wetnessValue < wetthreshold) {
+      if (!isSprinklerOn) {
+        // Turn on the sprinkler
+        setSprinklerStatus(90);
+        Serial.println("Sprinkler turned ON");
+        digitalWrite(ledGreen, HIGH);
+        digitalWrite(ledRed, LOW);
+      }
+    } else {
+      if (isSprinklerOn) {
+        // Turn off the sprinkler
+        setSprinklerStatus(180);
+        Serial.println("Sprinkler turned OFF");
+        digitalWrite(ledRed, LOW);
+        digitalWrite(ledGreen, LOW);
+      }
     }
   } else {
-    if (isSprinklerOn) {
-      // Turn off the sprinkler
-      setSprinklerStatus(180);
-      Serial.println("Sprinkler turned OFF");
-      digitalWrite(ledRed, LOW);
-      digitalWrite(ledGreen, LOW);
+    if (intruder) {
+      timeout0.timeOut(10000, endIntruderOverride);
+      intruder = false;
     }
-    
   }
+  
 
   delay(100);
   
