@@ -21,29 +21,40 @@
         <input type="submit" value="Submit">
     </form>
     <br/>
-    <form id="myForm2" action="/api/node_2/remote_trigger" method="POST">
-        <fieldset>
-            <legend>Remote Appliance Control</legend>
-            <label for="appliance_id">Appliance ID:</label>
-            <select id="appliance_id" name="appliance_id" required>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-            </select>
-            <br>
-            <label for="status">Status:</label>
-            <select id="status" name="status" required>
-                <option value="1">On</option>
-                <option value="0">Off</option>
-            </select>
-            <br>
-        </fieldset>
-        <br>
-        <input type="submit" value="Submit">
-    </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                <p>Room 1 Light</p>
+                <button type="button" class="btn btn-primary" onclick="sendData(1, 1)">On</button>
+                <button type="button" class="btn btn-secondary" onclick="sendData(1, 0)">Off</button>
+            </div>
+            <div class="col-md-2">
+                <p>Corridor Light</p>
+                <button type="button" class="btn btn-primary" onclick="sendData(2, 1)">On</button>
+                <button type="button" class="btn btn-secondary" onclick="sendData(2, 0)">Off</button>
+            </div>
+            <div class="col-md-2">
+                <p>Room 2 Light</p>
+                <button type="button" class="btn btn-primary" onclick="sendData(3, 1)">On</button>
+                <button type="button" class="btn btn-secondary" onclick="sendData(3, 0)">Off</button>
+            </div>
+            <div class="col-md-2">
+                <p>Room 1 Aircon</p>
+                <button type="button" class="btn btn-primary" onclick="sendData(4, 1)">On</button>
+                <button type="button" class="btn btn-secondary" onclick="sendData(4, 0)">Off</button>
+            </div>
+            <div class="col-md-2">
+                <p>Room 2 Aircon</p>
+                <button type="button" class="btn btn-primary" onclick="sendData(5, 1)">On</button>
+                <button type="button" class="btn btn-secondary" onclick="sendData(5, 0)">Off</button>
+            </div>
+            <div class="col-md-2">
+                <p>Ventilating Fan</p>
+                <button type="button" class="btn btn-primary" onclick="sendData(6, 1)">On</button>
+                <button type="button" class="btn btn-secondary" onclick="sendData(6, 0)">Off</button>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -70,25 +81,27 @@
       });
     });
 
-    document.getElementById("myForm2").addEventListener("submit", function(event) {
-        event.preventDefault(); // Prevent form submission
-        
-        var form = event.target;
-        var formData = new FormData(form);
-        
-        fetch(form.action, {
-        method: form.method,
-        body: formData
+    function sendData(appliance_id, status) {
+        var formData = new FormData();
+        formData.append("appliance_id", appliance_id);
+        formData.append("status", status);
+
+        fetch("/api/node_2/remote_trigger", {
+            method: "POST",
+            body: formData
         })
-        .then(response)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.text();
+        })
         .then(data => {
-        // Request successful, do something with the response
-        alert(data)
+            alert(data);
         })
         .catch(error => {
-        // Handle any errors
-        console.error(error);
+            console.error("There was a problem with the fetch operation:", error);
         });
-    });
+    }
 </script>
 {% endblock %}
