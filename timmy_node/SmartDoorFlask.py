@@ -67,7 +67,7 @@ def updatesettings():
             
             if settingsValue != None:
                 mycursor = mydb.cursor()
-                sql = "UPDATE Settings SET " + settingsDatabase[i] + " = '" + settingsValue + "' WHERE settings_id = '1'"
+                sql = "UPDATE Settings SET " + settingsDatabase[i] + " = '" + settingsValue + "' WHERE settings_id = '3'"
                 mycursor.execute(sql)
                 mydb.commit()
                 mycursor.close()
