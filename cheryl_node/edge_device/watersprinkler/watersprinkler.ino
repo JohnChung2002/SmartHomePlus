@@ -24,17 +24,36 @@ int buttonStatus = 0;
 const int minTemp = 0;     // Minimum temperature value from the potentiometer
 const int maxTemp = 1023;  // Maximum temperature value from the potentiometer
 
-Servo myServo; // Create a Servo object
+// Create a Servo object
+Servo sprinklerServo; 
 
-int threshold = 500; // Set the threshold value of the water sensor
+// The pin connected to the servo
+const int servoPin = 11;
+
+int wetthreshold = 500; // Set the threshold value of the water sensor
+int lightthreshold = 400; // Set the threshold value of the light sensor
 
 unsigned int pinStatus = 0;
 
+
+const int desiredMoisture = 30;  // Desired moisture level in percentage
+
+int currentMoisture = 0;
+int currentLightLevel = 0;
+int sprinklerPosition = 0;
+bool isSprinklerOn = false;
+bool previousSprinklerStatus = false;
+
+
 void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(9600);  // Initialize serial communication for debugging
-  myServo.attach(11); // Attach the servo to pin 3
-  myServo.write(180); // Starts from this position
+  //Initialize serial communication for debugging
+  
+  Serial.begin(9600); 
+  //Attach the servo pin
+  sprinklerServo.attach(servoPin); 
+
+  // Initialize the servo position
+  setSprinklerStatus(180);
 
   // Initialize the LED pin as an output
   pinMode(ledRed, OUTPUT);
@@ -53,113 +72,86 @@ void setup() {
   // Set the button pin as an input
   pinMode(buttonPin, INPUT_PULLUP); 
 
-
+  
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+
   if (Serial.available() > 0) {
     pinStatus = Serial.parseInt();
-    Serial.println(pinStatus);
-
+  
     switch (pinStatus){
       case 1:
         myServo.write(180);
+        digitalWrite(ledGreen, LOW);
+        digitalWrite(ledRed, LOW);
         break;
       case 2:
         myServo.write(90);
+        digitalWrite(ledGreen, HIGH);
+        digitalWrite(ledRed, LOW);
         break;
       case 3:
         myServo.write(0);
-        break;
-      case 4:
-        myServo.write(180);
         digitalWrite(ledGreen, LOW);
-        digitalWrite(ledRed, LOW);
-        break;
-      case 5:
-        myServo.write(90);
-        digitalWrite(ledGreen, HIGH);
         digitalWrite(ledRed, HIGH);
         break;
-      case 6:
-        myServo.write(90);
-        digitalWrite(ledRed, LOW);
-        digitalWrite(ledGreen, HIGH);
-        break;
-      case 7:
-        myServo.write(90);
-        digitalWrite(ledRed, HIGH);
-        digitalWrite(ledGreen, LOW);
-        break;
-      default:
-        break;                            
-    }
-  }
+
 
   // Read the analog value from the potentiometer
   int potValue = analogRead(potentiometerPin);
 
   // Map the analog value to the temperature range
   int temperature = map(potValue, minTemp, maxTemp, -20, 50);
-  Serial.print(temperature);
-
-  Serial.print(",");
-
-
-  // Read the analog value from the water sensor
-  int wetnessValue = analogRead(waterSensorPin);
-  Serial.print(wetnessValue);
-
-
-  Serial.print(",");
-
-  // Read the analog value from the LDR
-  int ldrValue = analogRead(ldrPin);
-  Serial.println(ldrValue);
-//  Serial.print(",");
-
-
-  // read the state of the pushbutton value:
-//  buttonPress();
-//  Serial.print("Button State: ");
-//  Serial.println(buttonState);
-
-
-  // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
-//  if (buttonState == LOW) {
-//    // turn LED on:
-//    digitalWrite(10, HIGH);
-//    Serial.println(buttonState);
-//  } else {
-//    // turn LED off:
-//    digitalWrite(10, LOW);    
-//    Serial.println(buttonState);
-//  }
   
-  delay(1000);  // Delay for stability
+  // Read the moisture level from the water sensor
+  int wetnessValue = analogRead(waterSensorPin);
 
+  // Read the light level from the LDR
+  int ldrValue = analogRead(ldrPin);
 
-}
-
-void buttonPress() {
-  int reading = digitalRead(buttonPin);
-  if (reading == 0 && buttonStatus == 0) {
-    buttonState = !buttonState;
-    //Status Changed
-    buttonStatus = 1;
-  }
-  if (reading == 1 && buttonStatus == 1) {
-    buttonStatus = 0;
-  }
-}
-
-
-void stableDelay(int interval) {
-  long startDelayTime = millis();
-  while (true) {
-    if (millis() - startDelayTime >= interval) {
-      return;
+  // Check if it is daytime and the moisture level is low
+  if (ldrValue > lightthreshold && wetnessValue < wetthreshold) {
+    if (!isSprinklerOn) {
+      // Turn on the sprinkler
+      setSprinklerStatus(90);
+      Serial.print("Sprinkler turned ON");
+      Serial.print(",");
+      digitalWrite(ledGreen, HIGH);
+      digitalWrite(ledRed, LOW);
     }
+  } else {
+    if (isSprinklerOn) {
+      // Turn off the sprinkler
+      setSprinklerStatus(180);
+      Serial.print("Sprinkler turned OFF");
+      Serial.print(",");
+      digitalWrite(ledRed, LOW);
+      digitalWrite(ledGreen, LOW);
+    }
+    
   }
+  
+
+  // Check if the sprinkler status has changed
+  if (previousSprinklerStatus != isSprinklerOn) {
+    Serial.print(wetnessValue);
+    Serial.print(",");
+    Serial.print(ldrValue);
+    Serial.print(",");
+    Serial.println(temperature);
+
+    // Update the previous sprinkler status
+    previousSprinklerStatus = isSprinklerOn;
+  }
+
+  // Wait for a short interval before checking again
+  delay(1000);
 }
+
+
+void setSprinklerStatus(int position) {
+  sprinklerServo.write(position);
+  sprinklerPosition = position;
+  isSprinklerOn = (position > 0 && position <= 90);
+} 
