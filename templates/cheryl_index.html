@@ -1,103 +1,64 @@
-<!DOCTYPE html> 
-    <head> 
-        <title>Smart Water Sprinkler</title> 
-        <style>
-          table {
-            border-collapse: collapse; 
-            margin-left: auto;
-            margin-right: auto;
-          }
-          th, td {
-            text-align: left;
-            padding: 8px;
-          }
-          th {
-            background-color: #ffc0cb;
-            color: white;
-          }
-          tr:nth-child(even){background-color: #f2f2f2}
-          button {
-            background-color: #ffc0cb; /* Pink */
-            border: none;
-            color: white;
-            padding: 15px 32px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 12px;
-          }
-          body {
-            text-align: center;
-          }
-          input[type=number]{
-            font-size: 16px;
-            box-sizing: border-box;
-            padding:10px 18px;
-            margin: 8px 0;
-            width: 100px;  
-            border: 3px solid #ccc;
-            -webkit-transition: 0.5s;
-            transition: 0.5s;
-            outline: none; 
-                  
-          }
-          input[type=number]:focus {
-            border: 3px solid #ffc0cb;
-          } 
-          label {
-            padding: 12px 12px 12px 0;
-            display: inline-block;
-            font-size: 20px;
-            font-weight: bold;
-          }
+{% extends 'layout.html' %}
 
-          input[type=submit] {
-            width: 100px;
-            background-color: #ffc0cb;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 12px 20px;
-            margin: 4px 0;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-          }
-          h3 {
-            font-weight: 20px;
-          }
-          h1 {
-            padding: 10px;
-          }
+{% block title %}Smart Water Sprinkler{% endblock %}
 
-        </style>
-        <script>
-          function showMessage() {
-            alert("Form submitted successfully");
-          }
-        </script>
-    </head> 
+{% block content %}
+<h1> Smart Water Sprinkler </h1>
 
-    <body> 
-        <h1> Smart Water Sprinkler </h1>
+<button class="btn btn-primary" onclick="turnOff()">Turn Off</button>
+<button class="btn btn-primary" onclick="turnOn()">Turn On</button>
+<button class="btn btn-danger" onclick="intruder()">Spray at Intruder</button>
 
-        <h3> Water Sprinkler Status:</h3> 
-        <a href="/api/node_1/action1" ><button class="button button1">Turn Off</button></a>
-        <a href="/api/node_1/action2" ><button class="button button2">Turn On</button></a>
-        <a href="/api/node_1/action3" ><button class="button button3">Spray at Intruder</button></a>
-         
+<h3>Adjust the wetness threshold to turn on the water sprinkler:</h3>
+<h3>You can enter any value between 100 to 500</h3>
+<form action="/api/node_1/submit-form" method="POST">
+  <label for="wetness value">New Wetness Threshold:</label>
+  <input type="number" id="wetness" name="wetness" placeholder="0"><br><br>
+  <input type="submit" value="SUBMIT" onclick="showMessage()"><br>
+</form>
+<div>
+  <div id="healthChart" class="mt-4"></div>
+</div>
+{% endblock %}
 
-        <h3>Adjust the wetness threshold to turn on the water sprinkler:</h3>
-        <h3>You can enter any value between 100 to 500</h3>
-        <form action="/api/node_1/submit-form" method="POST">
-          <label for="wetness value">New Wetness Threshold:</label>
-          <input type="number" id="wetness" name="wetness" placeholder="0"><br><br>
-          <input type="submit" value="SUBMIT" onclick="showMessage()"><br>
-        </form>
+{% block scripts %}
+<script>
+  function turnOff() {
+    $.ajax({
+      url: "/api/node_1/action1",
+      type: "GET",
+      success: function() {
+        alert("Water sprinkler successfully turned off!");
+      },
+      error: function() {
+        alert("Water sprinkler failed to turn off!");
+      }
+    });
+  }
+  function turnOn() {
+    $.ajax({
+      url: "/api/node_1/action2",
+      type: "GET",
+      success: function() {
+        alert("Water sprinkler successfully turned on!");
+      },
+      error: function() {
+        alert("Water sprinkler failed to turn on!");
+      }
+    });
+  }
+  function intruder() {
+    $.ajax({
+      url: "/api/node_1/action3",
+      type: "GET",
+      success: function() {
+        alert("Water sprinkler successfully sprayed at intruder!");
+      },
+      error: function() {
+        alert("Water sprinkler failed to spray at intruder!");
+      }
+    });
+  }
+</script>
 
-    </body> 
-</html> 
+{% endblock %}

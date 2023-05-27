@@ -54,3 +54,8 @@ def submit_form():
 #     return 'Form submitted successfully'
     return redirect(url_for('cheryl_node.WaterSprinkler.index'))
 
+@sprinkler_bp.route('/get-environment-data')
+def get_environment_data():
+    with g.dbconn:
+        result = g.dbconn.get_env_data()
+    return result

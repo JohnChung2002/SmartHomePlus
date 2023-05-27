@@ -86,3 +86,10 @@ class MySQLService:
         cursor.execute(f"UPDATE {table_name} SET {decrement_field} = {decrement_field} - 1 WHERE {self.join_param_string(primary_fields)}", data)
         self.connection.commit()
         cursor.close()
+
+    def get_env_data(self):
+        cursor = self.connection.cursor(dictionary=True)
+        cursor.execute("SELECT DATE_FORMAT(created_on, '%Y-%m-%d %H:00:00') AS hour, AVG(temperature) AS avg_temperature, AVG(brightness) AS avg_brightness, AVG(wetness) AS avg_wetness FROM environment_data GROUP BY hour")
+        result = cursor.fetchall()
+        cursor.close()
+        return result
