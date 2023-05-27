@@ -43,3 +43,22 @@ def validate_john_aircon_temp(f):
             return "Invalid appliance_id", 400
         return f(*args, **kwargs)
     return decorated_function
+
+def validate_john_month_year(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        month = request.form.get('month')
+        year = request.form.get('year')
+        if month is None or year is None or month == "" or year == "":
+            return generate_missing_error(["month", "year"]), 400
+        try:
+            month = int(month)
+            year = int(year)
+        except:
+            return "Invalid month or year", 400
+        if month < 1 or month > 12:
+            return "Invalid month", 400
+        if year < 0:
+            return "Invalid year", 400
+        return f(*args, **kwargs)
+    return decorated_function

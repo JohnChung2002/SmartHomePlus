@@ -62,3 +62,12 @@ def remote_aircon_temp():
         return "Success", 200
     except:
         return "Error", 500
+
+@remote_bp.route('/get_appliance_uptime', methods=['POST'])
+@auth_middleware
+@validate_john_month_year
+def get_appliance_uptime():
+    month = int(request.form.get('month'))
+    year = int(request.form.get('year'))
+    with g.dbconn:
+        return g.dbconn.get_appliance_uptime(month, year)
