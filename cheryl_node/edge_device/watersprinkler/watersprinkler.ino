@@ -105,6 +105,7 @@ void loop() {
     } else if (commandInput == "Spray") {
       override = true;
       intruder = true;
+      timeout0.cancel();
       sprinklerServo.write(0);
       digitalWrite(ledGreen, LOW);
       digitalWrite(ledRed, HIGH);
