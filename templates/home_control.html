@@ -222,20 +222,40 @@
                     applianceChart.render();
                 } else {
                     if (data.length > 0) {
-                        var chartList = []
+                        series = [
+                            {
+                            name: 'Appliance 1',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 2',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 3',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 4',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 5',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 6',
+                            data: []
+                            }
+                        ]
                         for (var i = 0; i < data.length; i++) {
                             var applianceIndex = data[i].appliance_id - 1;
-                            chartList.push({
+                            series[applianceIndex].data.push({
                                 x: new Date(data[i].date),
                                 y: data[i].uptime
                             });
-                            applianceChart.appendSeries([
-                                {
-                                    name: 'Appliance ' + (applianceIndex + 1),
-                                    data: chartList
-                                }
-                            ]);
                         }
+                        applianceChart.updateSeries(series);
                     } else {
                         applianceChart.updateSeries([]);
                     }
