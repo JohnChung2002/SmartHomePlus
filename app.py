@@ -79,11 +79,11 @@ def on_publish(client, data, result):
     pass
 
 def on_message(client, userdata, msg):
-    print("Received message from MQTT broker: ", msg.payload.decode())
+    message_mqtt = msg.payload.decode()
     if (msg.topic not in ["/cheryl_node", "/john_node", "/timmy_node"]):
-        print("Received unknown topic message: ", msg.payload.decode())
+        print("Received unknown topic message: ", message_mqtt)
     if msg.topic == "/john_node":
-        json_message = ast.literal_eval(msg.payload.decode())
+        json_message = ast.literal_eval(message_mqtt)
         if (json_message["sender"] == "Edge"):
             if (json_message["title"] == "Lights"):
                 with mqtt_dbconn:
@@ -104,13 +104,12 @@ def on_message(client, userdata, msg):
                         mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id"], [int(json_message["uptime"]), json_message["appliance_id"]])
             print("Received John's MQTT message: ", msg.payload.decode())         
     if msg.topic == "/cheryl_node":
-        message_mqtt = msg.payload.decode()
-        wetness, light_intensity, temperature = message_mqtt.split(",")
-        with mqtt_dbconn:
-            mqtt_dbconn.insert("systemData", ["temperature", "wetness", "light_intensity"], [temperature, wetness, light_intensity])
+        if ("," in message_mqtt):
+            wetness, light_intensity, temperature = message_mqtt.split(",")
+            with mqtt_dbconn:
+                mqtt_dbconn.insert("systemData", ["temperature", "wetness", "light_intensity"], [temperature, wetness, light_intensity])
     if msg.topic == "/timmy_node":
-        if (json_message["sender"] == "Edge"):
-            print("Received Timmy's MQTT message: ", msg.payload.decode())
+        print("Received Timmy's MQTT message: ", message_mqtt)
 
 # @app.template_filter('config_name_to_id')
 # def config_name_to_id(config_name):
@@ -213,7 +212,7 @@ hour_timer = None
 if __name__ == "__main__":
     client = mqtt.Client()
     mqtt_dbconn = MySQLService(os.getenv("CLOUD_DATABASE_HOST"), os.getenv("CLOUD_DATABASE_USERNAME"), os.getenv("CLOUD_DATABASE_PASSWORD"), os.getenv("CLOUD_DATABASE_NAME"))
-    client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
+    client.username_pw_set(username=os.getenv("CLOUD_MQTT_USERNAME"), password=os.getenv("CLOUD_MQTT_PASSWORD")) # type: ignore
     client.on_connect = on_connect 
     client.on_publish = on_publish
     client.on_message = on_message
