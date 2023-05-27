@@ -58,4 +58,5 @@ def submit_form():
 def get_environment_data():
     with g.dbconn:
         result = g.dbconn.get_env_data()
+    print(result)
     return result
