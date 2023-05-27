@@ -58,6 +58,12 @@ def doorcontrol(control):
 def updatesettings():
     # accessing database and table
     mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
+    mycursor = mydb.cursor()
+    mycursor.execute("SELECT settings_id FROM Settings")
+    settings = mycursor.fetchone()
+    mycursor.close()
+    
+    settingsID = settings[0]
     settingsHTML = ['door-height', 'in-distance-threshold', 'out-distance-threshold', 'closing-duration', 'detection-duration', 'face-detection-duration']
     settingsDatabase = ['door_height', 'distance_in_detection', 'distance_out_detection', 'time_close', 'time_detection', 'time_face_detection']
     
@@ -66,8 +72,9 @@ def updatesettings():
             settingsValue = request.form.get(settingsHTML[i])
             
             if settingsValue != None:
+                mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
                 mycursor = mydb.cursor()
-                sql = "UPDATE Settings SET " + settingsDatabase[i] + " = '" + settingsValue + "' WHERE settings_id = '3'"
+                sql = "UPDATE Settings SET " + settingsDatabase[i] + " = '" + settingsValue + "' WHERE settings_id = '" + settingsID + "'"
                 mycursor.execute(sql)
                 mydb.commit()
                 mycursor.close()
@@ -83,6 +90,7 @@ def profile():
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM Profile")
     profile = mycursor.fetchall()
+    mycursor.close()
     
     templateData = {
                     'profile' : profile
