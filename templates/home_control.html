@@ -222,16 +222,17 @@
                     applianceChart.render();
                 } else {
                     if (data.length > 0) {
+                        var chartList = []
                         for (var i = 0; i < data.length; i++) {
                             var applianceIndex = data[i].appliance_id - 1;
-                            var chartData = {
+                            chartList.append({
                                 x: new Date(data[i].date),
                                 y: data[i].uptime
-                            };
+                            });
                             applianceChart.appendSeries([
                                 {
                                     name: 'Appliance ' + (applianceIndex + 1),
-                                    data: [chartData]
+                                    data: chartList
                                 }
                             ]);
                         }
