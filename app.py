@@ -120,7 +120,7 @@ def on_message(client, userdata, msg):
             inHouse = timmyNodeMessage[7]
             
             with mqtt_dbconn:
-                mqtt_dbconn.insert("history", ["profile_id", "time", "date", "height", "weight", "bmi", "in_house"], [profileID, currentTime, currentDate, userHeight, potentiometerWeight, bmi, inHouse])
+                mqtt_dbconn.insert("History", ["profile_id", "time", "date", "height", "weight", "bmi", "in_house"], [profileID, currentTime, currentDate, userHeight, potentiometerWeight, bmi, inHouse])
         if timmyNodeMessage[0] == "profile":
             profileID = timmyNodeMessage[1]
             userHeight = timmyNodeMessage[2]
@@ -129,17 +129,17 @@ def on_message(client, userdata, msg):
             inHouse = timmyNodeMessage[5]
             
             with mqtt_dbconn:
-                mqtt_dbconn.update("profile", ["height"], ["profile_id"], [userHeight, profileID])
-                mqtt_dbconn.update("profile", ["weight"], ["profile_id"], [potentiometerWeight, profileID])
-                mqtt_dbconn.update("profile", ["bmi"], ["profile_id"], [bmi, profileID])
-                mqtt_dbconn.update("profile", ["in_house"], ["profile_id"], [inHouse, profileID])
+                mqtt_dbconn.update("Profile", ["height"], ["profile_id"], [userHeight, profileID])
+                mqtt_dbconn.update("Profile", ["weight"], ["profile_id"], [potentiometerWeight, profileID])
+                mqtt_dbconn.update("Profile", ["bmi"], ["profile_id"], [bmi, profileID])
+                mqtt_dbconn.update("Profile", ["in_house"], ["profile_id"], [inHouse, profileID])
         if timmyNodeMessage[0] == "stranger":
             currentTime = timmyNodeMessage[1]
             currentDate = timmyNodeMessage[2]
             strangerMessage = timmyNodeMessage[3]
             
             with mqtt_dbconn:
-                mqtt_dbconn.insert("stranger", ["time", "date", "status"], [currentTime, currentDate, strangerMessage])
+                mqtt_dbconn.insert("Stranger", ["time", "date", "status"], [currentTime, currentDate, strangerMessage])
         print("Received Timmy's MQTT message: ", message_mqtt)
 
 # @app.template_filter('config_name_to_id')
