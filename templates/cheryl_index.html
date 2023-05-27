@@ -15,20 +15,18 @@
   </div>
 
   <div class="row justify-content-center mb-4">
-    <div class="col-md-12">
-      <h3>Adjust the wetness threshold to turn on the water sprinkler:</h3>
-      <form id="wetness-form">
-        <div class="row">
-          <div class="col-md-8">
-            <label for="wetness">New Wetness Threshold (You can enter any value between 100 to 500):</label>
-            <input type="number" id="wetness" name="wetness" class="form-control" placeholder="0">
-          </div>
-          <div class="col-md-4 d-flex align-items-end">
-            <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
-          </div>
+    <h3 class="text-center">Adjust the wetness threshold to turn on the water sprinkler:</h3>
+    <form id="wetness-form">
+      <div class="d-flex justify-content-center">
+        <div>
+          <label for="wetness">New Wetness Threshold (You can enter any value between 100 to 500):</label>
+          <input type="number" id="wetness" name="wetness" class="form-control" placeholder="0">
         </div>
-      </form>
-    </div>
+        <div class="ms-2 d-flex align-items-center">
+          <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+        </div>
+      </div>
+    </form>
   </div>
 
   <div class="row justify-content-start">
