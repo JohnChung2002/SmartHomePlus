@@ -51,7 +51,7 @@ def action(action):
 #  This is to change the threshold value of the brightness
 @sprinkler_bp.route('/submit-form', methods=['POST'])
 def submit_form():
-    wetnessVal = int(request.form['wetnessVal'])
+    wetnessVal = int(request.form['wetness'])
     # Connect to the database
     db = connect_db()
 
