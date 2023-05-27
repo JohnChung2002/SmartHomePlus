@@ -162,52 +162,69 @@
             success: function(data) {
                 if (applianceChart === null) {
                     var options = {
-                    chart: {
-                        type: 'line',
-                        height: 350
-                    },
-                    series: [
-                        {
-                        name: 'Appliance 1',
-                        data: []
+                        chart: {
+                            type: 'line',
+                            height: 350
                         },
-                        {
-                        name: 'Appliance 2',
-                        data: []
+                        series: [
+                            {
+                            name: 'Appliance 1',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 2',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 3',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 4',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 5',
+                            data: []
+                            },
+                            {
+                            name: 'Appliance 6',
+                            data: []
+                            }
+                        ],
+                        xaxis: {
+                            type: 'datetime'
                         },
-                        {
-                        name: 'Appliance 3',
-                        data: []
+                        yaxis: {
+                            min: 0,
+                            title: {
+                                text: 'uptime (secs)',
+                                style: {
+                                    fontSize: '14px',
+                                    fontWeight: 600,
+                                    fontFamily: 'Helvetica, Arial, sans-serif',
+                                    color: '#263238'
+                                }
+                            },
+                            labels: {
+                                formatter: function (value) {
+                                    return value + ' (secs)';
+                                }
+                            }
                         },
-                        {
-                        name: 'Appliance 4',
-                        data: []
+                        noData: {
+                            text: 'Data not available'
                         },
-                        {
-                        name: 'Appliance 5',
-                        data: []
-                        },
-                        {
-                        name: 'Appliance 6',
-                        data: []
+                        legend: {
+                            position: 'top'
                         }
-                    ],
-                    xaxis: {
-                        type: 'datetime'
-                    },
-                    yaxis: {
-                        min: 0
-                    },
-                    noData: {
-                        text: 'Data not available'
-                    }
                     };
                     for (var i = 0; i < data.length; i++) {
                     var applianceIndex = data[i].appliance_id - 1;
-                    options.series[applianceIndex].data.push({
-                        x: new Date(data[i].date),
-                        y: data[i].uptime
-                    });
+                        options.series[applianceIndex].data.push({
+                            x: new Date(data[i].date),
+                            y: data[i].uptime
+                        });
                     }
                     var chartElement = document.getElementById('applianceChart');
                     applianceChart = new ApexCharts(chartElement, options);
