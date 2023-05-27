@@ -23,11 +23,22 @@ def on_message(client, userdata, msg):
     message_mqtt = msg.payload.decode()
     print(message_mqtt)
     if message_mqtt == "Sprinkler Off":
-        arduino.write(b"1")
+        arduino.write(b"Off")
     elif message_mqtt == "Sprinkler On":
-        arduino.write(b"2")           
+        arduino.write(b"On")           
     elif message_mqtt == "Spray at intruder":
-        arduino.write(b"3")
+        arduino.write(b"Spray")
+    else:
+        message_mqtt = message_mqtt.split(",")
+        if len(message_mqtt) == 2 and message_mqtt[0] == "Update Wetness Threshold":
+            wetnessThreshold = message_mqtt[1]
+            with mydb:
+                mycursor = mydb.cursor()
+                mycursor.execute("UPDATE system_data SET wetness_value = %s", (wetnessThreshold))
+                mydb.commit()
+                print("Wetness Threshold Updated")
+            message = f"Update|{wetnessThreshold}"
+            arduino.write(str.encode(message))
     time.sleep(1)
  
 client = mqtt.Client()
@@ -36,78 +47,48 @@ client.on_connect = on_connect
 client.on_publish = on_publish
 client.on_message = on_message
 client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
-
 topic = "/cheryl_node"
 client.subscribe(topic)
-
 client.loop_start()
 
 mydb = mysql.connector.connect(host="localhost", user="hp", password="0123", database="waterSprinkler_db")
-
 while True:
-
     while(arduino.in_waiting == 0):
         pass
-
     # Create a cursor object
     cur = mydb.cursor()
-
     # Execute the SQL query to retrieve data from the database
-    cur.execute("SELECT wetnessValue FROM settingTable")
-
+    cur.execute("SELECT wetness_value FROM system_data")
     # Fetch all the rows returned by the query and print out the value
     value = cur.fetchall()
     wetnessThreshold = value[0][0]
     print(wetnessThreshold)
-    
     data = arduino.readline().decode('utf-8').strip()
     print("Received data:", data) # Print received data for debugging
-
-    # Parse sensor readings from received data
-    readings = data.split(",")
-    
-    if len(readings) == 4:
+    if (data == "Sprinkler turned ON"):
+        with mydb:
+            mycursor = mydb.cursor()
+            mycursor.execute("UPDATE system_data SET water_sprinkler_status = 1")
+            mydb.commit()
+            mycursor.close()
+    elif (data == "Sprinkler turned OFF"):
+        with mydb:
+            mycursor = mydb.cursor()
+            mycursor.execute("UPDATE system_data SET water_sprinkler_status = 0")
+            mydb.commit()
+            mycursor.close()
+    else:
+        readings = data.split(",")
+        if len(readings) == 3:
+            wetnessLevel = 0 if readings[0] == "" else int(readings[0])
+            brightness = int(readings[1])  
+            temperature = int(readings[2])
+            # Parse sensor readings from received data
+            print(wetnessLevel, brightness, temperature)         
+            with mydb:      
+                mycursor = mydb.cursor() 
+                mycursor.execute("INSERT INTO environment_data (temperature, brightness, wetness) VALUES (%s, %s, %s)" %(brightness, wetnessLevel, temperature))        
+                mydb.commit()
+                mycursor.close()
+            client.publish(topic, f"{wetnessLevel},{brightness},{temperature}")
         
-        systemstat = str(readings[0])
-        wetnessLevel = readings[1]
-        if wetnessLevel == "":
-            wetnessLevel = 0
-        else:
-            wetnessLevel = int(readings[1])
-            
-        brightness = int(readings[2])
-        
-        temperature = int(readings[3])
-        
-        if wetnessLevel < wetnessThreshold :
-            status = "Soil is dry"            
-        else:
-            status = "Soil is moist"
-            
-        if brightness < 450:
-            status2 = "Nighttime"            
-        else:
-            status2 = "Daytime"
-            
-        if temperature < 15:
-            status3 = "Cool day"            
-        else:
-            status3 = "Hot day"
-               
-                    
-    print(wetnessLevel, brightness, temperature)    
-    print("Soil Moisture:", status, "Time of Day:", status2, "Temperature of Day:", status3)
-    print(systemstat)
-        
-    
-    
-    with mydb:      
-
-        mycursor = mydb.cursor() 
-        mycursor.execute("INSERT INTO systemData (wetnessValue, soilMoisture, brightness, timeOfDay, temperature, tempStatus, sprinklerStatus) VALUES (%s, '%s', %s, '%s', %s, '%s', '%s')" %(wetnessLevel, status, brightness, status2, temperature, status3, systemstat))        
-    
-        mydb.commit()
-        mycursor.close()
-
-    client.publish(topic, f"{wetnessLevel},{brightness},{temperature}")
- 

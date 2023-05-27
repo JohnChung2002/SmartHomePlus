@@ -115,8 +115,7 @@ void loop() {
     if (!isSprinklerOn) {
       // Turn on the sprinkler
       setSprinklerStatus(90);
-      Serial.print("Sprinkler turned ON");
-      Serial.print(",");
+      Serial.println("Sprinkler turned ON");
       digitalWrite(ledGreen, HIGH);
       digitalWrite(ledRed, LOW);
     }
@@ -124,23 +123,23 @@ void loop() {
     if (isSprinklerOn) {
       // Turn off the sprinkler
       setSprinklerStatus(180);
-      Serial.print("Sprinkler turned OFF");
-      Serial.print(",");
+      Serial.println("Sprinkler turned OFF");
       digitalWrite(ledRed, LOW);
       digitalWrite(ledGreen, LOW);
     }
     
   }
-  
 
-  // Check if the sprinkler status has changed
-  if (previousSprinklerStatus != isSprinklerOn) {
+  delay(100);
+  
     Serial.print(wetnessValue);
     Serial.print(",");
     Serial.print(ldrValue);
     Serial.print(",");
     Serial.println(temperature);
 
+  // Check if the sprinkler status has changed
+  if (previousSprinklerStatus != isSprinklerOn) {
     // Update the previous sprinkler status
     previousSprinklerStatus = isSprinklerOn;
   }
