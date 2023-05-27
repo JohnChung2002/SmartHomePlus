@@ -44,6 +44,11 @@ int sprinklerPosition = 0;
 bool isSprinklerOn = false;
 bool previousSprinklerStatus = false;
 
+void setSprinklerStatus(int position) {
+  sprinklerServo.write(position);
+  sprinklerPosition = position;
+  isSprinklerOn = (position > 0 && position <= 90);
+} 
 
 void setup() {
   //Initialize serial communication for debugging
@@ -82,20 +87,22 @@ void loop() {
   
     switch (pinStatus){
       case 1:
-        myServo.write(180);
+        sprinklerServo.write(180);
         digitalWrite(ledGreen, LOW);
         digitalWrite(ledRed, LOW);
         break;
       case 2:
-        myServo.write(90);
+        sprinklerServo.write(90);
         digitalWrite(ledGreen, HIGH);
         digitalWrite(ledRed, LOW);
         break;
       case 3:
-        myServo.write(0);
+        sprinklerServo.write(0);
         digitalWrite(ledGreen, LOW);
         digitalWrite(ledRed, HIGH);
         break;
+    }
+  }
 
 
   // Read the analog value from the potentiometer
@@ -148,10 +155,3 @@ void loop() {
   // Wait for a short interval before checking again
   delay(1000);
 }
-
-
-void setSprinklerStatus(int position) {
-  sprinklerServo.write(position);
-  sprinklerPosition = position;
-  isSprinklerOn = (position > 0 && position <= 90);
-} 
