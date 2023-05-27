@@ -3,21 +3,23 @@
 {% block title %}Smart Water Sprinkler{% endblock %}
 
 {% block content %}
-<h1> Smart Water Sprinkler </h1>
+<div class="container mt-4"></div>
+  <h1> Smart Water Sprinkler </h1>
 
-<button class="btn btn-primary" onclick="turnOff()">Turn Off</button>
-<button class="btn btn-primary" onclick="turnOn()">Turn On</button>
-<button class="btn btn-danger" onclick="intruder()">Spray at Intruder</button>
+  <button class="btn btn-primary" onclick="turnOff()">Turn Off</button>
+  <button class="btn btn-primary" onclick="turnOn()">Turn On</button>
+  <button class="btn btn-danger" onclick="intruder()">Spray at Intruder</button>
 
-<h3>Adjust the wetness threshold to turn on the water sprinkler:</h3>
-<h3>You can enter any value between 100 to 500</h3>
-<form action="/api/node_1/submit-form" method="POST">
-  <label for="wetness value">New Wetness Threshold:</label>
-  <input type="number" id="wetness" name="wetness" placeholder="0"><br><br>
-  <input type="submit" value="SUBMIT" onclick="showMessage()"><br>
-</form>
-<div>
-  <div id="healthChart" class="mt-4"></div>
+  <h3>Adjust the wetness threshold to turn on the water sprinkler:</h3>
+  <h3>You can enter any value between 100 to 500</h3>
+  <form id="wetness-form">
+    <label for="wetness value">New Wetness Threshold:</label>
+    <input type="number" id="wetness" name="wetness" placeholder="0"><br><br>
+    <input type="button" value="submit" onclick="submitForm()"><br>
+  </form>
+  <div>
+    <div id="environmentChart" class="mt-4"></div>
+  </div>
 </div>
 {% endblock %}
 
@@ -59,6 +61,140 @@
       }
     });
   }
-</script>
+  function submitForm() {
+    var wetness = document.getElementById("wetness").value;
+    if (wetness < 100 || wetness > 500) {
+      alert("Please enter a value between 100 and 500");
+      return;
+    }
+    $.ajax({
+      url: "/api/node_1/submit-form",
+      type: "POST",
+      data: $("#wetness-form").serialize(),
+      success: function() {
+        alert("Form submitted successfully!");
+      },
+      error: function() {
+        alert("Form submission failed!");
+      }
+    });
+  }
 
+  var environmentChart = null;
+
+  function updateEnvironmentData() {
+    $.ajax({
+      url: "/api/node_1/get-environment-data",
+      type: "POST",
+      data: {
+        date: new Date().toISOString().slice(0, 10)
+      },
+      dataType: "json",
+      success: function(data) {
+        if (environmentChart === null) {
+          var options = {
+            chart: {
+              type: 'line',
+              height: 350
+            },
+            series: [
+              {
+                name: 'Temperature',
+                data: []
+              },
+              {
+                name: 'Brightness',
+                data: []
+              },
+              {
+                name: 'Wetness',
+                data: []
+              }
+            ],
+            xaxis: {
+              type: 'datetime'
+            },
+            yaxis: {
+              min: 0,
+              max: 100
+            },
+            noData: {
+              text: 'Data not available'
+            }
+          };
+          var chartData = [];
+          for (var i = 0; i < data.length; i++) {
+            chartData.push({
+              x: new Date(data[i].hour),
+              y: [
+                data[i].avg_temperature,
+                data[i].avg_brightness,
+                data[i].avg_wetness
+              ]
+            });
+          }
+          options.series.forEach(function(series, index) {
+            series.data = chartData.map(function(item) {
+              return {
+                x: item.x,
+                y: item.y[index]
+              };
+            });
+          });
+          var chartElement = document.getElementById('environment-chart');
+          environmentChart = new ApexCharts(chartElement, options);
+          environmentChart.render();
+        } else {
+          var chartData = [];
+          for (var i = 0; i < data.length; i++) {
+            chartData.push({
+              x: new Date(data[i].hour),
+              y: [
+                data[i].avg_temperature,
+                data[i].avg_brightness,
+                data[i].avg_wetness
+              ]
+            });
+          }
+          environmentChart.updateSeries([
+            {
+              name: 'Temperature',
+              data: chartData.map(function(item) {
+                return {
+                  x: item.x,
+                  y: item.y[0]
+                };
+              })
+            },
+            {
+              name: 'Brightness',
+              data: chartData.map(function(item) {
+                return {
+                  x: item.x,
+                  y: item.y[1]
+                };
+              })
+            },
+            {
+              name: 'Wetness',
+              data: chartData.map(function(item) {
+                return {
+                  x: item.x,
+                  y: item.y[2]
+                };
+              })
+            }
+          ]);
+        }
+      },
+      error: function() {
+        alert("Failed to get environment data!");
+      }
+    });
+  }
+
+  $(document).ready(function() {
+    updateEnvironmentData();
+  });
+</script>
 {% endblock %}

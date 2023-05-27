@@ -87,9 +87,17 @@ class MySQLService:
         self.connection.commit()
         cursor.close()
 
-    def get_env_data(self):
+    def get_env_data(self, date: str):
         cursor = self.connection.cursor(dictionary=True)
-        cursor.execute("SELECT DATE_FORMAT(created_on, '%Y-%m-%d %H:00:00') AS hour, AVG(temperature) AS avg_temperature, AVG(brightness) AS avg_brightness, AVG(wetness) AS avg_wetness FROM environment_data GROUP BY hour")
+        cursor.execute("""
+        SELECT DATE_FORMAT(created_on, '%Y-%m-%d %H:00:00') AS hour,
+        AVG(temperature) AS avg_temperature,
+        AVG(brightness) AS avg_brightness,
+        AVG(wetness) AS avg_wetness
+        FROM environment_data
+        WHERE DATE_FORMAT(created_on, '%Y-%m-%d') = %s
+        GROUP BY hour
+        """ , (date))
         result = cursor.fetchall()
         cursor.close()
         return result

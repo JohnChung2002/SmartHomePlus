@@ -1,11 +1,6 @@
-import mysql.connector
-import serial 
-import time 
-import os
-from dotenv import load_dotenv
 from flask import Blueprint, Flask, render_template, redirect, url_for, request, g
+import datetime
 
-load_dotenv()
 sprinkler_bp = Blueprint('WaterSprinkler', __name__)
 
 # Dictionary of pins with name of pin and state ON/OFF 
@@ -54,9 +49,12 @@ def submit_form():
 #     return 'Form submitted successfully'
     return redirect(url_for('cheryl_node.WaterSprinkler.index'))
 
-@sprinkler_bp.route('/get-environment-data')
+@sprinkler_bp.route('/get-environment-data', methods=['POST'])
 def get_environment_data():
-    with g.dbconn:
-        result = g.dbconn.get_env_data()
-    print(result)
+    #check if there is date data, if there is, get the data from the date
+    #if there is no date data, get the latest data
+    date = request.form['date'] if ('date' in request.form and request.form['date']  != "") else datetime.datetime.now().strftime("%Y-%m-%d")
+    if date is not None and date != "":
+        with g.dbconn:
+            result = g.dbconn.get_env_data(date)
     return result
