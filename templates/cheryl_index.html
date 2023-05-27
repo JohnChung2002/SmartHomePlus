@@ -18,12 +18,12 @@
     <div class="col-md-12">
       <h3>Adjust the wetness threshold to turn on the water sprinkler:</h3>
       <form id="wetness-form">
-        <div class="form-row">
-          <div class="col">
+        <div class="row">
+          <div class="col-md-8">
             <label for="wetness">New Wetness Threshold (You can enter any value between 100 to 500):</label>
             <input type="number" id="wetness" name="wetness" class="form-control" placeholder="0">
           </div>
-          <div class="col-auto">
+          <div class="col-md-4 d-flex align-items-end">
             <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
           </div>
         </div>
@@ -37,7 +37,7 @@
         <form id="date-form">
           <div class="form-group mb-0">
             <div class="input-group">
-              <label for="date" class="input-group-prepend">Select a date to view the environment data:</label>
+              <label for="date" class="input-group-prepend d-flex align-items-center me-2">Select a date to view the environment data:</label>
               <input type="date" id="date" name="date" class="form-control" onchange="updateEnvironmentData()">
             </div>
           </div>
