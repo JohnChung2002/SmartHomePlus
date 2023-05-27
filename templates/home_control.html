@@ -113,9 +113,15 @@
     }
 
     function updateTemp() {
+        var value = document.getElementById("value").value;
+        if (value < 16 || value > 30) {
+            alert("Please enter a value between 16 and 30");
+            return;
+        }
+        
         var formData = new FormData();
         formData.append("appliance_id", document.getElementById("appliance_id").value);
-        formData.append("value", document.getElementById("value").value);
+        formData.append("value", value);
         
         fetch("/api/node_2/remote_aircon_temp", {
             method: "POST",
