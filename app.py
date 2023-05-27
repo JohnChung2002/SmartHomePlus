@@ -80,7 +80,8 @@ def on_publish(client, data, result):
 
 def on_message(client, userdata, msg):
     json_message = ast.literal_eval(msg.payload.decode())
-    print("Received message: ", msg.payload.decode())
+    if (msg.topic not in ["/cheryl_node", "/john_node", "/timmy_node"]):
+        print("Received unknown topic message: ", msg.payload.decode())
     if msg.topic == "/john_node":
         if (json_message["sender"] == "Edge"):
             if (json_message["title"] == "Lights"):
@@ -95,13 +96,13 @@ def on_message(client, userdata, msg):
             if (json_message["title"] == "Update Uptime"):
                 with mqtt_dbconn:
                     mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id"], [int(json_message["uptime"]), int(json_message["appliance_id"])])
-            print("Received message: ", msg.payload.decode())         
+            print("Received John's MQTT message: ", msg.payload.decode())         
     if msg.topic == "/cheryl_node":
         if (json_message["sender"] == "Edge"):
-            print("Received message: ", msg.payload.decode())
+            print("Received Cheryl's MQTT message: ", msg.payload.decode())
     if msg.topic == "/timmy_node":
         if (json_message["sender"] == "Edge"):
-            print("Received message: ", msg.payload.decode())
+            print("Received Timmy's MQTT message: ", msg.payload.decode())
 
 # @app.template_filter('config_name_to_id')
 # def config_name_to_id(config_name):
