@@ -50,7 +50,7 @@ def on_message(client, userdata, msg):
     else:
         message_mqtt = message_mqtt.split(",")
         if len(message_mqtt) == 2 and message_mqtt[0] == "Update Wetness Threshold":
-            wetnessThreshold = message_mqtt[1]
+            wetnessThreshold = int(message_mqtt[1])
             with mydb:
                 mydb.update("system_data", ["status"], ["field"], [wetnessThreshold, "wetness_value"])
                 print("Wetness Threshold Updated")

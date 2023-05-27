@@ -17,36 +17,11 @@ pins = {
 } 
 topic = "/cheryl_node"
 
-def display_data():
-    # Connect to the database
-    db = connect_db()
-
-    # Create a cursor object
-    cur = db.cursor()
-
-    # Execute the SQL query to retrieve data from the database
-    cur.execute("SELECT * FROM systemData ORDER BY dataID DESC LIMIT 20")
-
-    # Fetch all the rows returned by the query
-    rows = cur.fetchall()
-
-    # Close the cursor and database connection
-    cur.close()
-    db.close()
-    
-    return rows
-
 # Main function when accessing the website 
 @sprinkler_bp.route("/") 
 def index():  
-    # This data will be sent to index.html (pin dictionary)
-    rows = display_data()
-    templateData = { 
-        'pins' : pins,
-        'rows' : rows
-    } 
     # Pass the template data into the template index.html and return it 
-    return render_template('cheryl_index.html', **templateData)
+    return render_template('cheryl_index.html')
 
  
 # Function to send simple commands 
@@ -82,20 +57,8 @@ def submit_form():
 
     # Create a cursor object
     cur = db.cursor()
-
-    # Execute the SQL query to retrieve data from the database
-    sql = "UPDATE settingTable SET wetnessValue = %s WHERE tableID = 1"
-    values = (wetnessVal,)
-    print(wetnessVal)
-    
-    cur.execute(sql, values)
-    
-    # Commit the changes to the database
-    db.commit()
-
-    # Close the cursor and database connection
-    cur.close()
-    db.close()
+    g.dbconn.update("system_data", ["status"], ["field"], [wetnessVal, "wetness_value"])
+    g.client.publish(topic, f"Update Wetness Threshold,{wetnessVal}")
 #     return 'Form submitted successfully'
     return redirect(url_for('cheryl_node.WaterSprinkler.index'))
 
