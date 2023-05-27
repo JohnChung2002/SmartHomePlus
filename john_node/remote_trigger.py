@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, sessio
 import json
 
 from shared.services.auth_middleware import auth_middleware
-from shared.services.validation_service import validate_john_trigger, validate_john_aircon_temp
+from shared.services.validation_service import validate_john_trigger, validate_john_aircon_temp, validate_john_month_year
 
 remote_bp = Blueprint('remote_trigger', __name__)
 #testing remote pull
