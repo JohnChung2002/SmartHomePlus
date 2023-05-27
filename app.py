@@ -109,6 +109,37 @@ def on_message(client, userdata, msg):
             with mqtt_dbconn:
                 mqtt_dbconn.insert("environment_data", ["temperature", "wetness", "brightness"], [temperature, wetness, light_intensity])
     if msg.topic == "/timmy_node":
+        timmyNodeMessage = message_mqtt.split(",")
+        if timmyNodeMessage[0] == "history":
+            profileID = timmyNodeMessage[1]
+            currentTime = timmyNodeMessage[2]
+            currentDate = timmyNodeMessage[3]
+            userHeight = timmyNodeMessage[4]
+            potentiometerWeight = timmyNodeMessage[5]
+            bmi = timmyNodeMessage[6]
+            inHouse = timmyNodeMessage[7]
+            
+            with mqtt_dbconn:
+                mqtt_dbconn.insert("history", ["profile_id", "time", "date", "height", "weight", "bmi", "in_house"], [profileID, currentTime, currentDate, userHeight, potentiometerWeight, bmi, inHouse])
+        if timmyNodeMessage[0] == "profile":
+            profileID = timmyNodeMessage[1]
+            userHeight = timmyNodeMessage[2]
+            potentiometerWeight = timmyNodeMessage[3]
+            bmi = timmyNodeMessage[4]
+            inHouse = timmyNodeMessage[5]
+            
+            with mqtt_dbconn:
+                mqtt_dbconn.update("profile", ["height"], ["profile_id"], [userHeight, profileID])
+                mqtt_dbconn.update("profile", ["weight"], ["profile_id"], [potentiometerWeight, profileID])
+                mqtt_dbconn.update("profile", ["bmi"], ["profile_id"], [bmi, profileID])
+                mqtt_dbconn.update("profile", ["in_house"], ["profile_id"], [inHouse, profileID])
+        if timmyNodeMessage[0] == "stranger":
+            currentTime = timmyNodeMessage[1]
+            currentDate = timmyNodeMessage[2]
+            strangerMessage = timmyNodeMessage[3]
+            
+            with mqtt_dbconn:
+                mqtt_dbconn.insert("stranger", ["time", "date", "status"], [currentTime, currentDate, strangerMessage])
         print("Received Timmy's MQTT message: ", message_mqtt)
 
 # @app.template_filter('config_name_to_id')
