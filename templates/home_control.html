@@ -198,25 +198,16 @@
                         yaxis: {
                             min: 0,
                             title: {
-                                text: 'uptime (secs)',
+                                text: 'Uptime (secs)',
                                 style: {
                                     fontSize: '14px',
                                     fontWeight: 600,
-                                    fontFamily: 'Helvetica, Arial, sans-serif',
                                     color: '#263238'
-                                }
-                            },
-                            labels: {
-                                formatter: function (value) {
-                                    return value + ' (secs)';
                                 }
                             }
                         },
                         noData: {
                             text: 'Data not available'
-                        },
-                        legend: {
-                            position: 'top'
                         }
                     };
                     for (var i = 0; i < data.length; i++) {
