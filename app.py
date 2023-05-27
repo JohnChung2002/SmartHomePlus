@@ -103,8 +103,10 @@ def on_message(client, userdata, msg):
                         mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id"], [int(json_message["uptime"]), json_message["appliance_id"]])
             print("Received John's MQTT message: ", msg.payload.decode())         
     if msg.topic == "/cheryl_node":
-        if (json_message["sender"] == "Edge"):
-            print("Received Cheryl's MQTT message: ", msg.payload.decode())
+        message_mqtt = msg.payload.decode()
+        wetness, light_intensity, temperature = message_mqtt.split(",")
+        with mqtt_dbconn:
+            mqtt_dbconn.insert("systemData", ["temperature", "wetness", "light_intensity"], [temperature, wetness, light_intensity])
     if msg.topic == "/timmy_node":
         if (json_message["sender"] == "Edge"):
             print("Received Timmy's MQTT message: ", msg.payload.decode())

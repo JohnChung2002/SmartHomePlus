@@ -108,4 +108,6 @@ while True:
     
         mydb.commit()
         mycursor.close()
+
+    client.publish(topic, f"{wetnessLevel},{brightness},{temperature}")
  
