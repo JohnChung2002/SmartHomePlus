@@ -27,6 +27,12 @@ def doorcontrol2():
 def history():
     with g.dbconn:
         return jsonify(g.dbconn.get_all("History"))
+    
+@remote_bp.route("/rfid")
+@auth_middleware
+def rfid():
+    with g.dbconn:
+        return jsonify(g.dbconn.get_all("RFID"))
 
 # updates different settings
 @remote_bp.route("/update_settings", methods=["GET", "POST"])

@@ -5,6 +5,7 @@
 {% block content %}
     <div class="container">
         <table id="historyTable" class="display w-100"></table>
+        <table id="rfidTable" class="display w-100"></table>
     </div>
 
     <div class="navigation">
@@ -254,6 +255,20 @@
             });
         })
     }
+    function getRFID() {
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                type: "GET",
+                url: "/api/node_3/rfid",
+                success: function (result) {
+                    resolve(result);
+                },
+                error: function (result) {
+                    reject(result);
+                }
+            });
+        })
+    }
     $(document).ready(function() {
         getHistory().then(function(data) {
             $('#historyTable').DataTable({
@@ -267,6 +282,15 @@
                     { title: "Weight", data: "weight" },
                     { title: "BMI", data: "bmi" },
                     { title: "In House", data: "in_house" },
+                ]
+            });
+        });
+        getRFID().then(function(data) {
+            $('#rfidTable').DataTable({
+                data: data,
+                columns: [
+                    { title: "RFID ID", data: "history_id" },
+                    { title: "Number", data: "number" },
                 ]
             });
         });
