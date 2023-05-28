@@ -15,7 +15,7 @@
         <table id="profileTable" class="display table table-bordered w-100 my-2"></table>
     </div>
     {% endif %}
-    <div>
+    <div class="row align-items-center">
         <h3 class="text-center mt-3">Update Profile</h3>
         <form id="profileForm" action="/api/node_3/update_profile" method="post" class="row g-3">
           <div class="col-md-3">
@@ -38,12 +38,12 @@
         </form>
     </div>
     {% if role == "Admin" %}
-    <div>
+    <div class="row align-items-center">
         <h3 class="text-center mt-3">Update System Config</h3>
         <!--Edit the country code which the weather api depends on-->
         <form id="configForm" action="/api/node_1/config" method="post">
             <div class="row g-3">
-                <div class="col-md-3">
+                <div class="col-md-9">
                     <label for="iata_region" class="form-label">IATA Region</label>
                     <select id="iata_region" name="iata_region" class="form-select"></select>
                 </div>
@@ -114,7 +114,7 @@
 {% endif %}
 <script>
 $(document).ready(function() {
-    $("#birthday").val({{ birthday }});
+    $("#birthday").val(new Date("{{ birthday }}").toISOString().slice(0, 10));
     $("#height").val({{ height }});
     $("#weight").val({{ weight }});
     $('#profileForm').submit(function(event) {

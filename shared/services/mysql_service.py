@@ -124,7 +124,7 @@ class MySQLService:
     
     def get_all_profile(self):
         cursor = self.connection.cursor(dictionary=True)
-        cursor.execute("SELECT profile_id, rfid_id, name, birthday, height, weight, bmi")
+        cursor.execute("SELECT profile_id, rfid_id, name, birthday, height, weight, bmi FROM Profile")
         result = cursor.fetchall()
         cursor.close()
         return result
