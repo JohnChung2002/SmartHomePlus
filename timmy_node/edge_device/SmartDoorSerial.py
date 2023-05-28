@@ -1,9 +1,9 @@
+# imports libraries
 import time
 from datetime import date, datetime
 import serial
 import mysql.connector
 from SmartDoorDetection import detection, detectionstop
-# from SmartDoorDetection2 import detection, detectionstop
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 import os
@@ -17,6 +17,7 @@ strangerWrite = True
 showRed = True
 faceDetected = False
 
+# loads environment variables
 load_dotenv()
 
 # microcontroller (Arduino Uno)
@@ -30,14 +31,19 @@ def Countdown():
     
     return int(timeElapsedMs)
 
+# connects to MQTT
 def on_connect(client, userdata, flags, rc):
     print(f"Connected with RC: {str(rc)}")
-    pass
     
-def on_publish(client, data, result):
-    print("Message sent to MQTT broker")
     pass
 
+# sends messages through MQTT
+def on_publish(client, data, result):
+    print("Message sent to MQTT broker")
+    
+    pass
+
+# receives messages through MQTT
 def on_message(client, userdata, msg):
     messageReceived = msg.payload.decode()
     
@@ -50,6 +56,7 @@ def on_message(client, userdata, msg):
 
     pass
 
+# initializes MQTT client
 client = mqtt.Client()
 client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
 client.on_connect = on_connect
@@ -57,9 +64,11 @@ client.on_publish = on_publish
 client.on_message = on_message
 client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
 
+# subscribes to MQTT topic
 topic = "/timmy_node"
 client.subscribe(topic)
 
+# starts MQTT loop
 client.loop_start()
 
 # infinite loop
@@ -70,12 +79,13 @@ while True:
     dateNow = date.today()
     currentDate = dateNow.strftime("%Y-%m-%d")
     
-    # connection to the database and extraction of values from tables
+    # connection to the database and extraction of values from settings table
     mydb = mysql.connector.connect(host="localhost", user="pi", password="pi_101222782", database="Smart Door")
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM Settings")
     settings = mycursor.fetchall()
     
+    # obtains all settings values
     doorHeight = settings[0][1]
     irSensorInThreshold = settings[0][2]
     irSensorOutThreshold = settings[0][3]
@@ -83,21 +93,23 @@ while True:
     timeDetection = settings[0][5]
     timeFaceDetection = settings[0][6]
     
-    # obtains, reads and extracts the different data
+    # obtains, reads and extracts the different data from Arduino
     line = arduino.readline().decode().strip()
     sensorValue = line.split(",")
     
-    # obtains the IR proximity sensors distances (In and Out)
+    # obtains the IR proximity sensors distances (in and out)
     subjectDistanceIn = int(sensorValue[0])
     subjectDistanceOut = int(sensorValue[1])
     
     print("DistanceIn: ", subjectDistanceIn)
     print("DistanceOut: ", subjectDistanceOut)
     
+    # if subject is within range outside the house (going in)
     if subjectDistanceIn <= irSensorInThreshold:
         directionIn = True
         inHouse = "1"
-        
+    
+    # if subject is within range inside the house (going out)
     if subjectDistanceOut <= irSensorOutThreshold:
         directionOut = True
         inHouse = "0"
@@ -124,9 +136,11 @@ while True:
                         mycursor.execute(sql)
                         mydb.commit()
                         
+                        # publishes MQTT message
+                        noRFIDMessage = "stranger," + currentTime + "," + currentDate + ",No RFID"
+                        client.publish(topic, noRFIDMessage)
+                        
                     strangerWrite = False
-                    
-                    client.publish(topic, "No RFID")
                     
                     # continuously beeps the buzzer and blinks the red LED until the stranger leaves
                     arduino.write(b"4")
@@ -189,7 +203,9 @@ while True:
                 mycursor.execute(sql)
                 mydb.commit()
                 
-                client.publish(topic, "Wrong RFID")
+                # publishes MQTT message
+                wrongRFIDMessage = "stranger," + currentTime + "," + currentDate + ",Wrong RFID"
+                client.publish(topic, wrongRFIDMessage)
                 
                 # lights up red LED and makes a long beeping sound
                 arduino.write(b"5")
@@ -217,13 +233,6 @@ while True:
                         if faceDetected == True:
                             faceDetected = False
                             
-                            client.publish(topic, inHouse)
-                            
-                            # lights up green LED, makes 'granted' sound and opens door for set time before closing
-                            doorOpen = "open " + str(timeClose)
-                            arduino.write(doorOpen.encode('utf-8'))
-                            time.sleep(1)
-                            
                             # adds and updates the values in the tables
                             sql = "INSERT INTO History (profile_id, time, date, height, weight, bmi, in_house) VALUES ('" + str(i[0]) + "', '" + currentTime + "', '" + currentDate + "', '" + str(userHeight) + "', '" + str(potentiometerWeight) + "', '" + str(bmi) + "', '" + inHouse + "')"
                             mycursor.execute(sql)
@@ -244,12 +253,25 @@ while True:
                             sql = "UPDATE Profile SET in_house = '" + inHouse + "' WHERE profile_id = '" + str(i[0]) + "'"
                             mycursor.execute(sql)
                             mydb.commit()
+                            
+                            # publishes MQTT message
+                            addHistoryMessage = "history," + str(i[0]) + "," + currentTime + "," + currentDate + "," + str(userHeight) + "," + str(potentiometerWeight) + "," + str(bmi) + "," + inHouse
+                            client.publish(topic, addHistoryMessage)
+                            updateProfileMessage = "profile," + str(i[0]) + "," + str(userHeight) + "," + str(potentiometerWeight) + "," + str(bmi) + "," + inHouse
+                            client.publish(topic, updateProfileMessage)
+                            
+                            # lights up green LED, makes 'granted' sound and opens door for set time before closing
+                            doorOpen = "open " + str(timeClose)
+                            arduino.write(doorOpen.encode('utf-8'))
+                            time.sleep(1)
                         else:
                             sql = "INSERT INTO Stranger (time, date, status) VALUES ('" + currentTime + "', '" + currentDate + "', 'Wrong User')"
                             mycursor.execute(sql)
                             mydb.commit()
                             
-                            client.publish(topic, "Wrong User")
+                            # publishes MQTT message
+                            wrongUserMessage = "stranger," + currentTime + "," + currentDate + ",Wrong User"
+                            client.publish(topic, wrongUserMessage)
                         
                             # lights up red LED and makes a long beeping sound
                             arduino.write(b"5")
@@ -259,7 +281,9 @@ while True:
             mycursor.execute(sql)
             mydb.commit()
             
-            client.publish(topic, "No User")
+            # publishes MQTT message
+            noUserMessage = "stranger," + currentTime + "," + currentDate + ",No User"
+            client.publish(topic, noUserMessage)
                         
             # lights up red LED and makes a long beeping sound
             arduino.write(b"5")
