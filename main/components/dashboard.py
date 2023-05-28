@@ -16,10 +16,10 @@ def smart_door():
     # accessing database and table
     with g.dbconn:
         user = g.dbconn.get_by_id("user_details", ["user_id"], [session["user_id"]])
-        history = g.dbconn.get_all("history")
-        rfid = g.dbconn.get_all("rfid")
-        settings = g.dbconn.get_all("settings")
-        stranger = g.dbconn.get_all("stranger")
+        history = g.dbconn.get_all("History")
+        rfid = g.dbconn.get_all("RFID")
+        settings = g.dbconn.get_all("Settings")
+        stranger = g.dbconn.get_all("Stranger")
     templateData = {
         'history' : history,
         'rfid' : rfid,
