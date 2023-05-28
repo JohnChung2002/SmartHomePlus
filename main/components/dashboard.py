@@ -4,7 +4,7 @@ from shared.services.validation_service import validate_login
 
 dashboard_bp = Blueprint('dashboard', __name__)
 
-@dashboard_bp.route('/home_remote', methods=['GET'])
+@dashboard_bp.route('/home_control', methods=['GET'])
 @auth_middleware
 def home_remote():
     with g.dbconn:
