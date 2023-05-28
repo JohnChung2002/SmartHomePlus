@@ -3,7 +3,7 @@
 {% block title %}Smart Security{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href='/static/style.css'>
+    <link rel="stylesheet" href='/static/style.css'>
     <div class="navigation">
         <a href="/api/node_3/profile"><button class="navigation-btn">Profile</button></a>
     </div>
@@ -210,30 +210,30 @@
 {% endblock %}
 
 {% block scripts %}
-    <script>
-        function open() {
-            $.ajax({
-                url: "/api/node_3/control1",
-                type: "GET",
-                success: function() {
-                    alert("Door Opened!");
-                },
-                error: function() {
-                    alert("Door failed to open!");
-                }
-            });
-        }
-        function close() {
-            $.ajax({
-                url: "/api/node_3/control2",
-                type: "GET",
-                success: function() {
-                    alert("Door Closed!");
-                },
-                error: function() {
-                    alert("Door failed to close!");
-                }
-            });
-        }
-    </script>
+<script>
+    function open() {
+        $.ajax({
+            url: "/api/node_3/control1",
+            type: "GET",
+            success: function() {
+                alert("Door Opened!");
+            },
+            error: function() {
+                alert("Door failed to open!");
+            }
+        });
+    }
+    function close() {
+        $.ajax({
+            url: "/api/node_3/control2",
+            type: "GET",
+            success: function() {
+                alert("Door Closed!");
+            },
+            error: function() {
+                alert("Door failed to close!");
+            }
+        });
+    }
+</script>
 {% endblock %}

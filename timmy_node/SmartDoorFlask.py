@@ -23,9 +23,9 @@ def doorcontrol(control):
     if control == 'control2' :
         g.client.publish(topic, "doorClose")
         pins[5]['state'] = 0
-        
-    # redirects to the homepage
-    return redirect(url_for('timmy_node.remote_door.smartdoor'))
+    else:
+        return "Invalid action", 400
+    return "Success", 200
 
 # updates different settings
 @remote_bp.route("/update_settings", methods=["GET", "POST"])
