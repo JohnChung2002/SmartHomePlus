@@ -115,7 +115,7 @@ def on_message(client, userdata, msg):
                     title="Home Appliance Webhook", 
                     description=message, 
                     color="03b2f8",
-                    url = "https://dashboard.digitalserver.tech/"
+                    url = "https://dashboard.digitalserver.tech/home_control"
                 )
                 webhook.add_embed(embed)
                 webhook.execute()
@@ -146,10 +146,7 @@ def on_message(client, userdata, msg):
             inHouse = timmyNodeMessage[5]
             
             with mqtt_dbconn:
-                mqtt_dbconn.update("Profile", ["height"], ["profile_id"], [userHeight, profileID])
-                mqtt_dbconn.update("Profile", ["weight"], ["profile_id"], [potentiometerWeight, profileID])
-                mqtt_dbconn.update("Profile", ["bmi"], ["profile_id"], [bmi, profileID])
-                mqtt_dbconn.update("Profile", ["in_house"], ["profile_id"], [inHouse, profileID])
+                mqtt_dbconn.update("Profile", ["height", "weight", "bmi", "in_house"], ["profile_id"], [userHeight, potentiometerWeight, bmi, inHouse, profileID])
         if timmyNodeMessage[0] == "stranger":
             currentTime = timmyNodeMessage[1]
             currentDate = timmyNodeMessage[2]

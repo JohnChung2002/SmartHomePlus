@@ -67,6 +67,12 @@ def remote_trigger():
     except:
         return "Error", 500
     
+@remote_bp.route('/disengage_override')
+@auth_middleware
+def disengage_override():
+    g.client.publish("/john_node", json.dumps({"title": "Disengage Override", "sender": "Cloud"}))
+    return "Success", 200
+    
 @remote_bp.route('/remote_aircon_temp', methods=['POST'])
 @auth_middleware
 @validate_john_aircon_temp

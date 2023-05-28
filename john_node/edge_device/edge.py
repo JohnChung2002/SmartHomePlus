@@ -53,17 +53,20 @@ def read_serial_input():
             else:
                 input["sender"] = "Edge"
                 with mysql:
+                    row_count = 0
                     if (input["title"] == "Room Count"):
                         input["room"] = int(input["room"])
                         if (input["action"] == "Inc"):
                             mysql.increment_field("people_in_room", ["room_id"], "people_count", [input["room"]])
                         elif (input["action"] == "Dec"):
                             mysql.decrement_field("people_in_room", ["room_id"], "people_count" [input["room"]])
+                        row_count = 1
                     elif (input["title"] == "Lights"):
-                        mysql.update("appliance_status", ["status"], ["appliance_id"], [input["status"], lights_dict[input["room"]]])
+                        row_count = mysql.update_with_feedback("appliance_status", ["status"], ["appliance_id"], [input["status"], lights_dict[input["room"]]])
                     elif (input["title"] == "Ventilating Fan"):
-                        mysql.update("appliance_status", ["status"], ["appliance_id"], [input["status"], 6])       
-                client.publish(topic, json.dumps(input))   
+                        row_count = mysql.update_with_feedback("appliance_status", ["status"], ["appliance_id"], [input["status"], 6])
+                if (row_count > 0): 
+                    client.publish(topic, json.dumps(input))   
                 
 def on_connect(client, userdata, flags, rc):
     print(f"Connected with RC: {str(rc)}")
