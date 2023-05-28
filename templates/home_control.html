@@ -2,11 +2,17 @@
 
 {% block title %}Configurations{% endblock %}
 
+{% block head %}
+<link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css " rel="stylesheet">
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="row mt-4">
         <h3 class="text-center">Home Appliance Control</h3>
-        <button type="button" class="btn btn-primary" onclick="disengageOverride()">Disengage Manual Override</button>
+        <div class="text-center mb-3">
+            <button type="button" class="btn btn-primary" onclick="disengageOverride()">Disengage Manual Override</button>
+        </div>
     </div>
     <div class="row mb-4">
         <div class="col-md-2">
@@ -105,6 +111,7 @@
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js "></script>
 <script>
     const appliance_obj = {
         1: "Room 1 Light",
@@ -114,6 +121,19 @@
         5: "Room 2 Aircon",
         6: "Ventilating Fan"
     }
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        showCloseButton: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
 
     function updateTemp() {
         var value = document.getElementById("value").value;
@@ -137,7 +157,10 @@
             return response.text();
         })
         .then(data => {
-            alert(data);
+            Toast.fire({
+                icon: 'success',
+                title: 'Aircon temperature updated successfully!'
+            })
         })
         .catch(error => {
             console.error("There was a problem with the fetch operation:", error);
@@ -160,14 +183,36 @@
             return response.text();
         })
         .then(data => {
-            alert(data);
+            Toast.fire({
+                icon: 'success',
+                title: 'Appliance status updated successfully!'
+            })
         })
         .catch(error => {
             console.error("There was a problem with the fetch operation:", error);
         });
     }
-    var applianceChart = null;
 
+    function disengageOverride() {
+        fetch("/api/node_2/disengage_override")
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.text();
+        })
+        .then(data => {
+            Toast.fire({
+                icon: 'success',
+                title: 'Override disengaged successfully!'
+            })
+        })
+        .catch(error => {
+            console.error("There was a problem with the fetch operation:", error);
+        });
+    }
+
+    var applianceChart = null;
     function updateApplianceData() {
         //check if month and year have values, if not give them current month and year
         if ($("#month").val() == null) {
