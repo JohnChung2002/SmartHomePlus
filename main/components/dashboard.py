@@ -11,7 +11,7 @@ def home_remote():
     user = g.dbconn.get_by_id("user_details", ["user_id"], [session["user_id"]])
     return render_template('home_control.html', name=user["name"])
 
-@dashboard_bp_bp.route("/smart_sprinkler") 
+@dashboard_bp.route("/smart_sprinkler") 
 def index():
     user = g.dbconn.get_by_id("user_details", ["user_id"], [session["user_id"]])
     return render_template('cheryl_index.html', name=user["name"])
