@@ -101,7 +101,7 @@
             </div>
             <div class="col-md-2">
                 <label for="face-detection-duration">Detection Duration (seconds)</label>
-                <select name="face-detection-duration" id="face-detection-duration">
+                <select class="form-control" name="face-detection-duration" id="face-detection-duration">
                     <option disabled selected value>-- Select --</option>
                     <option value="3">3 seconds</option>
                     <option value="4">4 seconds</option>
@@ -116,9 +116,7 @@
                 </select>
             </div>
         </div>
-        <div class="form-submit">
-            <input type="submit" value="Update Settings">
-        </div>
+        <button type="submit" class="btn btn-primary mt-2">Update</button>
     </form>
 </div>
 {% endblock %}
