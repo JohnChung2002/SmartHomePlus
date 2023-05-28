@@ -16,19 +16,9 @@ def smart_door():
     # accessing database and table
     with g.dbconn:
         user = g.dbconn.get_by_id("user_details", ["user_id"], [session["user_id"]])
-        history = g.dbconn.get_all("History")
-        rfid = g.dbconn.get_all("RFID")
         settings = g.dbconn.get_all("Settings")
-        stranger = g.dbconn.get_all("Stranger")
-    templateData = {
-        'history' : history,
-        'rfid' : rfid,
-        'settings' : settings,
-        'stranger' : stranger
-    }
-
     # updates homepage with template content
-    return render_template('smartdoor.html', **templateData, name=user["name"])
+    return render_template('smartdoor.html', name=user["name"], settings=settings)
 
 @dashboard_bp.route('/home_control', methods=['GET'])
 @auth_middleware

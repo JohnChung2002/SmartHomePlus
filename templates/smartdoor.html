@@ -4,15 +4,20 @@
 
 {% block head %}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="/static/style.css">
 {% endblock %}
 
 {% block content %}
-    
-
-    <div class="navigation">
-        <a href="/api/node_3/profile"><button class="navigation-btn">Profile</button></a>
+    <div class="container">
+        <div>
+            <h3 class="mt-4">History Table</h3>
+            <table id="historyTable" class="display w-100 my-2"></table>
+            <h3 class="mt-4">RFID Table</h3>
+            <table id="rfidTable" class="display w-100 my-2"></table>
+            <h3 class="mt-4">Stranger Table</h3>
+            <table id="strangerTable" class="display w-100 my-2"></table>
+        </div>
     </div>
-
     <h2>Controls</h2>
 
     <div class="homepage-control">
@@ -20,14 +25,7 @@
         <button class="homepage-control-btn" onclick="close()">Close</button>
     </div>
 
-    <div class="container">
-        <h3 class="mt-4">History Table</h3>
-        <table id="historyTable" class="display w-100 my-2"></table>
-        <h3 class="mt-4">RFID Table</h3>
-        <table id="rfidTable" class="display w-100 my-2"></table>
-        <h3 class="mt-4">Stranger Table</h3>
-        <table id="strangerTable" class="display w-100 my-2"></table>
-    </div>
+        
     
     <h2>Settings Table</h2>
 
@@ -222,6 +220,12 @@
         })
     }
     $(document).ready(function() {
+        $("#door-height").val({{ door_height }});
+        $("#in-distance-threshold").val({{ in_distance_threshold }});
+        $("#out-distance-threshold").val({{ out_distance_threshold }});
+        $("#closing-duration").val({{ closing_duration }});
+        $("#detection-duration").val({{ detection_duration }});
+        $("#face-detection-duration").val({{ face_detection_duration }});
         getHistory().then(function(data) {
             $('#historyTable').DataTable({
                 data: data,
