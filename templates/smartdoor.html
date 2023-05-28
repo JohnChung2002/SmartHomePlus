@@ -219,12 +219,12 @@
         })
     }
     $(document).ready(function() {
-        $("#door-height").val({{ settings['door_height'] }});
-        $("#in-distance-threshold").val({{ settings['in_distance_threshold'] }});
-        $("#out-distance-threshold").val({{ settings['out_distance_threshold'] }});
-        $("#closing-duration").val({{ settings['closing_duration'] }});
-        $("#detection-duration").val({{ settings['detection_duration'] }});
-        $("#face-detection-duration").val({{ settings['face_detection_duration'] }});
+        $("#door-height").val("{{ settings['door_height'] }}");
+        $("#in-distance-threshold").val("{{ settings['in_distance_threshold'] }}");
+        $("#out-distance-threshold").val("{{ settings['out_distance_threshold'] }}");
+        $("#closing-duration").val("{{ settings['closing_duration'] }}");
+        $("#detection-duration").val("{{ settings['detection_duration'] }}");
+        $("#face-detection-duration").val("{{ settings['face_detection_duration'] }}");
         getHistory().then(function(data) {
             $('#historyTable').DataTable({
                 data: data,
