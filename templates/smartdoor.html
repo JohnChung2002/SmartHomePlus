@@ -4,11 +4,6 @@
 
 {% block head %}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <style>
-        table tbody tr td {
-            padding: 5px 0;
-        }
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -224,12 +219,12 @@
         })
     }
     $(document).ready(function() {
-        $("#door-height").val({{ door_height }});
-        $("#in-distance-threshold").val({{ in_distance_threshold }});
-        $("#out-distance-threshold").val({{ out_distance_threshold }});
-        $("#closing-duration").val({{ closing_duration }});
-        $("#detection-duration").val({{ detection_duration }});
-        $("#face-detection-duration").val({{ face_detection_duration }});
+        $("#door-height").val({{ settings['door_height'] }});
+        $("#in-distance-threshold").val({{ settings['in_distance_threshold'] }});
+        $("#out-distance-threshold").val({{ settings['out_distance_threshold'] }});
+        $("#closing-duration").val({{ settings['closing_duration'] }});
+        $("#detection-duration").val({{ settings['detection_duration'] }});
+        $("#face-detection-duration").val({{ settings['face_detection_duration'] }});
         getHistory().then(function(data) {
             $('#historyTable').DataTable({
                 data: data,
