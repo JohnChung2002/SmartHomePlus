@@ -230,6 +230,7 @@
         $("#closing-duration").val({{ closing_duration }});
         $("#detection-duration").val({{ detection_duration }});
         $("#face-detection-duration").val({{ face_detection_duration }});
+        $.fn.dataTableExt.oStdClasses.sWrapper = "cell-border dt-bootstrap5 no-footer";
         getHistory().then(function(data) {
             $('#historyTable').DataTable({
                 data: data,
