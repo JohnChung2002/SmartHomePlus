@@ -5,7 +5,7 @@ import paho.mqtt.client as mqtt
 from threading import Thread, Timer
 from shared.services.mysql_service import MySQLService
 from dotenv import load_dotenv
-import os, ast, requests, datetime, airporttime, pytz
+import os, ast, requests, datetime, airporttime, pytz, json
 
 from cheryl_node import bp_cheryl
 from john_node import bp_john
@@ -154,6 +154,24 @@ def on_message(client, userdata, msg):
             
             with mqtt_dbconn:
                 mqtt_dbconn.insert("Stranger", ["time", "date", "status"], [currentTime, currentDate, strangerMessage])
+            john_message = {
+                "title": "Intruder",
+                "sender": "Cloud",
+            }
+            client.publish("/john_node", json.dumps(john_message))
+            client.publish("/cheryl_node", "Spray at Intruder")
+            webhook = DiscordWebhook(
+                url=os.getenv("ALARM_DISCORD_WEBHOOK"), 
+                username="Security Bot"
+            )
+            embed = DiscordEmbed(
+                title="Security Webhook", 
+                description="An intruder has been detected!", 
+                color="03b2f8",
+                url = "https://dashboard.digitalserver.tech/smart_security"
+            )
+            webhook.add_embed(embed)
+            webhook.execute()
         print("Received Timmy's MQTT message: ", message_mqtt)
 
 # @app.template_filter('config_name_to_id')

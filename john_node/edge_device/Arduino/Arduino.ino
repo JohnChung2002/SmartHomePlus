@@ -243,13 +243,11 @@ void loop() {
       Serial.println(serialOutput);
     } else if (jsonDoc["title"] == "Intruder") {
       for (int i = 0; i < (sizeof(manualOverride) / sizeof(manualOverride[0])); i++) {
-        manualOverride[i] = int(jsonDoc["status"]);
+        manualOverride[i] = 1;
       }
-      if (jsonDoc["status"] == "1") {
-        button_status[2] = 1;
-        button_status[6] = 1;
-        button_status[10] = 1;
-      }
+      button_status[2] = 1;
+      button_status[6] = 1;
+      button_status[10] = 1;
       serialOutput = "{'title': 'Intruder Response', 'status': 'Success'}";
       Serial.println(serialOutput);
     }
