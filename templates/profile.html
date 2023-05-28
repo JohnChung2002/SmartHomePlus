@@ -110,6 +110,34 @@
         })
         populateInput('iata_region');
         $('#iata_region').val('{{ iata_region }}');
+        $('#configForm').submit(function(event) {
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function(data, status, xhr) {
+                    if (xhr.status === 304) {
+                        Toast.fire({
+                            icon: 'info',
+                            title: 'Config not modified!'
+                        })
+                    } else {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Config Updated!'
+                        })
+                    }
+                },
+                error: function(xhr, status, error) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Config failed to update! Check your input!'
+                    })
+                }
+            });
+        });
     });
 </script>
 {% endif %}
