@@ -2,6 +2,10 @@
 
 {% block title %}Smart Water Sprinkler{% endblock %}
 
+{% block head %}
+<link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css " rel="stylesheet">
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
   <h3 class="text-center mb-4">Smart Water Sprinkler</h3>
@@ -20,7 +24,7 @@
       <div class="d-flex justify-content-center">
         <div>
           <label for="wetness">New Wetness Threshold (You can enter any value between 100 to 500):</label>
-          <input type="number" id="wetness" name="wetness" class="form-control" placeholder="0">
+          <input type="number" id="wetness" name="wetness" class="form-control" placeholder="0" min="100" max="500">
         </div>
         <div class="ms-2 d-flex align-items-center">
           <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
@@ -54,16 +58,36 @@
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js "></script>
 <script>
+  const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      showCloseButton: true,
+      didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+      }
+  })
+
   function turnOff() {
     $.ajax({
       url: "/api/node_1/action1",
       type: "GET",
       success: function() {
-        alert("Water sprinkler successfully turned off!");
+        Toast.fire({
+            icon: 'success',
+            title: 'Water sprinkler successfully turned off!'
+        })
       },
       error: function() {
-        alert("Water sprinkler failed to turn off!");
+        Toast.fire({
+            icon: 'error',
+            title: 'Water sprinkler failed to turn off!'
+        })
       }
     });
   }
@@ -72,10 +96,16 @@
       url: "/api/node_1/action2",
       type: "GET",
       success: function() {
-        alert("Water sprinkler successfully turned on!");
+        Toast.fire({
+            icon: 'success',
+            title: 'Water sprinkler successfully turned on!'
+        })
       },
       error: function() {
-        alert("Water sprinkler failed to turn on!");
+        Toast.fire({
+            icon: 'error',
+            title: 'Water sprinkler failed to turn on!'
+        })
       }
     });
   }
@@ -84,17 +114,26 @@
       url: "/api/node_1/action3",
       type: "GET",
       success: function() {
-        alert("Water sprinkler successfully sprayed at intruder!");
+        Toast.fire({
+            icon: 'success',
+            title: 'Water sprinkler successfully sprayed at intruder!'
+        })
       },
       error: function() {
-        alert("Water sprinkler failed to spray at intruder!");
+        Toast.fire({
+            icon: 'error',
+            title: 'Water sprinkler failed to spray at intruder!'
+        })
       }
     });
   }
   function submitForm() {
     var wetness = document.getElementById("wetness").value;
     if (wetness < 100 || wetness > 500) {
-      alert("Please enter a value between 100 and 500");
+      Toast.fire({
+          icon: 'error',
+          title: 'Please enter a value between 100 to 500!'
+      })
       return;
     }
     $.ajax({
@@ -102,10 +141,16 @@
       type: "POST",
       data: $("#wetness-form").serialize(),
       success: function() {
-        alert("Form submitted successfully!");
+        Toast.fire({
+            icon: 'success',
+            title: 'Wetness threshold successfully updated!'
+        })
       },
       error: function() {
-        alert("Form submission failed!");
+        Toast.fire({
+            icon: 'error',
+            title: 'Wetness threshold failed to update!'
+        })
       }
     });
   }

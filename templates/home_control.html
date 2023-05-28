@@ -155,9 +155,9 @@
         })
         .then(response => {
             if (response.status === 304) {
-                throw new Error("Appliance status not changed!");
+                throw new Error("Aircon temperature not changed!");
             } else if (response.status === 500) {
-                throw new Error("Appliance status change failed!");
+                throw new Error("Aircon temperature change failed!");
             } else if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
@@ -170,9 +170,8 @@
             })
         })
         .catch(error => {
-            console.error("There was a problem with the fetch operation:", error);
             Toast.fire({
-                icon: error.message === "Not modified" ? 'info' : 'error',
+                icon: error.message === "Aircon temperature not changed!" ? 'info' : 'error',
                 title: error.message
             })
         });
@@ -204,9 +203,8 @@
             })
         })
         .catch(error => {
-            console.error("There was a problem with the fetch operation:", error);
             Toast.fire({
-                icon: error.message === "Appliance status change failed!" ? 'info' : 'error',
+                icon: error.message === "Appliance status not changed!" ? 'info' : 'error',
                 title: error.message
             })
         });
