@@ -138,7 +138,10 @@
     function updateTemp() {
         var value = document.getElementById("value").value;
         if (value < 16 || value > 30) {
-            alert("Please enter a value between 16 and 30");
+            Toast.fire({
+                icon: 'error',
+                title: 'Invalid temperature value! Please enter a value between 16 and 30.'
+            })
             return;
         }
         
@@ -151,7 +154,11 @@
             body: formData
         })
         .then(response => {
-            if (!response.ok) {
+            if (response.status === 304) {
+                throw new Error("Appliance status not changed!");
+            } else if (response.status === 500) {
+                throw new Error("Appliance status change failed!");
+            } else if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
             return response.text();
@@ -164,6 +171,10 @@
         })
         .catch(error => {
             console.error("There was a problem with the fetch operation:", error);
+            Toast.fire({
+                icon: error.message === "Not modified" ? 'info' : 'error',
+                title: error.message
+            })
         });
     }
 
@@ -177,7 +188,11 @@
             body: formData
         })
         .then(response => {
-            if (!response.ok) {
+            if (response.status === 304) {
+                throw new Error("Appliance status not changed!");
+            } else if (response.status === 500) {
+                throw new Error("Appliance status change failed!");
+            } else if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
             return response.text();
@@ -190,6 +205,10 @@
         })
         .catch(error => {
             console.error("There was a problem with the fetch operation:", error);
+            Toast.fire({
+                icon: error.message === "Not modified" ? 'info' : 'error',
+                title: error.message
+            })
         });
     }
 
