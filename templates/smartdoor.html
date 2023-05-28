@@ -259,24 +259,17 @@
             $('#historyTable').DataTable({
                 data: data,
                 columns: [
-                    { title: "Unlock ID", data: "unlock_id" },
-                    { title: "Unlock Timestamp", data: "unlock_timestamp" },
-                    { title: "Unlock Type", data: "unlock_type" },
-                    { title: "Unlock Status", data: "unlock_status" },
-                    { title: "User Name", data: "name" },
-                    { title: "Key Type", data: "key_type" },
-                    { title: "In/Out Timestamp", data: "in_out_timestamp" },
-                    { title: "In/Out Type", data: "in_out_type" },
-                    { title: "Weight (kg)", data: "weight" },
-                    { title: "Height (cm)", data: "height" },
+                    { title: "History ID", data: "history_id" },
+                    { title: "Profile ID", data: "profile_id" },
+                    { title: "Date", data: "date" },
+                    { title: "Time", data: "time" },
+                    { title: "Height", data: "height" },
+                    { title: "Weight", data: "weight" },
                     { title: "BMI", data: "bmi" },
-                    { title: "Remote Approval Timestamp", data: "remote_approval_timestamp" },
-                    { title: "Remote Approval Status", data: "remote_approval_status" },
-                    { title: "Remote Approval User Name", data: "remote_approval_user_name" }
+                    { title: "In House", data: "in_house" },
                 ]
             });
-
-            });
         });
+    });
 </script>
 {% endblock %}
