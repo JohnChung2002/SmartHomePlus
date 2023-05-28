@@ -4,6 +4,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css " rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -24,7 +25,7 @@
         <table id="strangerTable" class="display table table-bordered w-100 my-2"></table>
     </div>
     <h2 class="settings-h2">Update Settings</h2>
-    <form class="form-inline" action="/api/node_3/update_settings" method="post">
+    <form id="settingsForm" class="form-inline" action="/api/node_3/update_settings" method="post">
         <div class="row form-group align-items-end">
             <div class="col-md-2">
                 <label for="door-height">Door Height (cm)</label>
@@ -124,16 +125,36 @@
 {% block scripts %}
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js "></script>
 <script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        showCloseButton: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
     function openDoor() {
         $.ajax({
             url: "/api/node_3/control1",
             type: "GET",
             success: function() {
-                alert("Door Opened!");
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Door Opened!'
+                })
             },
             error: function() {
-                alert("Door failed to open!");
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Door failed to open!'
+                })
             }
         });
     }
@@ -142,10 +163,16 @@
             url: "/api/node_3/control2",
             type: "GET",
             success: function() {
-                alert("Door Closed!");
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Door Closed!'
+                })
             },
             error: function() {
-                alert("Door failed to close!");
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Door failed to close!'
+                })
             }
         });
     }
@@ -231,6 +258,27 @@
                     { title: "Time", data: "time" },
                     { title: "Status", data: "status" },
                 ]
+            });
+        });
+        $('#settingsForm').submit(function(event) {
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function(data) {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Settings Updated!'
+                    })
+                },
+                error: function(data) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Settings failed to update!'
+                    })
+                }
             });
         });
     });
