@@ -59,7 +59,7 @@ def read_serial_input():
                         if (input["action"] == "Inc"):
                             mysql.increment_field("people_in_room", ["room_id"], "people_count", [input["room"]])
                         elif (input["action"] == "Dec"):
-                            mysql.decrement_field("people_in_room", ["room_id"], "people_count" [input["room"]])
+                            mysql.decrement_field("people_in_room", ["room_id"], "people_count", [input["room"]])
                         row_count = 1
                     elif (input["title"] == "Lights"):
                         row_count = mysql.update_with_feedback("appliance_status", ["status"], ["appliance_id"], [input["status"], lights_dict[input["room"]]])
@@ -94,6 +94,9 @@ def on_message(client, userdata, msg):
             appliance_id = lights_dict[json_message["room"]] if json_message["title"] == "Lights" else aircon_dict[json_message["room"]] if json_message["title"] == "Aircon Switch" else 6
             with mysql:
                 data = mysql.get_by_id("appliance_uptime", ["appliance_id", "date"], [int(appliance_id), datetime.datetime.now().strftime("%Y-%m-%d")])
+                if data is None:
+                    mysql.insert("appliance_uptime", ["appliance_id", "date", "uptime"], [int(appliance_id), datetime.datetime.now().strftime("%Y-%m-%d"), 0])
+                    data = {'uptime': 0}
                 message = {
                     "title": "Update Uptime",
                     "sender": "Edge",

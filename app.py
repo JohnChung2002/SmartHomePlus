@@ -105,7 +105,7 @@ def on_message(client, userdata, msg):
                     if data is None:
                         mqtt_dbconn.insert("appliance_uptime", ["appliance_id", "uptime", "date"], [json_message["appliance_id"], int(json_message["uptime"]), today])
                     else:
-                        mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id"], [int(json_message["uptime"]), json_message["appliance_id"]])
+                        mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id", "date"], [int(json_message["uptime"]), json_message["appliance_id"], today])
             if message is not None:
                 webhook = DiscordWebhook(
                     url=os.getenv("AUTOMATION_DISCORD_WEBHOOK"), 
