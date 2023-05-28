@@ -69,18 +69,11 @@ def updatesettings():
 @remote_bp.route("/profile")
 def profile():
     # accessing database and table
-    mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
-    mycursor = mydb.cursor()
-    mycursor.execute("SELECT * FROM Profile")
-    profile = mycursor.fetchall()
-    mycursor.close()
-    
-    templateData = {
-                    'profile' : profile
-                    }
+    with g.dbconn:
+        profile = g.dbconn.get_all("Profile")
 
     # updates webpage with template content
-    return render_template('profile.html', **templateData)
+    return render_template('profile.html', profile=profile)
 
 # updates profile information
 @remote_bp.route("/update_profile", methods=["GET", "POST"])
