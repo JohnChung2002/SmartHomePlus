@@ -19,11 +19,11 @@ def login_post():
 
     with g.dbconn:
         ph = PasswordHasher()
-        result = g.dbconn.get_by_id("user_accounts", ["username"], [username])
+        result = g.dbconn.get_by_id("Profile", ["username"], [username])
         if result is not None:
             try:
                 if ph.verify(result["password"], password): # type: ignore
-                    session["user_id"] = result["user_id"]
+                    session["user_id"] = result["profile_id"]
                     session["user_role"] = result["role"]
                 return redirect("/")
             except Exception as e:

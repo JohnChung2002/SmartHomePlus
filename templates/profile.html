@@ -1,76 +1,147 @@
-<!DOCTYPE html>
-<head>
-    <title>Smart Door Profile</title>
-    <link rel="stylesheet" href='/static/style.css'>
-</head>
+{% extends 'layout.html' %}
 
-<body>
-    <h1><a href="/api/node_3/">Smart Door</a></h1>
-    <h2>Profile Page</h2>
-    
-    <div class="navigation">
-        <a href="/api/node_3/"><button class="navigation-btn">Home</button></a>
-        <a href="/api/node_3/profile"><button class="navigation-btn">Profile</button></a>
+{% block title %}Profile{% endblock %}
+
+{% block head %}
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <link href=" https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.min.css " rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    {% if role == "Admin" %}
+    <div>
+        <h3>Profile Table</h3>
+        <table id="profileTable" class="display table table-bordered w-100 my-2"></table>
     </div>
-
-    <h2>Profile Table</h2>
-
-    <div class="table-container">
-        <div class="table">
-            <div class="table-row table-header">
-                <div class="table-cell">Profile ID</div>
-                <div class="table-cell">RFID ID</div>
-                <div class="table-cell">Name</div>
-                <div class="table-cell">Birthday</div>
-                <div class="table-cell">Height (cm)</div>
-                <div class="table-cell">Weight (kg)</div>
-                <div class="table-cell">BMI</div>
-                <div class="table-cell">In House</div>
-            </div>
-              
-            {% for item in profile %}
-            <div class="table-row">
-                <div class="table-cell">{{ item[0] }}</div>
-                <div class="table-cell">{{ item[1] }}</div>
-                <div class="table-cell">{{ item[2] }}</div>
-                <div class="table-cell">{{ item[3] }}</div>
-                <div class="table-cell">{{ item[4] }}</div>
-                <div class="table-cell">{{ item[5] }}</div>
-                <div class="table-cell">{{ item[6] }}</div>
-                <div class="table-cell">{{ item[7] }}</div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    
-    <h2 class="profile-h2">Update Profile</h2>
-
-    <div class="form">
-        <form action="/update_profile" method="post">
-            <!-- <label for="updated-name">Name</label>
-            <input type="text" id="updated-name" name="updated-name"> -->
-        
-            <label for="updated-birthday">Birthday</label>
-            <input type="date" id="updated-birthday" name="updated-birthday">
-        
-            <label for="updated-height">Height (cm)</label>
-            <input type="text" id="updated-height" name="updated-height">
-        
-            <label for="updated-weight">Weight (kg)</label>
-            <input type="text" id="updated-weight" name="updated-weight">
-
-            <label for="updated-location">In House</label>
-            <select name="updated-location" id="updated-location">
-                <option disabled selected value>-- Select --</option>
-                <option value="1">Inside</option>
-                <option value="0">Outside</option>
-            </select>
-
+    {% endif %}
+    <div>
+        <h3 class="text-center mt-3">Update Profile</h3>
+        <form id="profileForm" action="/api/node_3/update_profile" method="post" class="row g-3">
+          <div class="col-md-3">
+            <label for="updated-birthday" class="form-label">Birthday</label>
+            <input type="date" id="updated-birthday" name="updated-birthday" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label for="updated-height" class="form-label">Height (cm)</label>
+            <input type="text" id="updated-height" name="updated-height" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label for="updated-weight" class="form-label">Weight (kg)</label>
+            <input type="text" id="updated-weight" name="updated-weight" class="form-control">
+          </div>
+          <div class="col-md-3">
             <div class="form-submit">
-                <input type="submit" value="Update Profile">
+              <input type="submit" value="Update Profile" class="btn btn-primary">
+            </div>
+          </div>
+        </form>
+    </div>
+    {% if role == "Admin" %}
+    <div>
+        <h3 class="text-center mt-3">Update System Config</h3>
+        <!--Edit the country code which the weather api depends on-->
+        <form id="configForm" action="/api/node_1/config" method="post">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="iata_region" class="form-label">IATA Region</label>
+                    <select id="iata_region" name="iata_region" class="form-select"></select>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-submit">
+                        <input type="submit" value="Update Config" class="btn btn-primary">
+                    </div>
+                </div>
             </div>
         </form>
     </div>
-</body>
+    {% endif %}
+</div>
+{% endblock %}
 
-</html>
+{% block script %}
+<script src=" https://cdn.jsdelivr.net/npm/sweetalert2@11.7.5/dist/sweetalert2.all.min.js "></script>
+{% if role == 'Admin' %}
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="/static/country_code.js"></script>
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        showCloseButton: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
+
+    function getProfile() {
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                type: "GET",
+                url: "/api/node_3/profile",
+                success: function (result) {
+                    resolve(result);
+                },
+                error: function (result) {
+                    reject(result);
+                }
+            });
+        })
+    }
+    $(document).ready(function() {
+        getProfile().then(function(result) {
+            $('#profileTable').DataTable({
+                data: result,
+                columns: [
+                    { title: "Profile ID", data: "profile_id" },
+                    { title: "RFID ID", data: "rfid_id" },
+                    { title: "Name", data: "name" },
+                    { title: "Birthday", data: "birthday" },
+                    { title: "Height (cm)", data: "height" },
+                    { title: "Weight (kg)", data: "weight" },
+                    { title: "BMI", data: "bmi"},
+                ]
+            });
+        })
+        populateInput('iata_region');
+    });
+</script>
+{% endif %}
+<script>
+$(document).ready(function() {
+    $('#profileForm').submit(function(event) {
+        event.preventDefault();
+        var form = $(this);
+        $.ajax({
+            type: form.attr('method'),
+            url: form.attr('action'),
+            data: form.serialize(),
+            success: function(data, status, xhr) {
+                if (xhr.status === 304) {
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Profile not modified!'
+                    })
+                } else {
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Profile Updated!'
+                    })
+                }
+            },
+            error: function(xhr, status, error) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Profile failed to update! Check your input!'
+                })
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

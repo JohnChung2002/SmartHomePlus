@@ -1,9 +1,9 @@
 from datetime import date
-from flask import Flask, render_template, request, redirect, url_for, Response, Blueprint, g, jsonify
+from flask import Flask, render_template, request, redirect, url_for, Response, Blueprint, g, jsonify, session
 import mysql.connector
 import os
 from shared.services.auth_middleware import auth_middleware
-from shared.services.validation_service import validate_timmy_settings
+from shared.services.validation_service import validate_timmy_settings, validate_timmy_profile
 
 remote_bp = Blueprint('remote_door', __name__)
 
@@ -39,6 +39,12 @@ def rfid():
 def stranger():
     with g.dbconn:
         return jsonify(g.dbconn.get_all("Stranger"))
+    
+@remote_bp.route("/profile")
+@auth_middleware
+def profile():
+    with g.dbconn:
+        return jsonify(g.dbconn.get_all_profile())
 
 # updates different settings
 @remote_bp.route("/update_settings", methods=["POST"])
@@ -61,63 +67,30 @@ def updatesettings():
         if row_count == 0:
             return "Not Modified", 304
         else:
+            g.client.publish(topic, f"settings,{settingsValue[0]},{settingsValue[1]},{settingsValue[2]},{settingsValue[3]},{settingsValue[4]},{settingsValue[5]}")
             return "Success", 200
     except:
         return "Invalid input", 400
 
-# profile page
-@remote_bp.route("/profile")
-def profile():
-    # accessing database and table
-    with g.dbconn:
-        profile = g.dbconn.get_all("Profile")
-
-    # updates webpage with template content
-    return render_template('profile.html', profile=profile)
-
 # updates profile information
 @remote_bp.route("/update_profile", methods=["GET", "POST"])
+@auth_middleware
+@validate_timmy_profile
 def updateprofile():
-    # accessing database and table
-    mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
-    mycursor = mydb.cursor()
-    mycursor.execute("SELECT name FROM Profile")
-    profileName = mycursor.fetchone()
-    profileHTML = ['updated-birthday', 'updated-height', 'updated-weight', 'updated-location']
-    profileDatabase = ['birthday', 'height', 'weight', 'in_house']
-#     profileHTML = ['updated-name', 'updated-birthday', 'updated-height', 'updated-weight', 'updated-location']
-#     profileDatabase = ['name', 'birthday', 'height', 'weight', 'in_house']
-
-    profileValueName = profileName[0]
-    
-    if request.method == "POST":
+    profileHTML = ["birthday", "height", "weight"]
+    profileValue = []
+    try:
         for i in range(len(profileHTML)):
-            profileValue = request.form.get(profileHTML[i])
-            
-            if profileValue == None:
-                pass
-            elif profileValue != '':
-                mycursor = mydb.cursor()
-                sql = "UPDATE Profile SET " + profileDatabase[i] + " = '" + profileValue + "' WHERE name = '" + profileValueName + "'"
-                mycursor.execute(sql)
-                mydb.commit()
-                mycursor.close()
-                
-    # calculates and updates user BMI (if height, weight or both were changed) [if any]
-    mycursor = mydb.cursor()
-    mycursor.execute("SELECT height, weight FROM Profile")
-    heightWeight = mycursor.fetchone()
-    
-    updatedHeight = heightWeight[0]
-    updatedWeight = heightWeight[1]
-    
-    updatedBMI = updatedWeight / ((updatedHeight / 100) ** 2)
-    updatedBMI = round(updatedBMI, 2)
-    
-    sql = "UPDATE Profile SET bmi = '" + str(updatedBMI) + "' WHERE name = '" + profileValueName + "'"
-    mycursor.execute(sql)
-    mydb.commit()
-    mycursor.close()
-    
-    # redirects to the profile webpage
-    return redirect(url_for('timmy_node.remote_door.profile'))
+            profileValue.append(request.form.get(profileHTML[i]))
+        profileHTML.append("bmi")
+        profileValue.append(round((float(profileValue[2]) / ((float(profileValue[1])/100) ** 2)), 2))
+        profileValue.append(session["user_id"])
+        with g.dbconn:
+            row_count = g.dbconn.update_with_feedback("Profile", profileHTML, ["profile_id"], profileValue)
+        if row_count == 0:
+            return "Not Modified", 304
+        else:
+            g.client.publish(topic, f"update_profile,{session['user_id']},{profileValue[0]},{profileValue[1]},{profileValue[2]},{profileValue[3]}")
+            return "Success", 200
+    except:     
+        return "Invalid input", 400

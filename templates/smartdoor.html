@@ -19,8 +19,6 @@
     <div>
         <h3 class="mt-4">History Table</h3>
         <table id="historyTable" class="display table table-bordered w-100 my-2"></table>
-        <h3 class="mt-4">RFID Table</h3>
-        <table id="rfidTable" class="display table table-bordered w-100 my-2"></table>
         <h3 class="mt-4">Stranger Table</h3>
         <table id="strangerTable" class="display table table-bordered w-100 my-2"></table>
     </div>
@@ -190,20 +188,6 @@
             });
         })
     }
-    function getRFID() {
-        return new Promise(function(resolve, reject) {
-            $.ajax({
-                type: "GET",
-                url: "/api/node_3/rfid",
-                success: function (result) {
-                    resolve(result);
-                },
-                error: function (result) {
-                    reject(result);
-                }
-            });
-        })
-    }
     function getStranger() {
         return new Promise(function(resolve, reject) {
             $.ajax({
@@ -237,15 +221,6 @@
                     { title: "Weight", data: "weight" },
                     { title: "BMI", data: "bmi" },
                     { title: "In House", data: "in_house" },
-                ]
-            });
-        });
-        getRFID().then(function(data) {
-            $('#rfidTable').DataTable({
-                data: data,
-                columns: [
-                    { title: "RFID ID", data: "rfid_id" },
-                    { title: "Number", data: "number" },
                 ]
             });
         });

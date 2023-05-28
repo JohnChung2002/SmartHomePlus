@@ -1,5 +1,6 @@
 from flask import Blueprint, Flask, render_template, redirect, url_for, request, g
 from shared.services.auth_middleware import auth_middleware
+from shared.services.validation_service import validate_iata_region
 import datetime
 
 sprinkler_bp = Blueprint('WaterSprinkler', __name__)
@@ -37,7 +38,21 @@ def submit_form():
         return "Success", 200
     except:
         return "Invalid wetness value", 400
-    
+
+@sprinkler_bp.route('/config', methods=['POST'])
+@auth_middleware
+@validate_iata_region
+def update_config():
+    try:
+        iata_region = request.form['iata_region']
+        with g.dbconn:
+            row_count = g.dbconn.update_with_feedback("config", ["value"], ["field"], [iata_region, "iata_region"])
+        if row_count == 0:
+            return "Not modified", 304
+        else:
+            return "Success", 200
+    except:
+        return "Invalid iata region", 400
 
 @sprinkler_bp.route('/get-environment-data', methods=['POST'])
 @auth_middleware
