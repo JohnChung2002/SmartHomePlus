@@ -89,15 +89,15 @@ def on_message(client, userdata, msg):
             if (json_message["title"] == "Lights"):
                 with mqtt_dbconn:
                     mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), lights_dict[json_message["room"]]])
-                message = "Lights in " + json_message["room"] + " turned " + "On" if (int(json_message["status"]) == 1) else "Off"
+                message = "Lights in " + json_message["room"] + " turned " + ("On" if (int(json_message["status"]) == 1) else "Off")
             if (json_message["title"] == "Aircon Switch"):
                 with mqtt_dbconn:
                     mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), aircon_dict[json_message["room"]]])
-                message = "Aircon in " + json_message["room"] + " turned " + "On" if (int(json_message["status"]) == 1) else "Off"
+                message = "Aircon in " + json_message["room"] + " turned " + ("On" if (int(json_message["status"]) == 1) else "Off")
             if (json_message["title"] == "Ventilating Fan"):
                 with mqtt_dbconn:
                     mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), 6])
-                message = "Ventilating Fan turned " + "On" if (int(json_message["status"]) == 1) else "Off"
+                message = "Ventilating Fan turned " + ("On" if (int(json_message["status"]) == 1) else "Off")
             if (json_message["title"] == "Update Uptime"):
                 with mqtt_dbconn:
                     today = datetime.date.today().strftime("%Y-%m-%d")
