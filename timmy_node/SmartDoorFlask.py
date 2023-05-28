@@ -33,6 +33,12 @@ def history():
 def rfid():
     with g.dbconn:
         return jsonify(g.dbconn.get_all("RFID"))
+    
+@remote_bp.route("/stranger")
+@auth_middleware
+def stranger():
+    with g.dbconn:
+        return jsonify(g.dbconn.get_all("Stranger"))
 
 # updates different settings
 @remote_bp.route("/update_settings", methods=["GET", "POST"])

@@ -7,10 +7,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <table id="historyTable" class="display w-100"></table>
-        <table id="rfidTable" class="display w-100"></table>
-    </div>
+    
 
     <div class="navigation">
         <a href="/api/node_3/profile"><button class="navigation-btn">Profile</button></a>
@@ -22,77 +19,14 @@
         <button class="homepage-control-btn" onclick="open()">Open</button>
         <button class="homepage-control-btn" onclick="close()">Close</button>
     </div>
-    
-    <br>
-    
-    <h2>History Table</h2>
 
-    <div class="table-container">
-        <div class="table">
-            <div class="table-row table-header">
-                <div class="table-cell">History ID</div>
-                <div class="table-cell">Profile ID</div>
-                <div class="table-cell">Time</div>
-                <div class="table-cell">Date</div>
-                <div class="table-cell">Height (cm)</div>
-                <div class="table-cell">Weight (kg)</div>
-                <div class="table-cell">BMI</div>
-                <div class="table-cell">In House</div>
-            </div>
-              
-            {% for item in history %}
-            <div class="table-row">
-                <div class="table-cell">{{ item['history_id'] }}</div>
-                <div class="table-cell">{{ item['profile_id'] }}</div>
-                <div class="table-cell">{{ item['time'] }}</div>
-                <div class="table-cell">{{ item['date'] }}</div>
-                <div class="table-cell">{{ item['height'] }}</div>
-                <div class="table-cell">{{ item['weight'] }}</div>
-                <div class="table-cell">{{ item['bmi'] }}</div>
-                <div class="table-cell">{{ item['in_house'] }}</div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    
-    <h2>RFID Table</h2>
-
-    <div class="table-container">
-        <div class="table">
-            <div class="table-row table-header">
-                <div class="table-cell">RFID ID</div>
-                <div class="table-cell">Number</div>
-            </div>
-              
-            {% for item in rfid %}
-            <div class="table-row">
-                <div class="table-cell">{{ item['rfid_id'] }}</div>
-                <div class="table-cell">{{ item['number'] }}</div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    
-    <h2>Stranger Table</h2>
-
-    <div class="table-container">
-        <div class="table">
-            <div class="table-row table-header">
-                <div class="table-cell">Stranger ID</div>
-                <div class="table-cell">Time</div>
-                <div class="table-cell">Date</div>
-                <div class="table-cell">Status</div>
-            </div>
-              
-            {% for item in stranger %}
-            <div class="table-row">
-                <div class="table-cell">{{ item['stranger_id'] }}</div>
-                <div class="table-cell">{{ item['time'] }}</div>
-                <div class="table-cell">{{ item['date'] }}</div>
-                <div class="table-cell">{{ item['status'] }}</div>
-            </div>
-            {% endfor %}
-        </div>
+    <div class="container">
+        <h3 class="mt-4">History Table</h3>
+        <table id="historyTable" class="display w-100 my-2"></table>
+        <h3 class="mt-4">RFID Table</h3>
+        <table id="rfidTable" class="display w-100 my-2"></table>
+        <h3 class="mt-4">Stranger Table</h3>
+        <table id="strangerTable" class="display w-100 my-2"></table>
     </div>
     
     <h2>Settings Table</h2>
@@ -273,6 +207,20 @@
             });
         })
     }
+    function getStranger() {
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                type: "GET",
+                url: "/api/node_3/stranger",
+                success: function (result) {
+                    resolve(result);
+                },
+                error: function (result) {
+                    reject(result);
+                }
+            });
+        })
+    }
     $(document).ready(function() {
         getHistory().then(function(data) {
             $('#historyTable').DataTable({
@@ -295,6 +243,17 @@
                 columns: [
                     { title: "RFID ID", data: "rfid_id" },
                     { title: "Number", data: "number" },
+                ]
+            });
+        });
+        getStranger().then(function(data) {
+            $('#strangerTable').DataTable({
+                data: data,
+                columns: [
+                    { title: "Stranger ID", data: "stranger_id" },
+                    { title: "Date", data: "date" },
+                    { title: "Time", data: "time" },
+                    { title: "Status", data: "status" },
                 ]
             });
         });
