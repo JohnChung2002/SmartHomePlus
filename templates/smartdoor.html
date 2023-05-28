@@ -267,24 +267,24 @@
                 type: form.attr('method'),
                 url: form.attr('action'),
                 data: form.serialize(),
-                success: function(data) {
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'Settings Updated!'
-                    })
-                },
-                error: function(xhr, status, error) {
+                success: function(data, status, xhr) {
                     if (xhr.status === 304) {
                         Toast.fire({
                             icon: 'info',
-                            title: 'Settings not modified!'
+                            title: 'Settings not modified'
                         })
                     } else {
                         Toast.fire({
-                            icon: 'error',
-                            title: 'Settings failed to update! Check your input!'
+                            icon: 'success',
+                            title: 'Settings Updated!'
                         })
                     }
+                },
+                error: function(xhr, status, error) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Settings failed to update! Check your input!'
+                    })
                 }
             });
         });
