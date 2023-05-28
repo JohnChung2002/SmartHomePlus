@@ -47,19 +47,18 @@ def remote_trigger():
             else:
                 return "Error", 400
             if webhook_message is not None:
-                
-            webhook = DiscordWebhook(
-                url=os.getenv("AUTOMATION_DISCORD_WEBHOOK"), 
-                username="Home Appliance Bot"
-            )
-            embed = DiscordEmbed(
-                title="Home Appliance Webhook", 
-                description=webhook_message, 
-                color="03b2f8",
-                url = "https://dashboard.digitalserver.tech/"
-            )
-            webhook.add_embed(embed)
-            webhook.execute()
+                webhook = DiscordWebhook(
+                    url=os.getenv("AUTOMATION_DISCORD_WEBHOOK"), 
+                    username="Home Appliance Bot"
+                )
+                embed = DiscordEmbed(
+                    title="Home Appliance Webhook", 
+                    description=webhook_message, 
+                    color="03b2f8",
+                    url = "https://dashboard.digitalserver.tech/"
+                )
+                webhook.add_embed(embed)
+                webhook.execute()
             g.client.publish("/john_node", json.dumps(message))
         return "Success", 200
     except:
