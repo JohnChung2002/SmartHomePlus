@@ -1,5 +1,5 @@
 from datetime import date
-from flask import Flask, render_template, request, redirect, url_for, Response, Blueprint, g
+from flask import Flask, render_template, request, redirect, url_for, Response, Blueprint, g, jsonify
 import mysql.connector
 import os
 from dotenv import load_dotenv
@@ -21,6 +21,12 @@ def doorcontrol1():
 def doorcontrol2():
     g.client.publish(topic, "doorClose")
     return "Success", 200
+
+@remote_bp.route("/history")
+@auth_middleware
+def history():
+    with g.dbconn:
+        return jsonify(g.dbconn.get_all("History"))
 
 # updates different settings
 @remote_bp.route("/update_settings", methods=["GET", "POST"])

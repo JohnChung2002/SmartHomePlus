@@ -1,5 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session
-from flask import g
+from flask import Blueprint, render_template, redirect, url_for, request, session, g
 from argon2 import PasswordHasher
 from shared.services.auth_middleware import auth_middleware
 from shared.services.validation_service import validate_login
