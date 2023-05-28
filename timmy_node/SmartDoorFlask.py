@@ -57,8 +57,11 @@ def updatesettings():
             settingsID = data["settings_id"]
             print(settingsID)
             settingsValue.append(settingsID)
-            g.dbconn.update("Settings", settingsDatabase, ["settings_id"], settingsValue)
-        return "Success", 200
+            row_count = g.dbconn.update_with_feedback("Settings", settingsDatabase, ["settings_id"], settingsValue)
+        if row_count == 0:
+            return "Not Modified", 304
+        else:
+            return "Success", 200
     except:
         return "Invalid input", 400
 

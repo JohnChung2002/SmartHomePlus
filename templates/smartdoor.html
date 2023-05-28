@@ -273,11 +273,18 @@
                         title: 'Settings Updated!'
                     })
                 },
-                error: function(data) {
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'Settings failed to update!'
-                    })
+                error: function(xhr, status, error) {
+                    if (xhr.status === 304) {
+                        Toast.fire({
+                            icon: 'info',
+                            title: 'Settings not modified!'
+                        })
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Settings failed to update! Check your input!'
+                        })
+                    }
                 }
             });
         });
