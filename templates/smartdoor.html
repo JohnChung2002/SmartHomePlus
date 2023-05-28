@@ -4,18 +4,22 @@
 
 {% block head %}
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        table tbody tr td {
+            padding: 5px 0;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
     <div class="container">
         <div>
             <h3 class="mt-4">History Table</h3>
-            <table id="historyTable" class="display w-100 my-2"></table>
+            <table id="historyTable" class="display cell-border w-100 my-2"></table>
             <h3 class="mt-4">RFID Table</h3>
-            <table id="rfidTable" class="display w-100 my-2"></table>
+            <table id="rfidTable" class="display cell-border w-100 my-2"></table>
             <h3 class="mt-4">Stranger Table</h3>
-            <table id="strangerTable" class="display w-100 my-2"></table>
+            <table id="strangerTable" class="display cell-border w-100 my-2"></table>
         </div>
     </div>
     <h2>Controls</h2>
