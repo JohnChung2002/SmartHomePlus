@@ -36,4 +36,4 @@ def login_post():
 def logout():
     session.pop('user_id', None)
     session.pop('user_role', None)
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('main.auth.login'))
