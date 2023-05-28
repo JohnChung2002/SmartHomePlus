@@ -85,15 +85,19 @@ def on_message(client, userdata, msg):
     if msg.topic == "/john_node":
         json_message = ast.literal_eval(message_mqtt)
         if (json_message["sender"] == "Edge"):
+            message = None
             if (json_message["title"] == "Lights"):
                 with mqtt_dbconn:
                     mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), lights_dict[json_message["room"]]])
+                message = "Lights in " + json_message["room"] + " turned " + "On" if (int(json_message["status"]) == 1) else "Off"
             if (json_message["title"] == "Aircon Switch"):
                 with mqtt_dbconn:
                     mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), aircon_dict[json_message["room"]]])
+                message = "Aircon in " + json_message["room"] + " turned " + "On" if (int(json_message["status"]) == 1) else "Off"
             if (json_message["title"] == "Ventilating Fan"):
                 with mqtt_dbconn:
                     mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), 6])
+                message = "Ventilating Fan turned " + "On" if (int(json_message["status"]) == 1) else "Off"
             if (json_message["title"] == "Update Uptime"):
                 with mqtt_dbconn:
                     today = datetime.date.today().strftime("%Y-%m-%d")
@@ -102,6 +106,19 @@ def on_message(client, userdata, msg):
                         mqtt_dbconn.insert("appliance_uptime", ["appliance_id", "uptime", "date"], [json_message["appliance_id"], int(json_message["uptime"]), today])
                     else:
                         mqtt_dbconn.update("appliance_uptime", ["uptime"], ["appliance_id"], [int(json_message["uptime"]), json_message["appliance_id"]])
+            if message is not None:
+                webhook = DiscordWebhook(
+                    url=os.getenv("AUTOMATION_DISCORD_WEBHOOK"), 
+                    username="Home Appliance Bot"
+                )
+                embed = DiscordEmbed(
+                    title="Home Appliance Webhook", 
+                    description=message, 
+                    color="03b2f8",
+                    url = "https://dashboard.digitalserver.tech/"
+                )
+                webhook.add_embed(embed)
+                webhook.execute()
             print("Received John's MQTT message: ", msg.payload.decode())         
     if msg.topic == "/cheryl_node":
         if ("," in message_mqtt and "Update Wetness Threshold" not in message_mqtt):

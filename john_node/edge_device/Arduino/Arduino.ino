@@ -74,10 +74,6 @@ void setup()
   Serial.println(serialOutput);
 }
 
-void loadInformation() {
-  
-}
-
 void checkButtonClick() {
   for (int i = 0; i < (sizeof(button_status) / sizeof(button_status[0])); i+=2) {
     int reading = digitalRead(button_pins[(i/2)]);

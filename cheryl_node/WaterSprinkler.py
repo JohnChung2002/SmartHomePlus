@@ -4,10 +4,6 @@ import datetime
 
 sprinkler_bp = Blueprint('WaterSprinkler', __name__)
 
-# Dictionary of pins with name of pin and state ON/OFF 
-pins = { 
-    11: {'name' : 'PIN 11', 'state' : 0}  
-} 
 topic = "/cheryl_node"
 
 # Function to send simple commands 

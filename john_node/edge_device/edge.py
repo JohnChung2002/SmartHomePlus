@@ -16,10 +16,6 @@ aircon_dict = {
     "2": 5
 }
 
-current_configs = {
-    
-}
-
 ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
 ser.reset_input_buffer()
 
@@ -111,17 +107,10 @@ client.on_connect = on_connect
 client.on_publish = on_publish
 client.on_message = on_message
 client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
-
 mysql = MySQLService(os.getenv("LOCAL_DATABASE_HOST"), os.getenv("LOCAL_DATABASE_USERNAME"), os.getenv("LOCAL_DATABASE_PASSWORD"), os.getenv("LOCAL_DATABASE_NAME"))
-
 topic = "/john_node"
 client.subscribe(topic)
-
-
-
 client.loop_start()
-
-
 read_serial_input()
 
 
