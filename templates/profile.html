@@ -19,16 +19,16 @@
         <h3 class="text-center mt-3">Update Profile</h3>
         <form id="profileForm" action="/api/node_3/update_profile" method="post" class="row g-3">
           <div class="col-md-3">
-            <label for="updated-birthday" class="form-label">Birthday</label>
-            <input type="date" id="updated-birthday" name="updated-birthday" class="form-control">
+            <label for="birthday" class="form-label">Birthday</label>
+            <input type="date" id="birthday" name="birthday" class="form-control">
           </div>
           <div class="col-md-3">
-            <label for="updated-height" class="form-label">Height (cm)</label>
-            <input type="text" id="updated-height" name="updated-height" class="form-control">
+            <label for="height" class="form-label">Height (cm)</label>
+            <input type="text" id="height" name="height" class="form-control">
           </div>
           <div class="col-md-3">
-            <label for="updated-weight" class="form-label">Weight (kg)</label>
-            <input type="text" id="updated-weight" name="updated-weight" class="form-control">
+            <label for="weight" class="form-label">Weight (kg)</label>
+            <input type="text" id="weight" name="weight" class="form-control">
           </div>
           <div class="col-md-3">
             <div class="form-submit">
@@ -114,6 +114,9 @@
 {% endif %}
 <script>
 $(document).ready(function() {
+    $("#birthday").val({{ birthday }});
+    $("#height").val({{ height }});
+    $("#weight").val({{ weight }});
     $('#profileForm').submit(function(event) {
         event.preventDefault();
         var form = $(this);

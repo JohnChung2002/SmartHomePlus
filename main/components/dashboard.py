@@ -40,4 +40,4 @@ def smart_sprinkler():
 def profile():
     with g.dbconn:
         user = g.dbconn.get_by_id("Profile", ["profile_id"], [session["user_id"]])
-    return render_template('profile.html', name=user["name"], user=user)
+    return render_template('profile.html', name=user["name"], role=session["user_role"], birthday=user["birthday"], weight=user['weight'], height=user['height'])
