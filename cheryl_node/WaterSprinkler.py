@@ -1,4 +1,5 @@
 from flask import Blueprint, Flask, render_template, redirect, url_for, request, g
+from ..shared.services.auth_middleware import auth_middleware
 import datetime
 
 sprinkler_bp = Blueprint('WaterSprinkler', __name__)
@@ -9,47 +10,36 @@ pins = {
 } 
 topic = "/cheryl_node"
 
-# Main function when accessing the website 
-@sprinkler_bp.route("/") 
-def index():
-    # Pass the template data into the template index.html and return it 
-    return render_template('cheryl_index.html')
-
 # Function to send simple commands 
-@sprinkler_bp.route("/<action>") 
+@sprinkler_bp.route("/<action>")
+@auth_middleware
 def action(action): 
     if action == 'action1' : 
-#         ser.write(b"1")
         g.client.publish(topic, "Sprinkler Off")
-        pins[11]['state'] = 0 
     if action == 'action2' : 
-#         ser.write(b"2")
         g.client.publish(topic, "Sprinkler On")
-        pins[11]['state'] = 1
     if action == 'action3' : 
-#         ser.write(b"3")
         g.client.publish(topic, "Spray at Intruder")
-        pins[11]['state'] = 2
-#     if action == 'action4' : 
-#         ser.write(b"4") 
-#         pins[12]['state'] = 0
-#     if action == 'action5' : 
-#         ser.write(b"5") 
-#         pins[12]['state'] = 1
-        
-    return redirect(url_for('cheryl_node.WaterSprinkler.index'))
+    else:
+        return "Invalid action", 400
+    return "Success", 200
 
 #  This is to change the threshold value of the brightness
 @sprinkler_bp.route('/submit-form', methods=['POST'])
+@auth_middleware
 def submit_form():
-    wetnessVal = int(request.form['wetness'])
-    with g.dbconn:
-        g.dbconn.update("system_data", ["status"], ["field"], [wetnessVal, "wetness_value"])
-    g.client.publish(topic, f"Update Wetness Threshold,{wetnessVal}")
-#     return 'Form submitted successfully'
-    return redirect(url_for('cheryl_node.WaterSprinkler.index'))
+    try:
+        wetnessVal = int(request.form['wetness'])
+        with g.dbconn:
+            g.dbconn.update("system_data", ["status"], ["field"], [wetnessVal, "wetness_value"])
+        g.client.publish(topic, f"Update Wetness Threshold,{wetnessVal}")
+        return "Success", 200
+    except:
+        return "Invalid wetness value", 400
+    
 
 @sprinkler_bp.route('/get-environment-data', methods=['POST'])
+@auth_middleware
 def get_environment_data():
     #check if there is date data, if there is, get the data from the date
     #if there is no date data, get the latest data
