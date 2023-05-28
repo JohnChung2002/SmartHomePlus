@@ -14,32 +14,6 @@ pins = {
         }
 topic = "/timmy_node"
 
-# homepage (dashboard)
-@remote_bp.route("/")
-def smartdoor():
-    # accessing database and table
-    mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
-    mycursor = mydb.cursor()
-    mycursor.execute("SELECT * FROM History")
-    history = mycursor.fetchall()
-    mycursor.execute("SELECT * FROM RFID")
-    rfid = mycursor.fetchall()
-    mycursor.execute("SELECT * FROM Settings")
-    settings = mycursor.fetchall()
-    mycursor.execute("SELECT * FROM Stranger")
-    stranger = mycursor.fetchall()
-    mycursor.close()
-        
-    templateData = {
-                    'history' : history,
-                    'rfid' : rfid,
-                    'settings' : settings,
-                    'stranger' : stranger
-                    }
-
-    # updates homepage with template content
-    return render_template('smartdoor.html', **templateData)
-
 # fully opens or closes the smart pet door
 @remote_bp.route("/<control>")
 def doorcontrol(control):

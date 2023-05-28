@@ -11,6 +11,25 @@ def dashboard():
         user = g.dbconn.get_by_id("user_details", ["user_id"], [session["user_id"]])
     return render_template('index.html', name=user["name"])
 
+@dashboard_bp.route("/smart_security")
+def smart_door():
+    # accessing database and table
+    with g.dbconn:
+        user = g.dbconn.get_by_id("user_details", ["user_id"], [session["user_id"]])
+        history = g.dbconn.get_all("history")
+        rfid = g.dbconn.get_all("rfid")
+        settings = g.dbconn.get_all("settings")
+        stranger = g.dbconn.get_all("stranger")
+    templateData = {
+        'history' : history,
+        'rfid' : rfid,
+        'settings' : settings,
+        'stranger' : stranger
+    }
+
+    # updates homepage with template content
+    return render_template('smartdoor.html', **templateData, name=user["name"])
+
 @dashboard_bp.route('/home_control', methods=['GET'])
 @auth_middleware
 def home_remote():
@@ -19,7 +38,7 @@ def home_remote():
     return render_template('home_control.html', name=user["name"])
 
 @dashboard_bp.route("/smart_sprinkler") 
-def index():
+def smart_sprinkler():
     with g.dbconn:
         user = g.dbconn.get_by_id("user_details", ["user_id"], [session["user_id"]])
     return render_template('cheryl_index.html', name=user["name"])
