@@ -2,8 +2,8 @@ from datetime import date
 from flask import Flask, render_template, request, redirect, url_for, Response, Blueprint, g, jsonify
 import mysql.connector
 import os
-from dotenv import load_dotenv
 from shared.services.auth_middleware import auth_middleware
+from shared.services.validation_service import validate_timmy_settings
 
 remote_bp = Blueprint('remote_door', __name__)
 
@@ -41,35 +41,26 @@ def stranger():
         return jsonify(g.dbconn.get_all("Stranger"))
 
 # updates different settings
-@remote_bp.route("/update_settings", methods=["GET", "POST"])
-def updatesettings():
-    # accessing database and table
-#     with g.dbconn:
-#         data = g.dbconn.get_last_entry("Settings", "settings_id")
-#         settingsID = data["settings_id"]
-    
+@remote_bp.route("/update_settings", methods=["POST"])
+@auth_middleware
+@validate_timmy_settings
+def updatesettings():  
     settingsHTML = ['door-height', 'in-distance-threshold', 'out-distance-threshold', 'closing-duration', 'detection-duration', 'face-detection-duration']
     settingsDatabase = ['door_height', 'distance_in_detection', 'distance_out_detection', 'time_close', 'time_detection', 'time_face_detection']
     
-    if request.method == "POST":
+    settingsValue = []
+    try:
         for i in range(len(settingsHTML)):
-            settingsValue = request.form.get(settingsHTML[i])
-            
-            if settingsValue != None:
-                with g.dbconn:
-                    data = g.dbconn.get_last_entry("Settings", "settings_id")
-                    settingsID = data["settings_id"]
-                    print(settingsID)
-                    mqtt_dbconn.update("Settings", [settingsDatabase[i]], ["settings_id"], [settingsValue, settingsID])
-#                 mydb = mysql.connector.connect(user=os.getenv("CLOUD_DATABASE_USERNAME"), password=os.getenv("CLOUD_DATABASE_PASSWORD"), host=os.getenv("CLOUD_DATABASE_HOST"), database=os.getenv("CLOUD_DATABASE_NAME"))
-#                 mycursor = mydb.cursor()
-#                 sql = "UPDATE Settings SET " + settingsDatabase[i] + " = '" + settingsValue + "' WHERE settings_id = '" + str(settingsID) + "'"
-#                 mycursor.execute(sql)
-#                 mydb.commit()
-#                 mycursor.close()
-
-    # redirects to the homepage
-    return redirect(url_for('timmy_node.remote_door.smartdoor'))
+            settingsValue.append(int(request.form.get(settingsHTML[i])))
+        with g.dbconn:
+            data = g.dbconn.get_last_entry("Settings", "settings_id")
+            settingsID = data["settings_id"]
+            print(settingsID)
+            settingsValue.append(settingsID)
+            g.dbconn.update("Settings", settingsDatabase, ["settings_id"], settingsValue)
+        return "Success", 200
+    except:
+        return "Invalid input", 400
 
 # profile page
 @remote_bp.route("/profile")
