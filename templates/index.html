@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+
+{% block title %}Smart Water Sprinkler{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h3 class="text-center">Welcome back {{ name }}!</h3>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Smart Security</h5>
+                    <p class="card-text">Manage smart door and intruder alerts</p>
+                    <a href="/smart_security" class="btn btn-primary">Go to Smart Security</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Home Control</h5>
+                    <p class="card-text">Manage your home appliances</p>
+                    <a href="/home_control" class="btn btn-primary">Go to Home Control</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Smart Sprinkler</h5>
+                    <p class="card-text">Manage your garden sprinkler</p>
+                    <a href="/smart_sprinkler" class="btn btn-primary">Go to Smart Sprinkler</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
