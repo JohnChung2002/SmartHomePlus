@@ -66,20 +66,7 @@
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="/static/country_code.js"></script>
 <script>
-    const Toast = Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        showCloseButton: true,
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer)
-            toast.addEventListener('mouseleave', Swal.resumeTimer)
-        }
-    })
-
-    function getProfile() {
+        function getProfile() {
         return new Promise(function(resolve, reject) {
             $.ajax({
                 type: "GET",
@@ -143,6 +130,18 @@
 {% endif %}
 <script>
 $(document).ready(function() {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        showCloseButton: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    })
     $("#birthday").val(new Date("{{ birthday }}").toISOString().slice(0, 10));
     $("#height").val({{ height }});
     $("#weight").val({{ weight }});
