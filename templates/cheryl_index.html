@@ -134,20 +134,23 @@
             },
             series: [
               {
-                name: 'Temperature',
+                name: 'Temperature (°C)',
                 data: []
               },
               {
-                name: 'Brightness',
+                name: 'Brightness (%)',
                 data: []
               },
               {
-                name: 'Wetness',
+                name: 'Wetness (%)',
                 data: []
               }
             ],
             xaxis: {
-              type: 'datetime'
+              type: 'datetime',
+              title: {
+                text: 'Time'
+              }
             },
             yaxis: {
               min: 0,
