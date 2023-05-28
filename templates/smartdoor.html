@@ -23,36 +23,6 @@
         <button class="homepage-control-btn" onclick="open()">Open</button>
         <button class="homepage-control-btn" onclick="close()">Close</button>
     </div>
-
-        
-    
-    <h2>Settings Table</h2>
-
-    <div class="table-container">
-        <div class="table">
-            <div class="table-row table-header">
-                <div class="table-cell">Settings ID</div>
-                <div class="table-cell">Door Height (cm)</div>
-                <div class="table-cell">In Distance Threshold (cm)</div>
-                <div class="table-cell">Out Distance Threshold (cm)</div>
-                <div class="table-cell">Closing Duration (seconds)</div>
-                <div class="table-cell">Detection Duration (seconds)</div>
-                <div class="table-cell">Face Detection Duration (seconds)</div>
-            </div>
-              
-            {% for item in settings %}
-            <div class="table-row">
-                <div class="table-cell">{{ item['settings_id'] }}</div>
-                <div class="table-cell">{{ item['door_height'] }}</div>
-                <div class="table-cell">{{ item['distance_in_detection'] }}</div>
-                <div class="table-cell">{{ item['distance_out_detection'] }}</div>
-                <div class="table-cell">{{ item['time_close'] }}</div>
-                <div class="table-cell">{{ item['time_detection'] }}</div>
-                <div class="table-cell">{{ item['time_face_detection'] }}</div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
     
     <h2 class="settings-h2">Update Settings</h2>
 
@@ -219,12 +189,12 @@
         })
     }
     $(document).ready(function() {
-        $("#door-height").val("{{ settings['door_height'] }}");
-        $("#in-distance-threshold").val("{{ settings['in_distance_threshold'] }}");
-        $("#out-distance-threshold").val("{{ settings['out_distance_threshold'] }}");
-        $("#closing-duration").val("{{ settings['closing_duration'] }}");
-        $("#detection-duration").val("{{ settings['detection_duration'] }}");
-        $("#face-detection-duration").val("{{ settings['face_detection_duration'] }}");
+        $("#door-height").val({{ settings['door_height'] }});
+        $("#in-distance-threshold").val({{ settings['distance_in_detection'] }});
+        $("#out-distance-threshold").val({{ settings['distance_out_detection'] }});
+        $("#closing-duration").val({{ settings['time_close'] }});
+        $("#detection-duration").val({{ settings['time_detection'] }});
+        $("#face-detection-duration").val({{ settings['time_face_detection'] }});
         getHistory().then(function(data) {
             $('#historyTable').DataTable({
                 data: data,
