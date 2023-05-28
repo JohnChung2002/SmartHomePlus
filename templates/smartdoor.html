@@ -3,7 +3,10 @@
 {% block title %}Smart Security{% endblock %}
 
 {% block content %}
-    <link rel="stylesheet" href='/static/style.css'>
+    <div class="container">
+        <table id="historyTable" class="display w-100"></table>
+    </div>
+
     <div class="navigation">
         <a href="/api/node_3/profile"><button class="navigation-btn">Profile</button></a>
     </div>
@@ -210,6 +213,8 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script>
     function open() {
         $.ajax({
@@ -235,5 +240,43 @@
             }
         });
     }
+    function getHistory() {
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                type: "GET",
+                url: "/api/node_3/history",
+                success: function (result) {
+                    resolve(result);
+                },
+                error: function (result) {
+                    reject(result);
+                }
+            });
+        })
+    }
+    $(document).ready(function() {
+        getHistory().then(function(data) {
+            $('#historyTable').DataTable({
+                data: data,
+                columns: [
+                    { title: "Unlock ID", data: "unlock_id" },
+                    { title: "Unlock Timestamp", data: "unlock_timestamp" },
+                    { title: "Unlock Type", data: "unlock_type" },
+                    { title: "Unlock Status", data: "unlock_status" },
+                    { title: "User Name", data: "name" },
+                    { title: "Key Type", data: "key_type" },
+                    { title: "In/Out Timestamp", data: "in_out_timestamp" },
+                    { title: "In/Out Type", data: "in_out_type" },
+                    { title: "Weight (kg)", data: "weight" },
+                    { title: "Height (cm)", data: "height" },
+                    { title: "BMI", data: "bmi" },
+                    { title: "Remote Approval Timestamp", data: "remote_approval_timestamp" },
+                    { title: "Remote Approval Status", data: "remote_approval_status" },
+                    { title: "Remote Approval User Name", data: "remote_approval_user_name" }
+                ]
+            });
+
+            });
+        });
 </script>
 {% endblock %}
