@@ -11,8 +11,8 @@
     <h1 class="text-center mb-4">Smart Door Controls</h1>
     <div class="row justify-content-center mb-4">
         <div class="col-auto">
-            <button class="btn btn-primary mx-2" onclick="open()">Unlock Door</button>
-            <button class="btn btn-primary mx-2" onclick="close()">Lock Door</button>
+            <button class="btn btn-primary mx-2" onclick="openDoor()">Unlock Door</button>
+            <button class="btn btn-primary mx-2" onclick="closeDoor()">Lock Door</button>
         </div>
     </div>
     <div>
@@ -125,7 +125,7 @@
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script>
-    function open() {
+    function openDoor() {
         $.ajax({
             url: "/api/node_3/control1",
             type: "GET",
@@ -137,7 +137,7 @@
             }
         });
     }
-    function close() {
+    function closeDoor() {
         $.ajax({
             url: "/api/node_3/control2",
             type: "GET",
