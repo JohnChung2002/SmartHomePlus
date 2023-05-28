@@ -11,17 +11,22 @@ pins = {
 topic = "/cheryl_node"
 
 # Function to send simple commands 
-@sprinkler_bp.route("/<action>")
+@sprinkler_bp.route("/action1")
 @auth_middleware
-def action(action): 
-    if action == 'action1' : 
-        g.client.publish(topic, "Sprinkler Off")
-    if action == 'action2' : 
-        g.client.publish(topic, "Sprinkler On")
-    if action == 'action3' : 
-        g.client.publish(topic, "Spray at Intruder")
-    else:
-        return "Invalid action", 400
+def action1(): 
+    g.client.publish(topic, "Sprinkler Off")
+    return "Success", 200
+
+@sprinkler_bp.route("/action2")
+@auth_middleware
+def action2():
+    g.client.publish(topic, "Sprinkler On")
+    return "Success", 200
+
+@sprinkler_bp.route("/action3")
+@auth_middleware
+def action3():
+    g.client.publish(topic, "Spray at Intruder")
     return "Success", 200
 
 #  This is to change the threshold value of the brightness

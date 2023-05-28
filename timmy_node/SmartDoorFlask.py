@@ -1,30 +1,25 @@
-import serial
 from datetime import date
-import time
 from flask import Flask, render_template, request, redirect, url_for, Response, Blueprint, g
 import mysql.connector
 import os
 from dotenv import load_dotenv
+from shared.services.auth_middleware import auth_middleware
 
 remote_bp = Blueprint('remote_door', __name__)
 
-# pin dictionary
-pins = {
-        5: {'name' : 'PIN5', 'state' : 0}
-        }
 topic = "/timmy_node"
 
 # fully opens or closes the smart pet door
-@remote_bp.route("/<control>")
-def doorcontrol(control):
-    if control == 'control1' :
-        g.client.publish(topic, "doorOpen")
-        pins[5]['state'] = 1
-    if control == 'control2' :
-        g.client.publish(topic, "doorClose")
-        pins[5]['state'] = 0
-    else:
-        return "Invalid action", 400
+@remote_bp.route("/control1")
+@auth_middleware
+def doorcontrol1():
+    g.client.publish(topic, "doorOpen")
+    return "Success", 200
+    
+@remote_bp.route("/control2")
+@auth_middleware
+def doorcontrol2():
+    g.client.publish(topic, "doorClose")
     return "Success", 200
 
 # updates different settings
