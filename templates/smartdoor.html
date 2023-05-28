@@ -1,31 +1,18 @@
-<!DOCTYPE html>
-<head>
-    <title>Smart Door Homepage</title>
-    <link rel="stylesheet" href='/static/style.css'>
-</head>
+{% extends 'layout.html' %}
 
-<body>
-    <h1><a href="/api/node_3/">Smart Door</a></h1>
-    <h2>Home Page</h2>
-    
+{% block title %}Smart Security{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href='/static/style.css'>
     <div class="navigation">
-        <a href="/api/node_3/"><button class="navigation-btn">Home</button></a>
         <a href="/api/node_3/profile"><button class="navigation-btn">Profile</button></a>
     </div>
 
     <h2>Controls</h2>
-    
-    {% for pin in pins %}
-    {% if pins[pin].state == 0 %}
-    <h3>The door is closed!</h3>
-    {% else %}
-    <h3>The door is open!</h3>
-    {% endif %}
-    {% endfor %}
 
     <div class="homepage-control">
-        <a href="/api/node_3/control1"><button class="homepage-control-btn" id="homepage-control-btn-open">Open</button></a>
-        <a href="/api/node_3/control2"><button class="homepage-control-btn" id="homepage-control-btn-close">Close</button></a>
+        <button class="homepage-control-btn" onclick="open()">Open</button>
+        <button class="homepage-control-btn" onclick="close()">Close</button>
     </div>
     
     <br>
@@ -220,6 +207,33 @@
             </div>
         </form>
     </div>
-</body>
+{% endblock %}
 
-</html>
+{% block scripts %}
+    <script>
+        function open() {
+            $.ajax({
+                url: "/api/node_3/control1",
+                type: "GET",
+                success: function() {
+                    alert("Door Opened!");
+                },
+                error: function() {
+                    alert("Door failed to open!");
+                }
+            });
+        }
+        function close() {
+            $.ajax({
+                url: "/api/node_3/control2",
+                type: "GET",
+                success: function() {
+                    alert("Door Closed!");
+                },
+                error: function() {
+                    alert("Door failed to close!");
+                }
+            });
+        }
+    </script>
+{% endblock %}
