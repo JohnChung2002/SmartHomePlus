@@ -17,7 +17,7 @@
     {% endif %}
     <div class="row align-items-center">
         <h3 class="text-center mt-3">Update Profile</h3>
-        <form id="profileForm" action="/api/node_3/update_profile" method="post" class="row g-3">
+        <form id="profileForm" action="/api/node_3/update_profile" method="post" class="row align-items-center">
           <div class="col-md-3">
             <label for="birthday" class="form-label">Birthday</label>
             <input type="date" id="birthday" name="birthday" class="form-control">
@@ -38,11 +38,11 @@
         </form>
     </div>
     {% if role == "Admin" %}
-    <div class="row align-items-center">
+    <div class="row">
         <h3 class="text-center mt-3">Update System Config</h3>
         <!--Edit the country code which the weather api depends on-->
         <form id="configForm" action="/api/node_1/config" method="post">
-            <div class="row g-3">
+            <div class="row align-items-center">
                 <div class="col-md-9">
                     <label for="iata_region" class="form-label">IATA Region</label>
                     <select id="iata_region" name="iata_region" class="form-select"></select>
