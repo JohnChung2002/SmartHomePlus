@@ -15,11 +15,11 @@
     <div class="container">
         <div>
             <h3 class="mt-4">History Table</h3>
-            <table id="historyTable" class="display cell-border w-100 my-2"></table>
+            <table id="historyTable" class="display table table-bordered w-100 my-2"></table>
             <h3 class="mt-4">RFID Table</h3>
-            <table id="rfidTable" class="display cell-border w-100 my-2"></table>
+            <table id="rfidTable" class="display table table-bordered w-100 my-2"></table>
             <h3 class="mt-4">Stranger Table</h3>
-            <table id="strangerTable" class="display cell-border w-100 my-2"></table>
+            <table id="strangerTable" class="display table table-bordered w-100 my-2"></table>
         </div>
     </div>
     <h2>Controls</h2>
@@ -230,7 +230,6 @@
         $("#closing-duration").val({{ closing_duration }});
         $("#detection-duration").val({{ detection_duration }});
         $("#face-detection-duration").val({{ face_detection_duration }});
-        $.fn.dataTableExt.oStdClasses.sWrapper = "cell-border dt-bootstrap5 no-footer";
         getHistory().then(function(data) {
             $('#historyTable').DataTable({
                 data: data,
