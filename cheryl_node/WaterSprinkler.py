@@ -1,5 +1,5 @@
 from flask import Blueprint, Flask, render_template, redirect, url_for, request, g
-from ..shared.services.auth_middleware import auth_middleware
+from shared.services.auth_middleware import auth_middleware
 import datetime
 
 sprinkler_bp = Blueprint('WaterSprinkler', __name__)
