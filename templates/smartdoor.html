@@ -7,115 +7,118 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div>
-            <h3 class="mt-4">History Table</h3>
-            <table id="historyTable" class="display table table-bordered w-100 my-2"></table>
-            <h3 class="mt-4">RFID Table</h3>
-            <table id="rfidTable" class="display table table-bordered w-100 my-2"></table>
-            <h3 class="mt-4">Stranger Table</h3>
-            <table id="strangerTable" class="display table table-bordered w-100 my-2"></table>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Smart Door Controls/h1>
+    <div class="row justify-content-center mb-4">
+        <div class="col-auto">
+            <button class="btn btn-primary mx-2" onclick="open()">Unlock Door</button>
+            <button class="btn btn-primary mx-2" onclick="close()">Lock Door</button>
         </div>
     </div>
-    <h2>Controls</h2>
-
-    <div class="homepage-control">
-        <button class="homepage-control-btn" onclick="open()">Open</button>
-        <button class="homepage-control-btn" onclick="close()">Close</button>
+    <div>
+        <h3 class="mt-4">History Table</h3>
+        <table id="historyTable" class="display table table-bordered w-100 my-2"></table>
+        <h3 class="mt-4">RFID Table</h3>
+        <table id="rfidTable" class="display table table-bordered w-100 my-2"></table>
+        <h3 class="mt-4">Stranger Table</h3>
+        <table id="strangerTable" class="display table table-bordered w-100 my-2"></table>
     </div>
-    
-    <h2 class="settings-h2">Update Settings</h2>
+</div>
 
-    <div class="form">
-        <form action="/api/node_3/update_settings" method="post">
-            <label for="door-height">Door Height (cm)</label>
-            <select name="door-height" id="door-height">
-                <option disabled selected value>-- Select --</option>
-                <option value="180">180 cm</option>
-                <option value="185">185 cm</option>
-                <option value="190">190 cm</option>
-                <option value="195">195 cm</option>
-                <option value="200">200 cm</option>
-                <option value="205">205 cm</option>
-                <option value="210">210 cm</option>
-            </select>
-
-            <label for="in-distance-threshold">In Distance Threshold (cm)</label>
-            <select name="in-distance-threshold" id="in-distance-threshold">
-                <option disabled selected value>-- Select --</option>
-                <option value="30">30 cm</option>
-                <option value="35">35 cm</option>
-                <option value="40">40 cm</option>
-                <option value="45">45 cm</option>
-                <option value="50">50 cm</option>
-                <option value="55">55 cm</option>
-                <option value="60">60 cm</option>
-                <option value="65">65 cm</option>
-                <option value="70">70 cm</option>
-            </select>
-
-            <label for="out-distance-threshold">In Distance Threshold (cm)</label>
-            <select name="out-distance-threshold" id="out-distance-threshold">
-                <option disabled selected value>-- Select --</option>
-                <option value="30">30 cm</option>
-                <option value="35">35 cm</option>
-                <option value="40">40 cm</option>
-                <option value="45">45 cm</option>
-                <option value="50">50 cm</option>
-                <option value="55">55 cm</option>
-                <option value="60">60 cm</option>
-                <option value="65">65 cm</option>
-                <option value="70">70 cm</option>
-            </select>
-
-            <label for="closing-duration">Closing Duration (seconds)</label>
-            <select name="closing-duration" id="closing-duration">
-                <option disabled selected value>-- Select --</option>
-                <option value="3">3 seconds</option>
-                <option value="4">4 seconds</option>
-                <option value="5">5 seconds</option>
-                <option value="6">6 seconds</option>
-                <option value="7">7 seconds</option>
-                <option value="8">8 seconds</option>
-                <option value="9">9 seconds</option>
-                <option value="10">10 seconds</option>
-            </select>
-
-            <label for="detection-duration">Detection Duration (seconds)</label>
-            <select name="detection-duration" id="detection-duration">
-                <option disabled selected value>-- Select --</option>
-                <option value="3">3 seconds</option>
-                <option value="4">4 seconds</option>
-                <option value="5">5 seconds</option>
-                <option value="6">6 seconds</option>
-                <option value="7">7 seconds</option>
-                <option value="8">8 seconds</option>
-                <option value="9">9 seconds</option>
-                <option value="10">10 seconds</option>
-                <option value="11">11 seconds</option>
-                <option value="12">12 seconds</option>
-            </select>
-
-            <label for="face-detection-duration">Detection Duration (seconds)</label>
-            <select name="face-detection-duration" id="face-detection-duration">
-                <option disabled selected value>-- Select --</option>
-                <option value="3">3 seconds</option>
-                <option value="4">4 seconds</option>
-                <option value="5">5 seconds</option>
-                <option value="6">6 seconds</option>
-                <option value="7">7 seconds</option>
-                <option value="8">8 seconds</option>
-                <option value="9">9 seconds</option>
-                <option value="10">10 seconds</option>
-                <option value="11">11 seconds</option>
-                <option value="12">12 seconds</option>
-            </select>
-
-            <div class="form-submit">
-                <input type="submit" value="Update Settings">
-            </div>
-        </form>
+<h2 class="settings-h2">Update Settings</h2>
+<form class="form-inline" action="/api/node_3/update_settings" method="post">
+    <div class="form-group">
+      <label for="door-height">Door Height (cm)</label>
+      <select class="form-control" name="door-height" id="door-height">
+        <option disabled selected value>-- Select --</option>
+        <option value="180">180 cm</option>
+        <option value="185">185 cm</option>
+        <option value="190">190 cm</option>
+        <option value="195">195 cm</option>
+        <option value="200">200 cm</option>
+        <option value="205">205 cm</option>
+        <option value="210">210 cm</option>
+      </select>
     </div>
+
+    <div class="form-group">
+        <label for="in-distance-threshold">In Distance Threshold (cm)</label>
+        <select class="form-control" name="in-distance-threshold" id="in-distance-threshold">
+          <option disabled selected value>-- Select --</option>
+          <option value="30">30 cm</option>
+          <option value="35">35 cm</option>
+          <option value="40">40 cm</option>
+          <option value="45">45 cm</option>
+          <option value="50">50 cm</option>
+          <option value="55">55 cm</option>
+          <option value="60">60 cm</option>
+          <option value="65">65 cm</option>
+          <option value="70">70 cm</option>
+        </select>
+    </div>   
+
+        <label for="out-distance-threshold">In Distance Threshold (cm)</label>
+        <select name="out-distance-threshold" id="out-distance-threshold">
+            <option disabled selected value>-- Select --</option>
+            <option value="30">30 cm</option>
+            <option value="35">35 cm</option>
+            <option value="40">40 cm</option>
+            <option value="45">45 cm</option>
+            <option value="50">50 cm</option>
+            <option value="55">55 cm</option>
+            <option value="60">60 cm</option>
+            <option value="65">65 cm</option>
+            <option value="70">70 cm</option>
+        </select>
+
+        <label for="closing-duration">Closing Duration (seconds)</label>
+        <select name="closing-duration" id="closing-duration">
+            <option disabled selected value>-- Select --</option>
+            <option value="3">3 seconds</option>
+            <option value="4">4 seconds</option>
+            <option value="5">5 seconds</option>
+            <option value="6">6 seconds</option>
+            <option value="7">7 seconds</option>
+            <option value="8">8 seconds</option>
+            <option value="9">9 seconds</option>
+            <option value="10">10 seconds</option>
+        </select>
+
+        <label for="detection-duration">Detection Duration (seconds)</label>
+        <select name="detection-duration" id="detection-duration">
+            <option disabled selected value>-- Select --</option>
+            <option value="3">3 seconds</option>
+            <option value="4">4 seconds</option>
+            <option value="5">5 seconds</option>
+            <option value="6">6 seconds</option>
+            <option value="7">7 seconds</option>
+            <option value="8">8 seconds</option>
+            <option value="9">9 seconds</option>
+            <option value="10">10 seconds</option>
+            <option value="11">11 seconds</option>
+            <option value="12">12 seconds</option>
+        </select>
+
+        <label for="face-detection-duration">Detection Duration (seconds)</label>
+        <select name="face-detection-duration" id="face-detection-duration">
+            <option disabled selected value>-- Select --</option>
+            <option value="3">3 seconds</option>
+            <option value="4">4 seconds</option>
+            <option value="5">5 seconds</option>
+            <option value="6">6 seconds</option>
+            <option value="7">7 seconds</option>
+            <option value="8">8 seconds</option>
+            <option value="9">9 seconds</option>
+            <option value="10">10 seconds</option>
+            <option value="11">11 seconds</option>
+            <option value="12">12 seconds</option>
+        </select>
+
+        <div class="form-submit">
+            <input type="submit" value="Update Settings">
+        </div>
+    </form>
+</div>
 {% endblock %}
 
 {% block scripts %}
