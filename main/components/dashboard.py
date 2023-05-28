@@ -19,7 +19,7 @@ def smart_door():
         settings = g.dbconn.get_all("Settings")
     # updates homepage with template content
     print(settings)
-    return render_template('smartdoor.html', name=user["name"], settings=settings)
+    return render_template('smartdoor.html', name=user["name"], settings=settings[0])
 
 @dashboard_bp.route('/home_control', methods=['GET'])
 @auth_middleware
