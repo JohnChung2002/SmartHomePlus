@@ -23,97 +23,99 @@
         <h3 class="mt-4">Stranger Table</h3>
         <table id="strangerTable" class="display table table-bordered w-100 my-2"></table>
     </div>
-</div>
-
-<h2 class="settings-h2">Update Settings</h2>
-<form class="form-inline" action="/api/node_3/update_settings" method="post">
-    <div class="form-group">
-      <label for="door-height">Door Height (cm)</label>
-      <select class="form-control" name="door-height" id="door-height">
-        <option disabled selected value>-- Select --</option>
-        <option value="180">180 cm</option>
-        <option value="185">185 cm</option>
-        <option value="190">190 cm</option>
-        <option value="195">195 cm</option>
-        <option value="200">200 cm</option>
-        <option value="205">205 cm</option>
-        <option value="210">210 cm</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-        <label for="in-distance-threshold">In Distance Threshold (cm)</label>
-        <select class="form-control" name="in-distance-threshold" id="in-distance-threshold">
-          <option disabled selected value>-- Select --</option>
-          <option value="30">30 cm</option>
-          <option value="35">35 cm</option>
-          <option value="40">40 cm</option>
-          <option value="45">45 cm</option>
-          <option value="50">50 cm</option>
-          <option value="55">55 cm</option>
-          <option value="60">60 cm</option>
-          <option value="65">65 cm</option>
-          <option value="70">70 cm</option>
-        </select>
-    </div>   
-
-        <label for="out-distance-threshold">In Distance Threshold (cm)</label>
-        <select name="out-distance-threshold" id="out-distance-threshold">
-            <option disabled selected value>-- Select --</option>
-            <option value="30">30 cm</option>
-            <option value="35">35 cm</option>
-            <option value="40">40 cm</option>
-            <option value="45">45 cm</option>
-            <option value="50">50 cm</option>
-            <option value="55">55 cm</option>
-            <option value="60">60 cm</option>
-            <option value="65">65 cm</option>
-            <option value="70">70 cm</option>
-        </select>
-
-        <label for="closing-duration">Closing Duration (seconds)</label>
-        <select name="closing-duration" id="closing-duration">
-            <option disabled selected value>-- Select --</option>
-            <option value="3">3 seconds</option>
-            <option value="4">4 seconds</option>
-            <option value="5">5 seconds</option>
-            <option value="6">6 seconds</option>
-            <option value="7">7 seconds</option>
-            <option value="8">8 seconds</option>
-            <option value="9">9 seconds</option>
-            <option value="10">10 seconds</option>
-        </select>
-
-        <label for="detection-duration">Detection Duration (seconds)</label>
-        <select name="detection-duration" id="detection-duration">
-            <option disabled selected value>-- Select --</option>
-            <option value="3">3 seconds</option>
-            <option value="4">4 seconds</option>
-            <option value="5">5 seconds</option>
-            <option value="6">6 seconds</option>
-            <option value="7">7 seconds</option>
-            <option value="8">8 seconds</option>
-            <option value="9">9 seconds</option>
-            <option value="10">10 seconds</option>
-            <option value="11">11 seconds</option>
-            <option value="12">12 seconds</option>
-        </select>
-
-        <label for="face-detection-duration">Detection Duration (seconds)</label>
-        <select name="face-detection-duration" id="face-detection-duration">
-            <option disabled selected value>-- Select --</option>
-            <option value="3">3 seconds</option>
-            <option value="4">4 seconds</option>
-            <option value="5">5 seconds</option>
-            <option value="6">6 seconds</option>
-            <option value="7">7 seconds</option>
-            <option value="8">8 seconds</option>
-            <option value="9">9 seconds</option>
-            <option value="10">10 seconds</option>
-            <option value="11">11 seconds</option>
-            <option value="12">12 seconds</option>
-        </select>
-
+    <h2 class="settings-h2">Update Settings</h2>
+    <form class="form-inline" action="/api/node_3/update_settings" method="post">
+        <div class="row form-group">
+            <div class="col-md-2">
+                <label for="door-height">Door Height (cm)</label>
+                <select class="form-control" name="door-height" id="door-height">
+                    <option disabled selected value>-- Select --</option>
+                    <option value="180">180 cm</option>
+                    <option value="185">185 cm</option>
+                    <option value="190">190 cm</option>
+                    <option value="195">195 cm</option>
+                    <option value="200">200 cm</option>
+                    <option value="205">205 cm</option>
+                    <option value="210">210 cm</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="in-distance-threshold">In Distance Threshold (cm)</label>
+                <select class="form-control" name="in-distance-threshold" id="in-distance-threshold">
+                    <option disabled selected value>-- Select --</option>
+                    <option value="30">30 cm</option>
+                    <option value="35">35 cm</option>
+                    <option value="40">40 cm</option>
+                    <option value="45">45 cm</option>
+                    <option value="50">50 cm</option>
+                    <option value="55">55 cm</option>
+                    <option value="60">60 cm</option>
+                    <option value="65">65 cm</option>
+                    <option value="70">70 cm</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="out-distance-threshold">In Distance Threshold (cm)</label>
+                <select class="form-control" name="out-distance-threshold" id="out-distance-threshold">
+                    <option disabled selected value>-- Select --</option>
+                    <option value="30">30 cm</option>
+                    <option value="35">35 cm</option>
+                    <option value="40">40 cm</option>
+                    <option value="45">45 cm</option>
+                    <option value="50">50 cm</option>
+                    <option value="55">55 cm</option>
+                    <option value="60">60 cm</option>
+                    <option value="65">65 cm</option>
+                    <option value="70">70 cm</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="closing-duration">Closing Duration (seconds)</label>
+                <select class="form-control" name="closing-duration" id="closing-duration">
+                    <option disabled selected value>-- Select --</option>
+                    <option value="3">3 seconds</option>
+                    <option value="4">4 seconds</option>
+                    <option value="5">5 seconds</option>
+                    <option value="6">6 seconds</option>
+                    <option value="7">7 seconds</option>
+                    <option value="8">8 seconds</option>
+                    <option value="9">9 seconds</option>
+                    <option value="10">10 seconds</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="detection-duration">Detection Duration (seconds)</label>
+                <select class="form-control" name="detection-duration" id="detection-duration">
+                    <option disabled selected value>-- Select --</option>
+                    <option value="3">3 seconds</option>
+                    <option value="4">4 seconds</option>
+                    <option value="5">5 seconds</option>
+                    <option value="6">6 seconds</option>
+                    <option value="7">7 seconds</option>
+                    <option value="8">8 seconds</option>
+                    <option value="9">9 seconds</option>
+                    <option value="10">10 seconds</option>
+                    <option value="11">11 seconds</option>
+                    <option value="12">12 seconds</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="face-detection-duration">Detection Duration (seconds)</label>
+                <select name="face-detection-duration" id="face-detection-duration">
+                    <option disabled selected value>-- Select --</option>
+                    <option value="3">3 seconds</option>
+                    <option value="4">4 seconds</option>
+                    <option value="5">5 seconds</option>
+                    <option value="6">6 seconds</option>
+                    <option value="7">7 seconds</option>
+                    <option value="8">8 seconds</option>
+                    <option value="9">9 seconds</option>
+                    <option value="10">10 seconds</option>
+                    <option value="11">11 seconds</option>
+                    <option value="12">12 seconds</option>
+                </select>
+            </div>
+        </div>
         <div class="form-submit">
             <input type="submit" value="Update Settings">
         </div>
