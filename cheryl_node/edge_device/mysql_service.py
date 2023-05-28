@@ -96,4 +96,12 @@ class MySQLService:
         result = cursor.fetchone()
         cursor.close()
         return result
+    
+    def update_with_feedback(self, table_name: str, modifying_fields: list, primary_fields: list, data: list):
+        cursor = self.connection.cursor() # type: ignore
+        cursor.execute(f"UPDATE {table_name} SET {self.join_param_string(modifying_fields)} WHERE {self.join_and_param_string(primary_fields)}", data)
+        self.connection.commit() # type: ignore
+        row_count = cursor.rowcount
+        cursor.close()
+        return row_count
         

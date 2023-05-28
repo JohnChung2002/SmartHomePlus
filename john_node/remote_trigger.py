@@ -20,46 +20,49 @@ def remote_trigger():
         status = int(request.form.get('status'))
         with g.dbconn:
             webhook_message = None
-            g.dbconn.update("appliance_status", ["status"], ["appliance_id"], [status, appliance_id])
-            if (appliance_id in [1, 2, 3]):
-                message = {
-                    "title": "Lights",
-                    "sender": "Cloud",
-                    "room": "1" if appliance_id == 1 else "Corridor" if appliance_id == 2 else "2",
-                    "status": status
-                }
-                webhook_message = f"Light in Room {message['room']} is turned {('On' if (status == 1) else 'Off')}"
-            elif (appliance_id in [4, 5]):
-                message = {
-                    "title": "Aircon Switch",
-                    "sender": "Cloud",
-                    "room": "1" if appliance_id == 4 else "2",
-                    "status": status
-                }
-                webhook_message = f"Aircon in Room {message['room']} is turned {('On' if (status == 1) else 'Off')}"
-            elif (appliance_id == 6):
-                message = {
-                    "title": "Ventilating Fan",
-                    "sender": "Cloud",
-                    "status": status
-                }
-                webhook_message = f"Ventilating Fan is turned {('On' if (status == 1) else 'Off')}"
+            row_count = g.dbconn.update_with_feedback("appliance_status", ["status"], ["appliance_id"], [status, appliance_id])
+            if row_count != 0:
+                if (appliance_id in [1, 2, 3]):
+                    message = {
+                        "title": "Lights",
+                        "sender": "Cloud",
+                        "room": "1" if appliance_id == 1 else "Corridor" if appliance_id == 2 else "2",
+                        "status": status
+                    }
+                    webhook_message = f"Light in Room {message['room']} is turned {('On' if (status == 1) else 'Off')}"
+                elif (appliance_id in [4, 5]):
+                    message = {
+                        "title": "Aircon Switch",
+                        "sender": "Cloud",
+                        "room": "1" if appliance_id == 4 else "2",
+                        "status": status
+                    }
+                    webhook_message = f"Aircon in Room {message['room']} is turned {('On' if (status == 1) else 'Off')}"
+                elif (appliance_id == 6):
+                    message = {
+                        "title": "Ventilating Fan",
+                        "sender": "Cloud",
+                        "status": status
+                    }
+                    webhook_message = f"Ventilating Fan is turned {('On' if (status == 1) else 'Off')}"
+                else:
+                    return "Error", 400
+                if webhook_message is not None:
+                    webhook = DiscordWebhook(
+                        url=os.getenv("AUTOMATION_DISCORD_WEBHOOK"), 
+                        username="Home Appliance Bot"
+                    )
+                    embed = DiscordEmbed(
+                        title="Home Appliance Webhook", 
+                        description=webhook_message, 
+                        color="03b2f8",
+                        url = "https://dashboard.digitalserver.tech/"
+                    )
+                    webhook.add_embed(embed)
+                    webhook.execute()
+                g.client.publish("/john_node", json.dumps(message))
             else:
-                return "Error", 400
-            if webhook_message is not None:
-                webhook = DiscordWebhook(
-                    url=os.getenv("AUTOMATION_DISCORD_WEBHOOK"), 
-                    username="Home Appliance Bot"
-                )
-                embed = DiscordEmbed(
-                    title="Home Appliance Webhook", 
-                    description=webhook_message, 
-                    color="03b2f8",
-                    url = "https://dashboard.digitalserver.tech/"
-                )
-                webhook.add_embed(embed)
-                webhook.execute()
-            g.client.publish("/john_node", json.dumps(message))
+                return "Not Modified", 304
         return "Success", 200
     except:
         return "Error", 500
@@ -72,14 +75,17 @@ def remote_aircon_temp():
         appliance_id = int(request.form.get('appliance_id'))
         value = int(request.form.get('value'))
         with g.dbconn:
-            g.dbconn.update("appliance_status", ["status_value"], ["appliance_id"], [value, appliance_id])
-            message = {
-                "title": "Aircon Temp",
-                "sender": "Cloud",
-                "room": "1" if appliance_id == 4 else "2",
-                "temp": value
-            }
-        g.client.publish("/john_node", json.dumps(message))
+            row_count = g.dbconn.update_with_feedback("appliance_status", ["status_value"], ["appliance_id"], [value, appliance_id])
+            if row_count != 0:
+                message = {
+                    "title": "Aircon Temp",
+                    "sender": "Cloud",
+                    "room": "1" if appliance_id == 4 else "2",
+                    "temp": value
+                }
+                g.client.publish("/john_node", json.dumps(message))
+            else:
+                return "Not Modified", 304
         return "Success", 200
     except:
         return "Error", 500
