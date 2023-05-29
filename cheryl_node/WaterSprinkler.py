@@ -23,7 +23,7 @@ def action2():
 @sprinkler_bp.route("/action3")
 @auth_middleware
 def action3():
-    g.client.publish(topic, "Spray at Intruder")
+    g.client.publish(topic, "Spray at intruder")
     return "Success", 200
 
 #  This is to change the threshold value of the brightness
