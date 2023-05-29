@@ -135,3 +135,10 @@ class MySQLService:
         result = cursor.fetchall()
         cursor.close()
         return result
+
+    def get_history(self):
+        cursor = self.connection.cursor(dictionary=True)
+        cursor.execute("SELECT history_id, profile_id, TIME_FORMAT(time, '%H:%i:%s') as time, DATE_FORMAT(date, '%Y-%m-%d') AS date, height, weight, bmi, in_house FROM History")
+        result = cursor.fetchall()
+        cursor.close()
+        return result
