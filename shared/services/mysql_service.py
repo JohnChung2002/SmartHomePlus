@@ -128,3 +128,10 @@ class MySQLService:
         result = cursor.fetchall()
         cursor.close()
         return result
+
+    def get_stranger(self):
+        cursor = self.connection.cursor(dictionary=True)
+        cursor.execute("SELECT stranger_id, TIME_FORMAT(time, '%H:%i:%s') as time, DATE_FORMAT(date, '%Y-%m-%d') AS date, status FROM Stranger")
+        result = cursor.fetchall()
+        cursor.close()
+        return result

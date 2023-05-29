@@ -38,7 +38,7 @@ def rfid():
 @auth_middleware
 def stranger():
     with g.dbconn:
-        return jsonify(g.dbconn.get_all("Stranger"))
+        return jsonify(g.dbconn.get_stranger())
     
 @remote_bp.route("/profile")
 @auth_middleware
