@@ -25,6 +25,10 @@ int buttonStatus = 0;
 const int minTemp = 0;     // Minimum temperature value from the potentiometer
 const int maxTemp = 1023;  // Maximum temperature value from the potentiometer
 
+// LDR range
+const int minLDR = 420;
+const int maxLDR = 950;
+
 // Create a Servo object
 Servo sprinklerServo;
 TimeOut timeout0;
@@ -33,8 +37,8 @@ TimeOut timeout1;
 // The pin connected to the servo
 const int servoPin = 11;
 
-int wetthreshold = 500; // Set the threshold value of the water sensor
-int lightthreshold = 400; // Set the threshold value of the light sensor
+int wetthreshold = 400; // Set the threshold value of the water sensor
+int lightthreshold = 60; // Set the threshold value of the light sensor
 
 String commandInput;
 
@@ -57,6 +61,8 @@ void setSprinklerStatus(int position) {
 
 void endIntruderOverride() {
   override = false;
+  digitalWrite(ledRed, LOW);
+  sprinklerServo.write(180);
 }
 
 void endGonnaRain() {
@@ -97,7 +103,7 @@ void loop() {
   TimeOut::handler();
   if (Serial.available() > 0) {
     commandInput = Serial.readString();
-
+    
     if (commandInput == "On") {
       override = true;
       sprinklerServo.write(90);
@@ -115,6 +121,7 @@ void loop() {
       sprinklerServo.write(0);
       digitalWrite(ledGreen, LOW);
       digitalWrite(ledRed, HIGH);
+      timeout0.timeOut(10000, endGonnaRain);
     } else if (commandInput == "GonnaRain") {
       gonnaRain = true;
       timeout1.timeOut(60000, endGonnaRain);
@@ -131,11 +138,12 @@ void loop() {
   int wetnessValue = analogRead(waterSensorPin);
   // Read the light level from the LDR
   int ldrValue = analogRead(ldrPin);
+  int light_intensity = map(ldrValue, minLDR, maxLDR, 1, 100);
 
   // Check if it is daytime and the moisture level is low
   if (!override) {
     if (!gonnaRain) {
-      if (ldrValue > lightthreshold && wetnessValue < wetthreshold) {
+      if (light_intensity > lightthreshold && wetnessValue < wetthreshold) {
         if (!isSprinklerOn) {
           // Turn on the sprinkler
           setSprinklerStatus(90);
@@ -165,7 +173,7 @@ void loop() {
   
   Serial.print(wetnessValue);
   Serial.print(",");
-  Serial.print(ldrValue);
+  Serial.print(light_intensity);
   Serial.print(",");
   Serial.println(temperature);
 
