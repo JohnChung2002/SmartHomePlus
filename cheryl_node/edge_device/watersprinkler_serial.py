@@ -78,7 +78,7 @@ while True:
     with mydb:
         data = mydb.get_by_id("system_data", ["field"], ["wetness_value"])
         wetnessThreshold = data["status"]
-        print(wetnessThreshold)
+        print("Wetness Threshold:", wetnessThreshold)
     data = arduino.readline().decode('utf-8').strip()
     print("Received data:", data) # Print received data for debugging
     if (data == "Sprinkler turned ON"):
