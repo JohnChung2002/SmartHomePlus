@@ -159,7 +159,7 @@ def on_message(client, userdata, msg):
                 "sender": "Cloud",
             }
             client.publish("/john_node", json.dumps(john_message))
-            client.publish("/cheryl_node", "Spray at Intruder")
+            client.publish("/cheryl_node", "Spray at intruder")
             webhook = DiscordWebhook(
                 url=os.getenv("ALARM_DISCORD_WEBHOOK"), 
                 username="Security Bot"
