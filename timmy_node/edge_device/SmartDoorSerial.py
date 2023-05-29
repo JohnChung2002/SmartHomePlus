@@ -53,16 +53,80 @@ def on_message(client, userdata, msg):
     elif messageReceived == "doorClose":
         arduino.write(b"7")
         time.sleep(1)
+    else:
+        mydb = mysql.connector.connect(host="localhost", user="pi", password="pi_101222782", database="Smart Door")
+        mycursor = mydb.cursor()
+    
+        tableValues = messageReceived.split(",")
+        
+        if tableValues[0] == "update_profile":
+            updateUser = tableValues[1]
+            updatedBirthday = tableValues[2]
+            updatedHeight = tableValues[3]
+            updatedWeight = tableValues[4]
+            updatedBMI = tableValues[5]
+            
+            sql = "UPDATE Profile SET birthday = '" + updatedBirthday + "' WHERE profile_id = '" + updateUser + "'"
+            mycursor.execute(sql)
+            mydb.commit()
+            
+            sql = "UPDATE Profile SET height = '" + updatedHeight + "' WHERE profile_id = '" + updateUser + "'"
+            mycursor.execute(sql)
+            mydb.commit()
+            
+            sql = "UPDATE Profile SET weight = '" + updatedWeight + "' WHERE profile_id = '" + updateUser + "'"
+            mycursor.execute(sql)
+            mydb.commit()
+            
+            sql = "UPDATE Profile SET bmi = '" + updatedBMI + "' WHERE profile_id = '" + updateUser + "'"
+            mycursor.execute(sql)
+            mydb.commit()
+        elif tableValues[0] == "settings":
+            mycursor.execute("SELECT settings_id FROM Settings")
+            settings = mycursor.fetchone()
+            settingsID = settings[0]
+            settingsID = str(settingsID)
+            
+            updatedDoorHeight = tableValues[1]
+            updatedDistanceInDetection = tableValues[2]
+            updatedDistanceOutDetection = tableValues[3]
+            updatedTimeClose = tableValues[4]
+            updatedTimeDetection = tableValues[5]
+            updatedTimeFaceDetection = tableValues[6]
+            
+            sql = "UPDATE Settings SET door_height = '" + updatedDoorHeight + "' WHERE settings_id = '" + settingsID + "'"
+            mycursor.execute(sql)
+            mydb.commit()
+            
+            sql = "UPDATE Settings SET distance_in_detection = '" + updatedDistanceInDetection + "' WHERE settings_id = '" + settingsID + "'"
+            mycursor.execute(sql)
+            mydb.commit()
+            
+            sql = "UPDATE Settings SET distance_out_detection = '" + updatedDistanceOutDetection + "' WHERE settings_id = '" + settingsID + "'"
+            mycursor.execute(sql)
+            mydb.commit()
+            
+            sql = "UPDATE Settings SET time_close = '" + updatedTimeClose + "' WHERE settings_id = '" + settingsID + "'"
+            mycursor.execute(sql)
+            mydb.commit()
+            
+            sql = "UPDATE Settings SET time_detection = '" + updatedTimeDetection + "' WHERE settings_id = '" + settingsID + "'"
+            mycursor.execute(sql)
+            mydb.commit()
+            
+            sql = "UPDATE Settings SET time_face_detection = '" + updatedTimeFaceDetection + "' WHERE settings_id = '" + settingsID + "'"
+            mycursor.execute(sql)
+            mydb.commit()
 
     pass
 
 # initializes MQTT client
 client = mqtt.Client()
-client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD")) # type: ignore
+client.username_pw_set(username=os.getenv("LOCAL_MQTT_USERNAME"), password=os.getenv("LOCAL_MQTT_PASSWORD"))
 client.on_connect = on_connect
 client.on_publish = on_publish
 client.on_message = on_message
-client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60) # type: ignore
+client.connect(os.getenv("LOCAL_MQTT_HOST"), int(os.getenv("LOCAL_MQTT_PORT")), 60)
 
 # subscribes to MQTT topic
 topic = "/timmy_node"

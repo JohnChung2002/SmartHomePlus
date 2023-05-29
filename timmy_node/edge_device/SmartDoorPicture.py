@@ -1,23 +1,26 @@
-# imports libraries and packages
+# imports libraries
 import cv2
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 import mysql.connector
 
+# connection to the database and extraction of name from profile table
 mydb = mysql.connector.connect(host="localhost", user="pi", password="pi_101222782", database="Smart Door")
 mycursor = mydb.cursor()
 mycursor.execute("SELECT name FROM Profile")
 profileName = mycursor.fetchone()
-
 name = profileName[0]
 
+# setting up picamera
 cam = PiCamera()
 cam.resolution = (512, 304)
 cam.framerate = 10
 rawCapture = PiRGBArray(cam, size=(512, 304))
-    
+
+# initializes counter for naming pictures taken
 img_counter = 0
 
+# infinite loop
 while True:
     for frame in cam.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         image = frame.array

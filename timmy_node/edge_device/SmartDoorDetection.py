@@ -1,4 +1,4 @@
-# imports libraries and packages
+# imports libraries
 import pickle
 from imutils.video import VideoStream
 import face_recognition
@@ -7,16 +7,16 @@ import time
 # determines faces from encodings.pickle file model created from SmartDoorTraining.py
 encodingsP = "encodings.pickle"
 
-# loads the known faces and embeddings along with OpenCV's Haar cascade for face detection
+# loads the known faces and embeddings
 data = pickle.loads(open(encodingsP, "rb").read())
 
 # initializes the video stream with picamera
 vs = VideoStream(usePiCamera=True).start()
-
 time.sleep(2.0)
 
+# 'detection' function to be called in SmartDoorSerial.py (accepts the name of the person to detect)
 def detection(detectedName):
-    # grabs the frame from the threaded video stream and resizes it to 500px to speedup processing
+    # grabs the frame from the threaded video stream and resizes it to 500px to speed up processing
     frame = vs.read()
     
     # detects the face boxes
@@ -43,5 +43,6 @@ def detection(detectedName):
             if detectedName == name:
                 return True
             
+# 'detectionstop' function to be called in SmartDoorSerial.py to stop the video stream with picamera
 def detectionstop():
     vs.stop()

@@ -1,11 +1,11 @@
-# imports libraries and packages
+# imports libraries
 from imutils import paths
 import face_recognition
 import pickle
 import cv2
 import os
 
-# images located in the dataset folder
+# images located in the 'dataset' folder in the same directory
 print("[INFO] start processing faces...")
 imagePaths = list(paths.list_images("dataset"))
 
@@ -31,7 +31,7 @@ for (i, imagePath) in enumerate(imagePaths):
 
     # loops over the encodings
     for encoding in encodings:
-        # adds each encoding + name to our set of known names and encodings
+        # adds each encoding + name to the set of known names and encodings
         knownEncodings.append(encoding)
         knownNames.append(name)
 
