@@ -3,7 +3,7 @@ import time
 from datetime import date, datetime
 import serial
 import mysql.connector
-from SmartDoorDetection import detection, detectionstop
+from SmartDoorDetection import detection
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 import os
@@ -283,15 +283,7 @@ while True:
                         timeDetectionStart = datetime.now()
                         timeDetected = Countdown()
                         
-                        # additional 2 seconds to compensate 2 second delay for initializing video stream
-                        while (Countdown() - timeDetected <= (timeFaceDetection + 2) * 1000):
-                            faceDetected = detection(i[1])
-
-                            if faceDetected == True:
-                                break
-                        
-                        # closes video stream
-                        detectionstop()
+                        faceDetected = detection(i[1], timeDetected, timeDetectionStart, timeFaceDetection)
                         
                         # checks whether the user bound to the RFID value matches the face of the user
                         if faceDetected == True:
