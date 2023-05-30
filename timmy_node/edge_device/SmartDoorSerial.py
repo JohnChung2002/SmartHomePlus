@@ -283,6 +283,7 @@ while True:
                         timeDetectionStart = datetime.now()
                         timeDetected = Countdown()
                         
+                        # calls the detection function in SmartDoorDetection.py
                         faceDetected = detection(i[1], timeDetected, timeDetectionStart, timeFaceDetection)
                         
                         # checks whether the user bound to the RFID value matches the face of the user
