@@ -1,0 +1,62 @@
+Start;
+while loop {
+  if Serial Input Detected {
+    Decode serial into JSON format (jsonDoc);
+    if (jsonDoc["title"] == "Load Configurations") {
+      Load existing status into Arduino (On startup);
+    } else if (jsonDoc["title"] == "Aircon Switch") {
+      Update specified aircon status;
+    } else if (jsonDoc["title"] == "Aircon Temp") {
+      Update specified aircon temperature;
+    } else if (jsonDoc["title"] == "Ventilating Fan") {
+      Update fan status;
+    } else if (jsonDoc["title"] == "Lights") {
+      Update specified lights status;
+    } else if (jsonDoc["title"] == "Disengage Override") {
+      Disengage Override (Intruder or Physical Switch);
+    } else if (jsonDoc["title"] == "Intruder") {
+      Engage Override (Intruder);
+      Turn on all lights;
+    }
+  }
+  if Physical Switch Pressed (Looped for all lights) {
+    Engage Override (Physical Switch);
+    Turn on specified light;
+  }
+  if Override Not Engaged (Looped for all appliance) {
+    Detect Motion for corridor movement;
+    if Set Interval passed {
+        Check brightness for each room;
+        Turn on/off lights based on brightness and if there are people in room or motion in corridor;
+    }
+  }
+}
+End; 
+
+Start;
+branch(cross_a) [MQTT Subscribe Thread] {
+  while(Loop) {
+    Read subscribed MQTT message (if any) and encode into JSON;
+    if (MQTT JSON title in ["Lights", "Intruder", "Ventilating Fan", "Aircon Switch", "Aircon Temp"]) {
+      Update the local database with appliance status as sent from the cloud webserver;
+    } 
+    Forward the received MQTT message to Arduino;
+  }
+}
+branch(cross_b) [Serial Subscribe Thread] {
+  On Arduino intialise, send existing appliance status;
+  while(Loop) {
+    Read serial input (if any) and encode into JSON;
+    switch (Serial JSON title) {
+      case Room Count:
+        Update the local database with the people count;
+        break;
+      case Lights:
+        Update the local database with the lights status (on/off);
+        break;
+    }
+  }
+  Propagate updated information to cloud using MQTT message;
+}
+join(cross_a, cross_b);
+End;

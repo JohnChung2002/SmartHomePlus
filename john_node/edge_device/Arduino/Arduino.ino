@@ -250,6 +250,10 @@ void loop() {
       button_status[10] = 1;
       serialOutput = "{'title': 'Intruder Response', 'status': 'Success'}";
       Serial.println(serialOutput);
+    } else if (jsonDoc["title"] == "Update Interval") {
+      interval = int(jsonDoc["interval"]);
+      serialOutput = "{'title': 'Update Interval Response', 'status': 'Success'}";
+      Serial.println(serialOutput);
     }
   }
   checkButtonClick();

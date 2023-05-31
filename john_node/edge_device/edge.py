@@ -63,8 +63,6 @@ def read_serial_input():
                         row_count = 1
                     elif (input["title"] == "Lights"):
                         row_count = mysql.update_with_feedback("appliance_status", ["status"], ["appliance_id"], [input["status"], lights_dict[input["room"]]])
-                    elif (input["title"] == "Ventilating Fan"):
-                        row_count = mysql.update_with_feedback("appliance_status", ["status"], ["appliance_id"], [input["status"], 6])
                 if (row_count > 0): 
                     client.publish(topic, json.dumps(input))   
                 
@@ -79,7 +77,7 @@ def on_publish(client, data, result):
 def on_message(client, userdata, msg):
     json_message = ast.literal_eval(msg.payload.decode())
     if (json_message["sender"] == "Cloud"):
-        if (json_message["title"] in ["Lights", "Intruder", "Ventilating Fan", "Aircon Switch", "Aircon Temp", "Disengage Override"]):
+        if (json_message["title"] in ["Lights", "Intruder", "Ventilating Fan", "Aircon Switch", "Aircon Temp", "Disengage Override", "Update Interval"]):
             ser.write(str.encode(json.dumps(json_message)))
             with mysql:
                 if json_message["title"] == "Lights":
@@ -118,5 +116,3 @@ topic = "/john_node"
 client.subscribe(topic)
 client.loop_start()
 read_serial_input()
-
-

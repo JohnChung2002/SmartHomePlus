@@ -95,6 +95,20 @@ def remote_aircon_temp():
         return "Success", 200
     except:
         return "Error", 500
+    
+@remote_bp.route('/update_interval', methods=['POST'])
+@auth_middleware
+def update_interval():
+    try:
+        interval = int(request.form.get('interval'))
+        with g.dbconn:
+            row_count = g.dbconn.update_with_feedback("system_data", ["status"], ["field"], [interval, "appliance_interval"])
+        if row_count == 0:
+            return "Not Modified", 304
+        g.client.publish("/john_node", json.dumps({"title": "Update Interval", "sender": "Cloud", "interval": interval}))
+        return "Success", 200
+    except:
+        return "Error", 500
 
 @remote_bp.route('/get_appliance_uptime', methods=['POST'])
 @auth_middleware
