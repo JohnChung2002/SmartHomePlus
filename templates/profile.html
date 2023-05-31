@@ -71,18 +71,19 @@
 <script src="/static/country_code.js"></script>
 <script>
     function getProfile() {
-    return new Promise(function(resolve, reject) {
-        $.ajax({
-            type: "GET",
-            url: "/api/node_3/profile",
-            success: function (result) {
-                resolve(result);
-            },
-            error: function (result) {
-                reject(result);
-            }
-        });
-    })
+        return new Promise(function(resolve, reject) {
+            $.ajax({
+                type: "GET",
+                url: "/api/node_3/profile",
+                success: function (result) {
+                    resolve(result);
+                },
+                error: function (result) {
+                    reject(result);
+                }
+            });
+        })
+    }
     function getRfid() {
         return new Promise(function(resolve, reject) {
             $.ajax({
@@ -96,7 +97,6 @@
                 }
             });
         })
-    }
     }
     $(document).ready(function() {
         getProfile().then(function(result) {
