@@ -90,7 +90,13 @@ def on_message(client, userdata, msg):
                 with mqtt_dbconn:
                     mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [int(json_message["status"]), lights_dict[json_message["room"]]])
                 message = "Lights in " + json_message["room"] + " turned " + ("On" if (int(json_message["status"]) == 1) else "Off")
-            if (json_message["title"] == "Update Uptime"):
+            elif (json_message["title"] == "Room Count"):
+                with mqtt_dbconn:
+                    if (json_message["action"] == "Inc"):
+                        mqtt_dbconn.increment_field("people_in_room", ["room"], "people_count", [int(json_message["room"])])
+                    elif (json_message["action"] == "Dec"):
+                        mqtt_dbconn.decrement_field("people_in_room", ["room"], "people_count", [int(json_message["room"])])
+            elif (json_message["title"] == "Update Uptime"):
                 with mqtt_dbconn:
                     today = datetime.date.today().strftime("%Y-%m-%d")
                     data = mqtt_dbconn.get_by_id("appliance_uptime", ["appliance_id", "date"], [json_message["appliance_id"], today])
