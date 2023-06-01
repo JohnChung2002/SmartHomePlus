@@ -152,11 +152,15 @@ def on_message(client, userdata, msg):
             
             with mqtt_dbconn:
                 mqtt_dbconn.insert("Stranger", ["time", "date", "status"], [currentTime, currentDate, strangerMessage])
-            john_message = {
-                "title": "Intruder",
-                "sender": "Cloud",
-            }
-            client.publish("/john_node", json.dumps(john_message))
+                john_message = {
+                    "title": "Intruder",
+                    "sender": "Cloud",
+                }
+                client.publish("/john_node", json.dumps(john_message))
+                with mqtt_dbconn:
+                    mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [1, 1])
+                    mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [1, 2])
+                    mqtt_dbconn.update("appliance_status", ["status"], ["appliance_id"], [1, 3])
             client.publish("/cheryl_node", "Spray at intruder")
             webhook = DiscordWebhook(
                 url=os.getenv("ALARM_DISCORD_WEBHOOK"), 

@@ -88,6 +88,11 @@ def on_message(client, userdata, msg):
                     mysql.update("appliance_status", ["status"], ["appliance_id"], [json_message["status"], aircon_dict[json_message["room"]]])
                 elif json_message["title"] == "Aircon Temp":
                     mysql.update("appliance_status", ["status_value"], ["appliance_id"], [json_message["temp"], aircon_dict[json_message["room"]]])
+        if (json_message["title"] == "Intruder"):
+            with mysql:
+                mysql.update("appliance_status", ["status"], ["appliance_id"], [1, 1])
+                mysql.update("appliance_status", ["status"], ["appliance_id"], [1, 2])
+                mysql.update("appliance_status", ["status"], ["appliance_id"], [1, 3])
         if (json_message["title"] in ["Lights", "Aircon Switch", "Ventilating Fan"]):
             appliance_id = lights_dict[json_message["room"]] if json_message["title"] == "Lights" else aircon_dict[json_message["room"]] if json_message["title"] == "Aircon Switch" else 6
             with mysql:
